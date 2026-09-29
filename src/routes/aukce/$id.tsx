@@ -1,8 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
+  AlertTriangle,
   Bell,
   Bot,
   CalendarClock,
+  CheckCircle2,
   Clock,
   Gavel,
   ShieldCheck,
@@ -123,9 +125,20 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
   const fee = Math.round(amount * a.buyerFeeRate);
   const leading = leaderRef.current === "me" && price > 0;
 
+  const [lastMine, setLastMine] = useState<{ amount: number; at: Date } | null>(null);
+  const [busy, setBusy] = useState(false);
+
   const push = (user: string, value: number, mine: boolean) => {
+    const wasLeading = leaderRef.current === "me";
     priceRef.current = value;
     leaderRef.current = mine ? "me" : "other";
+    if (mine) setLastMine({ amount: value, at: new Date() });
+    // Okamžité upozornění, když uživatele někdo přehodí.
+    if (!mine && wasLeading && autoRef.current === null) {
+      toast.warning(`Přehodili vás – nový příhoz ${czk(value)}`, {
+        description: "Přihoďte znovu nebo nastavte automatické přihazování.",
+      });
+    }
     setPrice(value);
     setCount((c) => c + 1);
     setFeed((f) => [{ user, amount: value, time: "právě teď", mine }, ...f.slice(0, 7)]);
@@ -169,6 +182,15 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
       toast.error(`Minimální příhoz je ${czk(minBid)}`);
       return;
     }
+    setBusy(true);
+    try {
+      await submitBid();
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function submitBid() {
     if (supabase) {
       const { data } = await supabase.auth.getSession();
       if (!data.session) {
@@ -178,14 +200,16 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
       }
       try {
         await placeBid(a.id, amount);
-        toast.success("Příhoz přijat");
+        setLastMine({ amount, at: new Date() });
+        leaderRef.current = "me";
+        toast.success(`Příhoz ${czk(amount)} přijat`, { description: "Vedete aukci." });
       } catch (err) {
         toast.error(err instanceof Error ? err.message : "Příhoz se nepodařilo zpracovat");
       }
       return;
     }
     bidAsMe(amount);
-    toast.success(`Přihodili jste ${czk(amount)}`, { description: "Vedete aukci." });
+    toast.success(`Příhoz ${czk(amount)} přijat`, { description: "Vedete aukci." });
   }
 
   return (
@@ -314,16 +338,31 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
                     {czk(a.startPrice)}
                   </p>
                   {feed.some((f) => f.mine) ? (
-                    <p
+                    <div
+                      role="status"
+                      aria-live="polite"
                       className={cn(
-                        "mt-3 rounded-xl px-3 py-2 text-sm font-semibold",
+                        "mt-3 rounded-xl px-3 py-2.5 text-sm",
                         leading
                           ? "bg-success/12 text-success"
-                          : "bg-destructive/10 text-destructive",
+                          : "animate-in fade-in bg-destructive/10 text-destructive",
                       )}
                     >
-                      {leading ? "Vedete aukci" : "Někdo vás přehodil – přihoďte znovu"}
-                    </p>
+                      <p className="flex items-center gap-2 font-bold">
+                        {leading ? (
+                          <CheckCircle2 className="h-4 w-4" />
+                        ) : (
+                          <AlertTriangle className="h-4 w-4" />
+                        )}
+                        {leading ? "Vedete aukci" : "Někdo vás přehodil – přihoďte znovu"}
+                      </p>
+                      {lastMine ? (
+                        <p className="mt-0.5 text-xs opacity-80">
+                          Váš poslední příhoz {czk(lastMine.amount)} byl přijat v{" "}
+                          {lastMine.at.toLocaleTimeString("cs-CZ")}.
+                        </p>
+                      ) : null}
+                    </div>
                   ) : null}
 
                   <form onSubmit={onBid} className="mt-5 space-y-3">
@@ -348,8 +387,12 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
                       className="field text-lg font-semibold"
                       aria-label="Výše příhozu"
                     />
-                    <button className="flex w-full items-center justify-center gap-2 rounded-full bg-primary py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90">
-                      <Gavel className="h-4 w-4" /> Přihodit {czk(amount)}
+                    <button
+                      disabled={busy}
+                      className="flex w-full items-center justify-center gap-2 rounded-full bg-primary py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+                    >
+                      <Gavel className="h-4 w-4" />{" "}
+                      {busy ? "Odesílám příhoz…" : `Přihodit ${czk(amount)}`}
                     </button>
                     <p className="text-xs text-muted-foreground">
                       Min. příhoz {czk(minBid)}. Aukční poplatek {Math.round(a.buyerFeeRate * 100)}{" "}

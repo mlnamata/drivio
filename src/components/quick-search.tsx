@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { Bike, Car, Caravan, Search, SlidersHorizontal, Truck } from "lucide-react";
 import { useMemo, useState } from "react";
 import {
@@ -14,7 +14,8 @@ import {
 import { sellerOf, num } from "@/lib/mock-data";
 import { cleanSearch, filterVehicles, type ListingSearch } from "@/lib/search";
 import { useVehicles } from "@/lib/store";
-import { cn } from "@/lib/utils";
+import { FilterDialog } from "@/components/filter-dialog";
+import { cars, cn } from "@/lib/utils";
 
 const selectCls = "field appearance-none bg-card pr-8";
 const categoryIcons = { osobni: Car, uzitkove: Truck, obytne: Caravan, motorky: Bike } as const;
@@ -198,19 +199,24 @@ export function QuickSearch() {
             />
             Odpočet DPH
           </label>
-          <Link
-            to="/inzeraty"
-            search={cleanSearch(s)}
-            className="inline-flex items-center gap-1.5 font-semibold text-primary hover:underline"
-          >
-            <SlidersHorizontal className="h-4 w-4" /> Další parametry
-          </Link>
+          <FilterDialog
+            value={cleanSearch(s)}
+            onApply={(next) => void navigate({ to: "/inzeraty", search: next })}
+            trigger={
+              <button
+                type="button"
+                className="inline-flex items-center gap-1.5 font-semibold text-primary hover:underline"
+              >
+                <SlidersHorizontal className="h-4 w-4" /> Další parametry
+              </button>
+            }
+          />
         </div>
         <button
           type="submit"
           className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-7 py-3 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/30 transition-colors hover:bg-primary/90"
         >
-          <Search className="h-4 w-4" /> Zobrazit {num(count)} vozů
+          <Search className="h-4 w-4" /> Zobrazit {cars(count)}
         </button>
       </div>
     </form>

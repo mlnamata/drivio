@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Fuel, Gauge, Heart, MapPin, Settings2, ShieldCheck } from "lucide-react";
+import { BadgeCheck, Fuel, Gauge, Heart, MapPin, Settings2, ShieldCheck } from "lucide-react";
 import { CarImage } from "@/components/car-image";
 import { CompareButton } from "@/components/compare";
 import { useFavorites } from "@/hooks/use-favorites";
@@ -123,6 +123,12 @@ export function VehicleCard({
           </span>
           <span className="flex items-center gap-1.5 overflow-hidden whitespace-nowrap">
             <MapPin className="h-3.5 w-3.5 shrink-0" /> {dealer.city}
+            {dealer.isDealer ? (
+              <BadgeCheck
+                className="h-3.5 w-3.5 shrink-0 text-success"
+                aria-label="Ověřený prodejce"
+              />
+            ) : null}
           </span>
         </div>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">

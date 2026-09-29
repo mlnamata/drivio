@@ -12,8 +12,10 @@ import {
 } from "recharts";
 import { btn, PageHeader, Stat } from "@/components/app-shell";
 import { useCurrentDealer, useDealerBilling, leadsSample } from "@/lib/billing";
-import { store } from "@/lib/store";
+import { store, useAllVehicles } from "@/lib/store";
 import { czk, vehicleTitle } from "@/lib/mock-data";
+
+import { cars } from "@/lib/utils";
 
 export const Route = createFileRoute("/dashboard/")({ component: Overview });
 
@@ -30,6 +32,14 @@ const views = [
 function Overview() {
   const dealerId = useCurrentDealer();
   const b = useDealerBilling(dealerId);
+  // Rychlost obratu: prodané vozy (doba do prodeje), jinak aktivní vozy (doba inzerce).
+  const mineAll = useAllVehicles().filter((v) => v.dealerId === dealerId);
+  const sold = mineAll.filter((v) => v.status === "sold");
+  const basis = sold.length ? sold : b.lines.map((l) => l.vehicle);
+  const avgDays = basis.length
+    ? Math.round(basis.reduce((x, v) => x + v.listedDays, 0) / basis.length)
+    : 0;
+  const oldest = Math.max(0, ...b.lines.map((l) => l.vehicle.listedDays));
   const stale = b.lines.filter((l) => l.stale);
   return (
     <>
@@ -75,10 +85,10 @@ function Overview() {
           hint={b.payg ? "tarif Platba za vůz" : `${b.plan.slots - b.used} volných`}
         />
         <Stat
-          label="Zobrazení (7 dní)"
-          value="7 952"
-          hint="+18 % oproti minulému týdnu"
-          tone="ok"
+          label="Rychlost obratu"
+          value={`${avgDays} dní`}
+          hint={`průměrná doba inzerce · nejstarší vůz ${oldest} dní`}
+          tone={avgDays > 60 ? "warn" : "ok"}
         />
         <Stat
           label="Nové poptávky"
@@ -138,7 +148,7 @@ function Overview() {
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between">
               <dt className="text-muted-foreground">
-                {b.payg ? `Platba za vůz (${b.used} vozů)` : `Paušál ${b.plan.name}`}
+                {b.payg ? `Platba za vůz (${cars(b.used)})` : `Paušál ${b.plan.name}`}
               </dt>
               <dd className="font-semibold">
                 {czk(b.payg ? b.lines.reduce((x, l) => x + l.base, 0) : b.plan.price)}

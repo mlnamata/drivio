@@ -9,7 +9,7 @@ import { LEASING_CONSENT_TEXT, submitLead } from "@/lib/leads";
 import { leaseKm, leaseMonthly, leasingOffers } from "@/lib/leasing";
 import { czk, num } from "@/lib/mock-data";
 import { useDataReady } from "@/lib/store";
-import { cn } from "@/lib/utils";
+import { cars, cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/leasing/firmy")({
   head: () => ({
@@ -338,7 +338,7 @@ function FleetLeasing() {
                   className="w-full rounded-full bg-primary py-3 text-sm font-bold text-primary-foreground disabled:opacity-50"
                 >
                   {selected.length
-                    ? `Poptat ${selected.reduce((s, [, n]) => s + n, 0)} vozů`
+                    ? `Poptat ${cars(selected.reduce((s, [, n]) => s + n, 0))}`
                     : "Vyberte vozy v tabulce"}
                 </button>
               </form>

@@ -166,3 +166,20 @@ export const leadsSample = [
     partner: "Home Credit",
   },
 ];
+
+/** Poplatek za inzerci vozu v daném měsíci podle tarifu (bez paušálu balíčku). */
+export function monthlyListingCost(
+  plan: ReturnType<typeof planById>,
+  price: number,
+  month: number,
+) {
+  if (plan.id === "payg") return perVehicleFee(price, month);
+  return Math.round(plan.perSlot * surchargeFactor(month)) + slotSurcharge(plan, price);
+}
+
+/** Součet poplatků od vložení vozu do konce zadaného měsíce inzerce. */
+export function listingCostToDate(plan: ReturnType<typeof planById>, price: number, month: number) {
+  let sum = 0;
+  for (let m = 1; m <= month; m++) sum += monthlyListingCost(plan, price, m);
+  return sum;
+}

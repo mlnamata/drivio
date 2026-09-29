@@ -28,5 +28,14 @@ export function AuctionCountdown({ minutes }: { minutes: number }) {
         {minutes >= 1440 ? `${Math.floor(minutes / 1440)} d` : `${Math.floor(minutes / 60)} h`}
       </span>
     );
-  return <span className="tabular-nums">{fmt(end - now)}</span>;
+  const left = end - now;
+  // Posledních 5 minut: výrazně červeně a pulzuje.
+  const urgent = left > 0 && left < 5 * 60_000;
+  return (
+    <span
+      className={urgent ? "animate-pulse font-bold tabular-nums text-destructive" : "tabular-nums"}
+    >
+      {fmt(left)}
+    </span>
+  );
 }

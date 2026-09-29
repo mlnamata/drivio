@@ -1,11 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { LayoutGrid, List, SlidersHorizontal, X } from "lucide-react";
+import { BadgeCheck, Flag, LayoutGrid, List, ScanLine, ShieldCheck, X } from "lucide-react";
 import { Fragment, useMemo } from "react";
 import { AdSlot } from "@/components/ad-slot";
 import { ListingFilters } from "@/components/listing-filters";
 import { Breadcrumbs, Container, Page } from "@/components/site-shell";
 import { VehicleCard } from "@/components/vehicle-card";
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { FilterDialog } from "@/components/filter-dialog";
 import {
   bodyTypes,
   brandBySlug,
@@ -25,7 +25,7 @@ import {
   type ListingSearch,
 } from "@/lib/search";
 import { useVehicles } from "@/lib/store";
-import { cn } from "@/lib/utils";
+import { cars, cn, plural } from "@/lib/utils";
 import { WatchdogDialog } from "@/components/watchdog-dialog";
 
 export const Route = createFileRoute("/inzeraty")({
@@ -156,6 +156,9 @@ function Listings() {
     () => filterVehicles(source, search, (v) => sellerOf(v).region),
     [source, search],
   );
+  const cebiaPct = source.length
+    ? Math.round((source.filter((v) => v.cebiaVerified).length / source.length) * 100)
+    : 0;
   const page = search.page ?? 1;
   const pages = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
   const list = all.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -178,7 +181,8 @@ function Listings() {
           <div>
             <h1 className="text-3xl font-extrabold md:text-4xl">{heading}</h1>
             <p className="mt-1 text-muted-foreground">
-              {num(all.length)} vozů odpovídá vašemu hledání
+              {cars(all.length)} {plural(all.length, "odpovídá", "odpovídají", "odpovídá")} vašemu
+              hledání
             </p>
           </div>
           <input
@@ -192,6 +196,21 @@ function Listings() {
           />
         </div>
 
+        <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 rounded-2xl border border-border bg-card px-4 py-3 text-xs font-medium text-foreground/80">
+          <span className="flex items-center gap-1.5">
+            <BadgeCheck className="h-4 w-4 text-success" /> Autobazary ověřené podle IČO
+          </span>
+          <span className="flex items-center gap-1.5">
+            <ShieldCheck className="h-4 w-4 text-success" /> {cebiaPct} % vozů s historií Cebia
+          </span>
+          <span className="flex items-center gap-1.5">
+            <ScanLine className="h-4 w-4 text-success" /> VIN u každého inzerátu
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Flag className="h-4 w-4 text-success" /> Podezřelé inzeráty prověřujeme do 24 h
+          </span>
+        </div>
+
         <div className="mt-8 grid gap-8 lg:grid-cols-[290px_1fr]">
           <aside className="hidden lg:block">
             <div className="surface-card px-5 py-4">{filters}</div>
@@ -200,18 +219,17 @@ function Listings() {
 
           <div>
             <div className="mb-4 flex flex-wrap items-center gap-2">
-              <Sheet>
-                <SheetTrigger asChild>
-                  <button className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold lg:hidden">
-                    <SlidersHorizontal className="h-4 w-4" /> Filtry{" "}
-                    {chips.length ? `(${chips.length})` : ""}
-                  </button>
-                </SheetTrigger>
-                <SheetContent side="left" className="w-[88vw] max-w-sm overflow-y-auto">
-                  <SheetTitle className="sr-only">Filtry</SheetTitle>
-                  <div className="pt-6">{filters}</div>
-                </SheetContent>
-              </Sheet>
+              <FilterDialog
+                value={search}
+                activeCount={chips.length}
+                onApply={(next) =>
+                  void navigate({
+                    search: { ...next, view: search.view, sort: search.sort },
+                    replace: true,
+                    resetScroll: false,
+                  })
+                }
+              />
               <select
                 aria-label="Řazení"
                 className="field w-auto py-2"

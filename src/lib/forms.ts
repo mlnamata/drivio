@@ -38,7 +38,8 @@ async function notify(subject: string, text: string, replyTo?: string) {
 }
 
 const contactSchema = z.object({
-  kind: z.enum(["contact", "advertising"]),
+  kind: z.enum(["contact", "advertising", "report"]),
+  vehicleId: z.string().max(80).optional(),
   topic: z.string().max(120).optional(),
   company: z.string().max(200).optional(),
   name: z.string().trim().min(2).max(120),
@@ -53,7 +54,12 @@ export const submitContact = createServerFn({ method: "POST" })
   .inputValidator((d: z.input<typeof contactSchema>) => contactSchema.parse(d))
   .handler(async ({ data }) => {
     const { website: _hp, ...row } = data;
-    await insert("contact_messages", { ...row, ip: getRequestIP({ xForwardedFor: true }) ?? null });
+    const { vehicleId, ...rest } = row;
+    await insert("contact_messages", {
+      ...rest,
+      vehicle_id: vehicleId ?? null,
+      ip: getRequestIP({ xForwardedFor: true }) ?? null,
+    });
     await notify(
       data.kind === "advertising"
         ? `Poptávka reklamy: ${data.company ?? data.name}`

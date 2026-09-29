@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Slider } from "@/components/ui/slider";
 import { CONSENT_TEXT, submitLead } from "@/lib/leads";
@@ -22,6 +22,12 @@ export function FinanceCalculator({
   const [down, setDown] = useState(0);
   const [months, setMonths] = useState(72);
   const [step, setStep] = useState<"calc" | "form" | "done">("calc");
+  // Tlačítko „Předschválení“ u ceny vozu otevře rovnou formulář.
+  useEffect(() => {
+    const open = () => setStep((s) => (s === "done" ? s : "form"));
+    window.addEventListener("drivio:open-finance", open);
+    return () => window.removeEventListener("drivio:open-finance", open);
+  }, []);
   const [busy, setBusy] = useState(false);
   const [errors, setErrors] = useState<
     Partial<Record<"name" | "email" | "phone" | "consent", string>>

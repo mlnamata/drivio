@@ -6,6 +6,8 @@ import { sellerOf } from "@/lib/mock-data";
 import { filterVehicles } from "@/lib/search";
 import { store, useStore, useVehicles } from "@/lib/store";
 
+import { cars } from "@/lib/utils";
+
 export const Route = createFileRoute("/hlidaci-pes")({
   head: () => ({
     meta: [{ title: "Hlídací pes | Drivio" }, { name: "robots", content: "noindex" }],
@@ -69,7 +71,7 @@ function Watchdog() {
                     search={w.search}
                     className="inline-flex w-fit items-center gap-2 rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background"
                   >
-                    <Search className="h-4 w-4" /> Zobrazit {count} vozů
+                    <Search className="h-4 w-4" /> Zobrazit {cars(count)}
                   </Link>
                 </div>
               );

@@ -14,6 +14,8 @@ import { AuthGate } from "@/components/auth-gate";
 import { useCurrentDealer, useDealerBilling, leadsSample } from "@/lib/billing";
 import { czk } from "@/lib/mock-data";
 
+import { cars } from "@/lib/utils";
+
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [{ title: "Administrace autobazaru | Drivio" }, { name: "robots", content: "noindex" }],
@@ -63,7 +65,7 @@ function DealerLayout() {
             <p className="font-semibold text-white">{b.plan.name}</p>
             {b.payg ? (
               <p className="mt-1.5 text-sidebar-foreground/60">
-                {b.used} vozů · tento měsíc {czk(b.total)}
+                {cars(b.used)} · tento měsíc {czk(b.total)}
               </p>
             ) : (
               <>

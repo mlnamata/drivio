@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Gavel, Pencil, Search } from "lucide-react";
+import { Calculator, Gavel, Pencil, Search } from "lucide-react";
+import { CostCalculatorDialog } from "@/components/cost-calculator";
 import { useState } from "react";
 import { toast } from "sonner";
 import { btn, DataTable, PageHeader, StatusBadge } from "@/components/app-shell";
@@ -8,6 +9,8 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/compone
 import { useCurrentDealer, useDealerBilling } from "@/lib/billing";
 import { czk, num, vehicleTitle, type Vehicle } from "@/lib/mock-data";
 import { store, useAllVehicles } from "@/lib/store";
+
+import { cars } from "@/lib/utils";
 
 export const Route = createFileRoute("/dashboard/vozy")({ component: MyCars });
 
@@ -18,6 +21,7 @@ function MyCars() {
   const soldList = all.filter((v) => v.dealerId === dealerId && v.status === "sold");
   const [q, setQ] = useState("");
   const [editing, setEditing] = useState<Vehicle | null>(null);
+  const [costFor, setCostFor] = useState<{ v: Vehicle; month: number } | null>(null);
   const lines = b.lines.filter((l) =>
     vehicleTitle(l.vehicle).toLowerCase().includes(q.toLowerCase()),
   );
@@ -28,7 +32,7 @@ function MyCars() {
         title="Moje vozy"
         desc={
           b.payg
-            ? `${b.used} vozů · tarif Platba za vůz`
+            ? `${cars(b.used)} · tarif Platba za vůz`
             : `${b.used} z ${b.plan.slots} slotů obsazeno · limit ceny ${b.plan.maxPrice ? czk(b.plan.maxPrice) : "bez limitu"}`
         }
         actions={
@@ -103,6 +107,14 @@ function MyCars() {
               </td>
               <td>
                 <div className="flex justify-end gap-1">
+                  <button
+                    className="rounded-lg p-2 hover:bg-muted"
+                    aria-label="Náklady a marže"
+                    title="Náklady a marže"
+                    onClick={() => setCostFor({ v, month: l.month })}
+                  >
+                    <Calculator className="h-4 w-4" />
+                  </button>
                   {!inAuction ? (
                     <button
                       className="rounded-lg p-2 hover:bg-muted"
@@ -150,6 +162,16 @@ function MyCars() {
         <p className="mt-4 text-sm text-muted-foreground">
           Prodáno tento měsíc: {soldList.map((v) => vehicleTitle(v)).join(", ")}
         </p>
+      ) : null}
+
+      {costFor ? (
+        <CostCalculatorDialog
+          vehicle={costFor.v}
+          plan={b.plan}
+          month={costFor.month}
+          open
+          onOpenChange={(o) => !o && setCostFor(null)}
+        />
       ) : null}
 
       <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>

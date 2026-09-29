@@ -22,6 +22,8 @@ import { bodyTypes, brands } from "@/lib/catalog";
 import { czk, monthlyPayment, num, vehicleTitle } from "@/lib/mock-data";
 import { useAllVehicles, useAuctions, useVehicles } from "@/lib/store";
 
+import { cars } from "@/lib/utils";
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -92,8 +94,8 @@ function Index() {
           <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-center">
             <div>
               <p className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold shadow-sm">
-                <BadgeCheck className="h-4 w-4 text-primary" /> {num(list.length)} vozů od
-                prověřených prodejců
+                <BadgeCheck className="h-4 w-4 text-primary" /> {cars(list.length)} od prověřených
+                prodejců
               </p>
               <h1 className="mt-5 text-4xl font-extrabold leading-[1.05] tracking-tight md:text-[3.4rem]">
                 Auto, které si můžete dovolit.
@@ -186,7 +188,7 @@ function Index() {
                   {czk(m)}
                 </p>
                 <p className="mt-3 inline-flex rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">
-                  {count} vozů →
+                  {cars(count)} →
                 </p>
               </Link>
             );
@@ -208,7 +210,7 @@ function Index() {
               <BrandLogo slug={b.slug} name={b.name} className="h-11 w-11" />
               <span className="text-sm font-semibold">{b.name}</span>
               <span className="text-xs text-muted-foreground">
-                {list.filter((v) => v.brand === b.slug).length} vozů
+                {cars(list.filter((v) => v.brand === b.slug).length)}
               </span>
             </Link>
           ))}

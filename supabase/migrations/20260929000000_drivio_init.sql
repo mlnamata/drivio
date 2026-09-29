@@ -409,7 +409,8 @@ create table public.saved_searches (
 -- ---------------------------------------------------------------- zprávy z formulářů
 create table public.contact_messages (
   id uuid primary key default gen_random_uuid(),
-  kind text not null check (kind in ('contact', 'advertising')),
+  kind text not null check (kind in ('contact', 'advertising', 'report')),
+  vehicle_id uuid references public.vehicles (id) on delete set null,
   topic text,
   company text,
   name text not null,

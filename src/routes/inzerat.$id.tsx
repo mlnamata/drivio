@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { BrandLogo } from "@/components/brand-logo";
 import { AdSlot } from "@/components/ad-slot";
 import { CarImage } from "@/components/car-image";
+import { SafeBuyBox } from "@/components/trust-box";
 import { InstallmentOptions } from "@/components/installment-options";
 import { CompareButton } from "@/components/compare";
 import { FinanceCalculator } from "@/components/finance-calculator";
@@ -252,14 +253,7 @@ function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
             </section>
 
             <div className="mt-8">
-              <InstallmentOptions
-                price={v.price}
-                onPick={() =>
-                  document
-                    .getElementById("financovani")
-                    ?.scrollIntoView({ behavior: "smooth", block: "center" })
-                }
-              />
+              <InstallmentOptions price={v.price} onPick={openFinance} />
             </div>
 
             <section className="mt-8 surface-card p-6">
@@ -387,6 +381,7 @@ function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
               <DealerContactForm vehicleId={v.id} title={title} />
             </div>
 
+            <SafeBuyBox vehicle={v} seller={dealer} />
             <div id="financovani" className="scroll-mt-24">
               <FinanceCalculator price={v.price} vehicleId={v.id} />
             </div>
@@ -430,16 +425,33 @@ function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
         </div>
         <p className="mt-4 font-display text-3xl font-extrabold">{czk(v.price)}</p>
         <PriceRatingBadge vehicle={v} className="mt-1 text-xs" />
-        <p className="text-sm text-muted-foreground">
-          {v.vatDeductible ? `${czk(Math.round(v.price / 1.21))} bez DPH · ` : ""}
-          nebo{" "}
-          <span className="font-semibold text-primary">
-            od {czk(monthlyPayment(v.price))} měsíčně
-          </span>
-        </p>
+        {v.vatDeductible ? (
+          <p className="text-sm text-muted-foreground">{czk(Math.round(v.price / 1.21))} bez DPH</p>
+        ) : null}
+        <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl bg-accent p-3">
+          <div>
+            <p className="text-xs text-accent-foreground/80">nebo na splátky bez akontace</p>
+            <p className="font-display text-xl font-extrabold text-accent-foreground">
+              od {czk(monthlyPayment(v.price))} / měs.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={openFinance}
+            className="shrink-0 rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground hover:bg-primary/90"
+          >
+            Předschválení za 2 min
+          </button>
+        </div>
       </div>
     );
   }
+}
+
+/** Posune na kalkulačku a rovnou otevře formulář předběžného schválení. */
+function openFinance() {
+  document.getElementById("financovani")?.scrollIntoView({ behavior: "smooth", block: "center" });
+  window.dispatchEvent(new Event("drivio:open-finance"));
 }
 
 function DealerContactForm({ vehicleId, title }: { vehicleId: string; title: string }) {
