@@ -10,19 +10,48 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AukceRouteImport } from './routes/aukce'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as CenikRouteImport } from './routes/cenik'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as FinancovaniRouteImport } from './routes/financovani'
 import { Route as InzeratyRouteImport } from './routes/inzeraty'
+import { Route as KontaktRouteImport } from './routes/kontakt'
+import { Route as OblibeneRouteImport } from './routes/oblibene'
+import { Route as PrihlaseniRouteImport } from './routes/prihlaseni'
+import { Route as ProAutobazaryRouteImport } from './routes/pro-autobazary'
+import { Route as ProLeasingoveSpolecnostiRouteImport } from './routes/pro-leasingove-spolecnosti'
+import { Route as AdminIndexRouteImport } from './routes/admin/index'
+import { Route as AdminAukceRouteImport } from './routes/admin/aukce'
+import { Route as AdminAutobazaryRouteImport } from './routes/admin/autobazary'
+import { Route as AdminAutomatizaceRouteImport } from './routes/admin/automatizace'
+import { Route as AdminFakturaceRouteImport } from './routes/admin/fakturace'
+import { Route as AdminInzeratyRouteImport } from './routes/admin/inzeraty'
+import { Route as AdminLeadyRouteImport } from './routes/admin/leady'
+import { Route as AdminNastaveniRouteImport } from './routes/admin/nastaveni'
+import { Route as AukceIndexRouteImport } from './routes/aukce/index'
+import { Route as AukceIdRouteImport } from './routes/aukce/$id'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
+import { Route as DashboardAukceRouteImport } from './routes/dashboard/aukce'
+import { Route as DashboardFakturyRouteImport } from './routes/dashboard/faktury'
+import { Route as DashboardNastaveniRouteImport } from './routes/dashboard/nastaveni'
+import { Route as DashboardPoptavkyRouteImport } from './routes/dashboard/poptavky'
+import { Route as DashboardPredplatneRouteImport } from './routes/dashboard/predplatne'
+import { Route as DashboardPridatRouteImport } from './routes/dashboard/pridat'
+import { Route as DashboardVozyRouteImport } from './routes/dashboard/vozy'
+import { Route as InzeratIdRouteImport } from './routes/inzerat.$id'
+import { Route as PravniCookiesRouteImport } from './routes/pravni/cookies'
+import { Route as PravniObchodniPodminkyRouteImport } from './routes/pravni/obchodni-podminky'
+import { Route as PravniOchranaOsobnichUdajuRouteImport } from './routes/pravni/ochrana-osobnich-udaju'
+import { Route as ApiWebhooksFakturoidRouteImport } from './routes/api/webhooks/fakturoid'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AukceRoute = AukceRouteImport.update({
-  id: '/aukce',
-  path: '/aukce',
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CenikRoute = CenikRouteImport.update({
@@ -35,48 +64,394 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FinancovaniRoute = FinancovaniRouteImport.update({
+  id: '/financovani',
+  path: '/financovani',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InzeratyRoute = InzeratyRouteImport.update({
   id: '/inzeraty',
   path: '/inzeraty',
   getParentRoute: () => rootRouteImport,
 } as any)
+const KontaktRoute = KontaktRouteImport.update({
+  id: '/kontakt',
+  path: '/kontakt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OblibeneRoute = OblibeneRouteImport.update({
+  id: '/oblibene',
+  path: '/oblibene',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrihlaseniRoute = PrihlaseniRouteImport.update({
+  id: '/prihlaseni',
+  path: '/prihlaseni',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProAutobazaryRoute = ProAutobazaryRouteImport.update({
+  id: '/pro-autobazary',
+  path: '/pro-autobazary',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProLeasingoveSpolecnostiRoute =
+  ProLeasingoveSpolecnostiRouteImport.update({
+    id: '/pro-leasingove-spolecnosti',
+    path: '/pro-leasingove-spolecnosti',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAukceRoute = AdminAukceRouteImport.update({
+  id: '/aukce',
+  path: '/aukce',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAutobazaryRoute = AdminAutobazaryRouteImport.update({
+  id: '/autobazary',
+  path: '/autobazary',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAutomatizaceRoute = AdminAutomatizaceRouteImport.update({
+  id: '/automatizace',
+  path: '/automatizace',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminFakturaceRoute = AdminFakturaceRouteImport.update({
+  id: '/fakturace',
+  path: '/fakturace',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminInzeratyRoute = AdminInzeratyRouteImport.update({
+  id: '/inzeraty',
+  path: '/inzeraty',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLeadyRoute = AdminLeadyRouteImport.update({
+  id: '/leady',
+  path: '/leady',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminNastaveniRoute = AdminNastaveniRouteImport.update({
+  id: '/nastaveni',
+  path: '/nastaveni',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AukceIndexRoute = AukceIndexRouteImport.update({
+  id: '/aukce/',
+  path: '/aukce/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AukceIdRoute = AukceIdRouteImport.update({
+  id: '/aukce/$id',
+  path: '/aukce/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardAukceRoute = DashboardAukceRouteImport.update({
+  id: '/aukce',
+  path: '/aukce',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardFakturyRoute = DashboardFakturyRouteImport.update({
+  id: '/faktury',
+  path: '/faktury',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardNastaveniRoute = DashboardNastaveniRouteImport.update({
+  id: '/nastaveni',
+  path: '/nastaveni',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardPoptavkyRoute = DashboardPoptavkyRouteImport.update({
+  id: '/poptavky',
+  path: '/poptavky',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardPredplatneRoute = DashboardPredplatneRouteImport.update({
+  id: '/predplatne',
+  path: '/predplatne',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardPridatRoute = DashboardPridatRouteImport.update({
+  id: '/pridat',
+  path: '/pridat',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardVozyRoute = DashboardVozyRouteImport.update({
+  id: '/vozy',
+  path: '/vozy',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const InzeratIdRoute = InzeratIdRouteImport.update({
+  id: '/inzerat/$id',
+  path: '/inzerat/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PravniCookiesRoute = PravniCookiesRouteImport.update({
+  id: '/pravni/cookies',
+  path: '/pravni/cookies',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PravniObchodniPodminkyRoute = PravniObchodniPodminkyRouteImport.update({
+  id: '/pravni/obchodni-podminky',
+  path: '/pravni/obchodni-podminky',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PravniOchranaOsobnichUdajuRoute =
+  PravniOchranaOsobnichUdajuRouteImport.update({
+    id: '/pravni/ochrana-osobnich-udaju',
+    path: '/pravni/ochrana-osobnich-udaju',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiWebhooksFakturoidRoute = ApiWebhooksFakturoidRouteImport.update({
+  id: '/api/webhooks/fakturoid',
+  path: '/api/webhooks/fakturoid',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/aukce': typeof AukceRoute
+  '/admin': typeof AdminRouteWithChildren
   '/cenik': typeof CenikRoute
-  '/dashboard': typeof DashboardRoute
+  '/dashboard': typeof DashboardRouteWithChildren
+  '/financovani': typeof FinancovaniRoute
   '/inzeraty': typeof InzeratyRoute
+  '/kontakt': typeof KontaktRoute
+  '/oblibene': typeof OblibeneRoute
+  '/prihlaseni': typeof PrihlaseniRoute
+  '/pro-autobazary': typeof ProAutobazaryRoute
+  '/pro-leasingove-spolecnosti': typeof ProLeasingoveSpolecnostiRoute
+  '/admin/aukce': typeof AdminAukceRoute
+  '/admin/autobazary': typeof AdminAutobazaryRoute
+  '/admin/automatizace': typeof AdminAutomatizaceRoute
+  '/admin/fakturace': typeof AdminFakturaceRoute
+  '/admin/inzeraty': typeof AdminInzeratyRoute
+  '/admin/leady': typeof AdminLeadyRoute
+  '/admin/nastaveni': typeof AdminNastaveniRoute
+  '/aukce/$id': typeof AukceIdRoute
+  '/dashboard/aukce': typeof DashboardAukceRoute
+  '/dashboard/faktury': typeof DashboardFakturyRoute
+  '/dashboard/nastaveni': typeof DashboardNastaveniRoute
+  '/dashboard/poptavky': typeof DashboardPoptavkyRoute
+  '/dashboard/predplatne': typeof DashboardPredplatneRoute
+  '/dashboard/pridat': typeof DashboardPridatRoute
+  '/dashboard/vozy': typeof DashboardVozyRoute
+  '/inzerat/$id': typeof InzeratIdRoute
+  '/pravni/cookies': typeof PravniCookiesRoute
+  '/pravni/obchodni-podminky': typeof PravniObchodniPodminkyRoute
+  '/pravni/ochrana-osobnich-udaju': typeof PravniOchranaOsobnichUdajuRoute
+  '/admin/': typeof AdminIndexRoute
+  '/aukce/': typeof AukceIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/api/webhooks/fakturoid': typeof ApiWebhooksFakturoidRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/aukce': typeof AukceRoute
   '/cenik': typeof CenikRoute
-  '/dashboard': typeof DashboardRoute
+  '/financovani': typeof FinancovaniRoute
   '/inzeraty': typeof InzeratyRoute
+  '/kontakt': typeof KontaktRoute
+  '/oblibene': typeof OblibeneRoute
+  '/prihlaseni': typeof PrihlaseniRoute
+  '/pro-autobazary': typeof ProAutobazaryRoute
+  '/pro-leasingove-spolecnosti': typeof ProLeasingoveSpolecnostiRoute
+  '/admin/aukce': typeof AdminAukceRoute
+  '/admin/autobazary': typeof AdminAutobazaryRoute
+  '/admin/automatizace': typeof AdminAutomatizaceRoute
+  '/admin/fakturace': typeof AdminFakturaceRoute
+  '/admin/inzeraty': typeof AdminInzeratyRoute
+  '/admin/leady': typeof AdminLeadyRoute
+  '/admin/nastaveni': typeof AdminNastaveniRoute
+  '/aukce/$id': typeof AukceIdRoute
+  '/dashboard/aukce': typeof DashboardAukceRoute
+  '/dashboard/faktury': typeof DashboardFakturyRoute
+  '/dashboard/nastaveni': typeof DashboardNastaveniRoute
+  '/dashboard/poptavky': typeof DashboardPoptavkyRoute
+  '/dashboard/predplatne': typeof DashboardPredplatneRoute
+  '/dashboard/pridat': typeof DashboardPridatRoute
+  '/dashboard/vozy': typeof DashboardVozyRoute
+  '/inzerat/$id': typeof InzeratIdRoute
+  '/pravni/cookies': typeof PravniCookiesRoute
+  '/pravni/obchodni-podminky': typeof PravniObchodniPodminkyRoute
+  '/pravni/ochrana-osobnich-udaju': typeof PravniOchranaOsobnichUdajuRoute
+  '/admin': typeof AdminIndexRoute
+  '/aukce': typeof AukceIndexRoute
+  '/dashboard': typeof DashboardIndexRoute
+  '/api/webhooks/fakturoid': typeof ApiWebhooksFakturoidRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/aukce': typeof AukceRoute
+  '/admin': typeof AdminRouteWithChildren
   '/cenik': typeof CenikRoute
-  '/dashboard': typeof DashboardRoute
+  '/dashboard': typeof DashboardRouteWithChildren
+  '/financovani': typeof FinancovaniRoute
   '/inzeraty': typeof InzeratyRoute
+  '/kontakt': typeof KontaktRoute
+  '/oblibene': typeof OblibeneRoute
+  '/prihlaseni': typeof PrihlaseniRoute
+  '/pro-autobazary': typeof ProAutobazaryRoute
+  '/pro-leasingove-spolecnosti': typeof ProLeasingoveSpolecnostiRoute
+  '/admin/aukce': typeof AdminAukceRoute
+  '/admin/autobazary': typeof AdminAutobazaryRoute
+  '/admin/automatizace': typeof AdminAutomatizaceRoute
+  '/admin/fakturace': typeof AdminFakturaceRoute
+  '/admin/inzeraty': typeof AdminInzeratyRoute
+  '/admin/leady': typeof AdminLeadyRoute
+  '/admin/nastaveni': typeof AdminNastaveniRoute
+  '/aukce/$id': typeof AukceIdRoute
+  '/dashboard/aukce': typeof DashboardAukceRoute
+  '/dashboard/faktury': typeof DashboardFakturyRoute
+  '/dashboard/nastaveni': typeof DashboardNastaveniRoute
+  '/dashboard/poptavky': typeof DashboardPoptavkyRoute
+  '/dashboard/predplatne': typeof DashboardPredplatneRoute
+  '/dashboard/pridat': typeof DashboardPridatRoute
+  '/dashboard/vozy': typeof DashboardVozyRoute
+  '/inzerat/$id': typeof InzeratIdRoute
+  '/pravni/cookies': typeof PravniCookiesRoute
+  '/pravni/obchodni-podminky': typeof PravniObchodniPodminkyRoute
+  '/pravni/ochrana-osobnich-udaju': typeof PravniOchranaOsobnichUdajuRoute
+  '/admin/': typeof AdminIndexRoute
+  '/aukce/': typeof AukceIndexRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/api/webhooks/fakturoid': typeof ApiWebhooksFakturoidRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/aukce' | '/cenik' | '/dashboard' | '/inzeraty'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/cenik'
+    | '/dashboard'
+    | '/financovani'
+    | '/inzeraty'
+    | '/kontakt'
+    | '/oblibene'
+    | '/prihlaseni'
+    | '/pro-autobazary'
+    | '/pro-leasingove-spolecnosti'
+    | '/admin/aukce'
+    | '/admin/autobazary'
+    | '/admin/automatizace'
+    | '/admin/fakturace'
+    | '/admin/inzeraty'
+    | '/admin/leady'
+    | '/admin/nastaveni'
+    | '/aukce/$id'
+    | '/dashboard/aukce'
+    | '/dashboard/faktury'
+    | '/dashboard/nastaveni'
+    | '/dashboard/poptavky'
+    | '/dashboard/predplatne'
+    | '/dashboard/pridat'
+    | '/dashboard/vozy'
+    | '/inzerat/$id'
+    | '/pravni/cookies'
+    | '/pravni/obchodni-podminky'
+    | '/pravni/ochrana-osobnich-udaju'
+    | '/admin/'
+    | '/aukce/'
+    | '/dashboard/'
+    | '/api/webhooks/fakturoid'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/aukce' | '/cenik' | '/dashboard' | '/inzeraty'
-  id: '__root__' | '/' | '/aukce' | '/cenik' | '/dashboard' | '/inzeraty'
+  to:
+    | '/'
+    | '/cenik'
+    | '/financovani'
+    | '/inzeraty'
+    | '/kontakt'
+    | '/oblibene'
+    | '/prihlaseni'
+    | '/pro-autobazary'
+    | '/pro-leasingove-spolecnosti'
+    | '/admin/aukce'
+    | '/admin/autobazary'
+    | '/admin/automatizace'
+    | '/admin/fakturace'
+    | '/admin/inzeraty'
+    | '/admin/leady'
+    | '/admin/nastaveni'
+    | '/aukce/$id'
+    | '/dashboard/aukce'
+    | '/dashboard/faktury'
+    | '/dashboard/nastaveni'
+    | '/dashboard/poptavky'
+    | '/dashboard/predplatne'
+    | '/dashboard/pridat'
+    | '/dashboard/vozy'
+    | '/inzerat/$id'
+    | '/pravni/cookies'
+    | '/pravni/obchodni-podminky'
+    | '/pravni/ochrana-osobnich-udaju'
+    | '/admin'
+    | '/aukce'
+    | '/dashboard'
+    | '/api/webhooks/fakturoid'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/cenik'
+    | '/dashboard'
+    | '/financovani'
+    | '/inzeraty'
+    | '/kontakt'
+    | '/oblibene'
+    | '/prihlaseni'
+    | '/pro-autobazary'
+    | '/pro-leasingove-spolecnosti'
+    | '/admin/aukce'
+    | '/admin/autobazary'
+    | '/admin/automatizace'
+    | '/admin/fakturace'
+    | '/admin/inzeraty'
+    | '/admin/leady'
+    | '/admin/nastaveni'
+    | '/aukce/$id'
+    | '/dashboard/aukce'
+    | '/dashboard/faktury'
+    | '/dashboard/nastaveni'
+    | '/dashboard/poptavky'
+    | '/dashboard/predplatne'
+    | '/dashboard/pridat'
+    | '/dashboard/vozy'
+    | '/inzerat/$id'
+    | '/pravni/cookies'
+    | '/pravni/obchodni-podminky'
+    | '/pravni/ochrana-osobnich-udaju'
+    | '/admin/'
+    | '/aukce/'
+    | '/dashboard/'
+    | '/api/webhooks/fakturoid'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AukceRoute: typeof AukceRoute
+  AdminRoute: typeof AdminRouteWithChildren
   CenikRoute: typeof CenikRoute
-  DashboardRoute: typeof DashboardRoute
+  DashboardRoute: typeof DashboardRouteWithChildren
+  FinancovaniRoute: typeof FinancovaniRoute
   InzeratyRoute: typeof InzeratyRoute
+  KontaktRoute: typeof KontaktRoute
+  OblibeneRoute: typeof OblibeneRoute
+  PrihlaseniRoute: typeof PrihlaseniRoute
+  ProAutobazaryRoute: typeof ProAutobazaryRoute
+  ProLeasingoveSpolecnostiRoute: typeof ProLeasingoveSpolecnostiRoute
+  AukceIdRoute: typeof AukceIdRoute
+  InzeratIdRoute: typeof InzeratIdRoute
+  PravniCookiesRoute: typeof PravniCookiesRoute
+  PravniObchodniPodminkyRoute: typeof PravniObchodniPodminkyRoute
+  PravniOchranaOsobnichUdajuRoute: typeof PravniOchranaOsobnichUdajuRoute
+  AukceIndexRoute: typeof AukceIndexRoute
+  ApiWebhooksFakturoidRoute: typeof ApiWebhooksFakturoidRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -88,11 +463,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/aukce': {
-      id: '/aukce'
-      path: '/aukce'
-      fullPath: '/aukce'
-      preLoaderRoute: typeof AukceRouteImport
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cenik': {
@@ -109,6 +484,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/financovani': {
+      id: '/financovani'
+      path: '/financovani'
+      fullPath: '/financovani'
+      preLoaderRoute: typeof FinancovaniRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/inzeraty': {
       id: '/inzeraty'
       path: '/inzeraty'
@@ -116,15 +498,274 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InzeratyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/kontakt': {
+      id: '/kontakt'
+      path: '/kontakt'
+      fullPath: '/kontakt'
+      preLoaderRoute: typeof KontaktRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/oblibene': {
+      id: '/oblibene'
+      path: '/oblibene'
+      fullPath: '/oblibene'
+      preLoaderRoute: typeof OblibeneRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/prihlaseni': {
+      id: '/prihlaseni'
+      path: '/prihlaseni'
+      fullPath: '/prihlaseni'
+      preLoaderRoute: typeof PrihlaseniRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pro-autobazary': {
+      id: '/pro-autobazary'
+      path: '/pro-autobazary'
+      fullPath: '/pro-autobazary'
+      preLoaderRoute: typeof ProAutobazaryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pro-leasingove-spolecnosti': {
+      id: '/pro-leasingove-spolecnosti'
+      path: '/pro-leasingove-spolecnosti'
+      fullPath: '/pro-leasingove-spolecnosti'
+      preLoaderRoute: typeof ProLeasingoveSpolecnostiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/aukce': {
+      id: '/admin/aukce'
+      path: '/aukce'
+      fullPath: '/admin/aukce'
+      preLoaderRoute: typeof AdminAukceRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/autobazary': {
+      id: '/admin/autobazary'
+      path: '/autobazary'
+      fullPath: '/admin/autobazary'
+      preLoaderRoute: typeof AdminAutobazaryRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/automatizace': {
+      id: '/admin/automatizace'
+      path: '/automatizace'
+      fullPath: '/admin/automatizace'
+      preLoaderRoute: typeof AdminAutomatizaceRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/fakturace': {
+      id: '/admin/fakturace'
+      path: '/fakturace'
+      fullPath: '/admin/fakturace'
+      preLoaderRoute: typeof AdminFakturaceRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/inzeraty': {
+      id: '/admin/inzeraty'
+      path: '/inzeraty'
+      fullPath: '/admin/inzeraty'
+      preLoaderRoute: typeof AdminInzeratyRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/leady': {
+      id: '/admin/leady'
+      path: '/leady'
+      fullPath: '/admin/leady'
+      preLoaderRoute: typeof AdminLeadyRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/nastaveni': {
+      id: '/admin/nastaveni'
+      path: '/nastaveni'
+      fullPath: '/admin/nastaveni'
+      preLoaderRoute: typeof AdminNastaveniRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/aukce/': {
+      id: '/aukce/'
+      path: '/aukce'
+      fullPath: '/aukce/'
+      preLoaderRoute: typeof AukceIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aukce/$id': {
+      id: '/aukce/$id'
+      path: '/aukce/$id'
+      fullPath: '/aukce/$id'
+      preLoaderRoute: typeof AukceIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/aukce': {
+      id: '/dashboard/aukce'
+      path: '/aukce'
+      fullPath: '/dashboard/aukce'
+      preLoaderRoute: typeof DashboardAukceRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/faktury': {
+      id: '/dashboard/faktury'
+      path: '/faktury'
+      fullPath: '/dashboard/faktury'
+      preLoaderRoute: typeof DashboardFakturyRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/nastaveni': {
+      id: '/dashboard/nastaveni'
+      path: '/nastaveni'
+      fullPath: '/dashboard/nastaveni'
+      preLoaderRoute: typeof DashboardNastaveniRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/poptavky': {
+      id: '/dashboard/poptavky'
+      path: '/poptavky'
+      fullPath: '/dashboard/poptavky'
+      preLoaderRoute: typeof DashboardPoptavkyRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/predplatne': {
+      id: '/dashboard/predplatne'
+      path: '/predplatne'
+      fullPath: '/dashboard/predplatne'
+      preLoaderRoute: typeof DashboardPredplatneRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/pridat': {
+      id: '/dashboard/pridat'
+      path: '/pridat'
+      fullPath: '/dashboard/pridat'
+      preLoaderRoute: typeof DashboardPridatRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/vozy': {
+      id: '/dashboard/vozy'
+      path: '/vozy'
+      fullPath: '/dashboard/vozy'
+      preLoaderRoute: typeof DashboardVozyRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/inzerat/$id': {
+      id: '/inzerat/$id'
+      path: '/inzerat/$id'
+      fullPath: '/inzerat/$id'
+      preLoaderRoute: typeof InzeratIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pravni/cookies': {
+      id: '/pravni/cookies'
+      path: '/pravni/cookies'
+      fullPath: '/pravni/cookies'
+      preLoaderRoute: typeof PravniCookiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pravni/obchodni-podminky': {
+      id: '/pravni/obchodni-podminky'
+      path: '/pravni/obchodni-podminky'
+      fullPath: '/pravni/obchodni-podminky'
+      preLoaderRoute: typeof PravniObchodniPodminkyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pravni/ochrana-osobnich-udaju': {
+      id: '/pravni/ochrana-osobnich-udaju'
+      path: '/pravni/ochrana-osobnich-udaju'
+      fullPath: '/pravni/ochrana-osobnich-udaju'
+      preLoaderRoute: typeof PravniOchranaOsobnichUdajuRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/webhooks/fakturoid': {
+      id: '/api/webhooks/fakturoid'
+      path: '/api/webhooks/fakturoid'
+      fullPath: '/api/webhooks/fakturoid'
+      preLoaderRoute: typeof ApiWebhooksFakturoidRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface AdminRouteChildren {
+  AdminAukceRoute: typeof AdminAukceRoute
+  AdminAutobazaryRoute: typeof AdminAutobazaryRoute
+  AdminAutomatizaceRoute: typeof AdminAutomatizaceRoute
+  AdminFakturaceRoute: typeof AdminFakturaceRoute
+  AdminInzeratyRoute: typeof AdminInzeratyRoute
+  AdminLeadyRoute: typeof AdminLeadyRoute
+  AdminNastaveniRoute: typeof AdminNastaveniRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAukceRoute: AdminAukceRoute,
+  AdminAutobazaryRoute: AdminAutobazaryRoute,
+  AdminAutomatizaceRoute: AdminAutomatizaceRoute,
+  AdminFakturaceRoute: AdminFakturaceRoute,
+  AdminInzeratyRoute: AdminInzeratyRoute,
+  AdminLeadyRoute: AdminLeadyRoute,
+  AdminNastaveniRoute: AdminNastaveniRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface DashboardRouteChildren {
+  DashboardAukceRoute: typeof DashboardAukceRoute
+  DashboardFakturyRoute: typeof DashboardFakturyRoute
+  DashboardNastaveniRoute: typeof DashboardNastaveniRoute
+  DashboardPoptavkyRoute: typeof DashboardPoptavkyRoute
+  DashboardPredplatneRoute: typeof DashboardPredplatneRoute
+  DashboardPridatRoute: typeof DashboardPridatRoute
+  DashboardVozyRoute: typeof DashboardVozyRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
+}
+
+const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardAukceRoute: DashboardAukceRoute,
+  DashboardFakturyRoute: DashboardFakturyRoute,
+  DashboardNastaveniRoute: DashboardNastaveniRoute,
+  DashboardPoptavkyRoute: DashboardPoptavkyRoute,
+  DashboardPredplatneRoute: DashboardPredplatneRoute,
+  DashboardPridatRoute: DashboardPridatRoute,
+  DashboardVozyRoute: DashboardVozyRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
+}
+
+const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
+  DashboardRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AukceRoute: AukceRoute,
+  AdminRoute: AdminRouteWithChildren,
   CenikRoute: CenikRoute,
-  DashboardRoute: DashboardRoute,
+  DashboardRoute: DashboardRouteWithChildren,
+  FinancovaniRoute: FinancovaniRoute,
   InzeratyRoute: InzeratyRoute,
+  KontaktRoute: KontaktRoute,
+  OblibeneRoute: OblibeneRoute,
+  PrihlaseniRoute: PrihlaseniRoute,
+  ProAutobazaryRoute: ProAutobazaryRoute,
+  ProLeasingoveSpolecnostiRoute: ProLeasingoveSpolecnostiRoute,
+  AukceIdRoute: AukceIdRoute,
+  InzeratIdRoute: InzeratIdRoute,
+  PravniCookiesRoute: PravniCookiesRoute,
+  PravniObchodniPodminkyRoute: PravniObchodniPodminkyRoute,
+  PravniOchranaOsobnichUdajuRoute: PravniOchranaOsobnichUdajuRoute,
+  AukceIndexRoute: AukceIndexRoute,
+  ApiWebhooksFakturoidRoute: ApiWebhooksFakturoidRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

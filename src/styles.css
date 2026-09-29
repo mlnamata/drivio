@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Drivio design system — dark "night lot" theme with amber tempo accent.
+ * Drivio design system — světlý "glass" vzhled, kobaltový akcent, zákaznický portál.
  * All colors are oklch tokens. Never hardcode colors in components.
  */
 
@@ -54,67 +54,57 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
-  --font-display: "Archivo", ui-sans-serif, system-ui, sans-serif;
-  --font-sans: "Inter Tight", ui-sans-serif, system-ui, sans-serif;
+  --color-auction: var(--auction);
+  --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
-  --radius: 0.75rem;
-  --background: oklch(0.165 0.012 70);
-  --foreground: oklch(0.965 0.006 80);
-  --card: oklch(0.213 0.014 72);
-  --card-foreground: oklch(0.965 0.006 80);
-  --popover: oklch(0.213 0.014 72);
-  --popover-foreground: oklch(0.965 0.006 80);
-  --primary: oklch(0.795 0.163 66);
-  --primary-foreground: oklch(0.19 0.03 60);
-  --secondary: oklch(0.27 0.015 72);
-  --secondary-foreground: oklch(0.965 0.006 80);
-  --muted: oklch(0.255 0.012 72);
-  --muted-foreground: oklch(0.72 0.014 78);
-  --accent: oklch(0.3 0.04 68);
-  --accent-foreground: oklch(0.965 0.006 80);
-  --destructive: oklch(0.62 0.21 25);
-  --destructive-foreground: oklch(0.98 0.005 80);
-  --success: oklch(0.72 0.15 155);
-  --success-foreground: oklch(0.18 0.03 155);
-  --warning: oklch(0.8 0.15 85);
-  --warning-foreground: oklch(0.2 0.03 85);
-  --border: oklch(0.31 0.014 72);
-  --input: oklch(0.31 0.014 72);
-  --ring: oklch(0.795 0.163 66);
-  --chart-1: oklch(0.795 0.163 66);
-  --chart-2: oklch(0.72 0.15 155);
-  --chart-3: oklch(0.62 0.21 25);
-  --chart-4: oklch(0.7 0.12 250);
-  --chart-5: oklch(0.8 0.15 85);
-  --sidebar: oklch(0.19 0.013 72);
-  --sidebar-foreground: oklch(0.965 0.006 80);
-  --sidebar-primary: oklch(0.795 0.163 66);
-  --sidebar-primary-foreground: oklch(0.19 0.03 60);
-  --sidebar-accent: oklch(0.27 0.015 72);
-  --sidebar-accent-foreground: oklch(0.965 0.006 80);
-  --sidebar-border: oklch(0.31 0.014 72);
-  --sidebar-ring: oklch(0.795 0.163 66);
+  --radius: 0.875rem;
+  /* Světlý, čistý základ – jedna akcentní barva (kobalt), žádné duhové přechody */
+  --background: oklch(0.975 0.004 255);
+  --foreground: oklch(0.2 0.03 262);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2 0.03 262);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2 0.03 262);
+  --primary: oklch(0.52 0.2 262);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.945 0.008 255);
+  --secondary-foreground: oklch(0.25 0.03 262);
+  --muted: oklch(0.955 0.006 255);
+  --muted-foreground: oklch(0.5 0.02 260);
+  --accent: oklch(0.94 0.03 262);
+  --accent-foreground: oklch(0.35 0.15 262);
+  --destructive: oklch(0.58 0.21 25);
+  --destructive-foreground: oklch(0.99 0 0);
+  --success: oklch(0.6 0.14 155);
+  --success-foreground: oklch(0.99 0 0);
+  --warning: oklch(0.72 0.16 60);
+  --warning-foreground: oklch(0.2 0.04 60);
+  --auction: oklch(0.64 0.19 35);
+  --border: oklch(0.91 0.008 255);
+  --input: oklch(0.89 0.01 255);
+  --ring: oklch(0.52 0.2 262);
+  --chart-1: oklch(0.52 0.2 262);
+  --chart-2: oklch(0.6 0.14 155);
+  --chart-3: oklch(0.64 0.19 35);
+  --chart-4: oklch(0.7 0.1 220);
+  --chart-5: oklch(0.72 0.16 60);
+  --sidebar: oklch(0.2 0.03 262);
+  --sidebar-foreground: oklch(0.92 0.01 255);
+  --sidebar-primary: oklch(0.7 0.15 262);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.27 0.035 262);
+  --sidebar-accent-foreground: oklch(0.99 0 0);
+  --sidebar-border: oklch(0.3 0.03 262);
+  --sidebar-ring: oklch(0.7 0.15 262);
 
-  --gradient-heat: linear-gradient(
-    135deg,
-    oklch(0.795 0.163 66) 0%,
-    oklch(0.72 0.19 40) 100%
-  );
-  --gradient-night: linear-gradient(
-    180deg,
-    oklch(0.165 0.012 70 / 0) 0%,
-    oklch(0.165 0.012 70 / 0.75) 55%,
-    oklch(0.165 0.012 70) 100%
-  );
-  --shadow-glow: 0 0 0 1px oklch(0.795 0.163 66 / 0.25),
-    0 18px 50px -20px oklch(0.795 0.163 66 / 0.45);
-  --shadow-card: 0 20px 40px -28px oklch(0 0 0 / 0.9);
-}
-
-.dark {
-  color-scheme: dark;
+  --glass-bg: oklch(1 0 0 / 0.62);
+  --glass-border: oklch(1 0 0 / 0.75);
+  --glass-shadow: 0 1px 0 oklch(1 0 0 / 0.8) inset, 0 20px 50px -24px oklch(0.25 0.06 262 / 0.35);
+  --shadow-card: 0 1px 2px oklch(0.2 0.03 262 / 0.05), 0 12px 32px -18px oklch(0.2 0.03 262 / 0.22);
+  --shadow-lift: 0 2px 4px oklch(0.2 0.03 262 / 0.06), 0 24px 48px -20px oklch(0.2 0.03 262 / 0.3);
 }
 
 @layer base {
@@ -145,16 +135,53 @@
   box-shadow: var(--shadow-card);
 }
 
-@utility text-heat {
-  background: var(--gradient-heat);
-  background-clip: text;
-  color: transparent;
+/* Skleněný panel – používat nad obrázky nebo nad jemným pozadím */
+@utility glass {
+  background-color: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
 }
 
-@utility bg-heat {
-  background-image: var(--gradient-heat);
+@utility glass-dark {
+  background-color: oklch(0.2 0.03 262 / 0.55);
+  border: 1px solid oklch(1 0 0 / 0.14);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
 }
 
-@utility glow {
-  box-shadow: var(--shadow-glow);
+@utility lift {
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lift);
+  }
+}
+
+/* Jemné pozadí stránky – jednobarevné kobaltové odlesky, žádná duha */
+@utility bg-ambient {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(60rem 30rem at 85% -10%, oklch(0.52 0.2 262 / 0.09), transparent 60%),
+    radial-gradient(40rem 24rem at -10% 10%, oklch(0.52 0.2 262 / 0.06), transparent 60%);
+}
+
+@utility field {
+  width: 100%;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--input);
+  background-color: var(--card);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  outline: none;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+  &:focus {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 3px oklch(0.52 0.2 262 / 0.15);
+  }
 }
