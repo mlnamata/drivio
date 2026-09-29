@@ -1,5 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Bot, Clock, Gavel, ShieldCheck, TrendingUp, Trophy } from "lucide-react";
+import {
+  Bell,
+  Bot,
+  CalendarClock,
+  Clock,
+  Gavel,
+  ShieldCheck,
+  TrendingUp,
+  Trophy,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { AuctionCountdown } from "@/components/auction-countdown";
@@ -118,7 +127,7 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
 
   // Realtime: s napojeným Supabase poslouchá INSERTy do bids; bez něj simuluje ostatní dražitele.
   useEffect(() => {
-    if (a.ended) return;
+    if (a.ended || a.upcoming) return;
     if (supabase) return subscribeToBids(a.id, (b) => push("Dražitel", b.amount, false));
     const names = ["Petr H.", "Kateřina D.", "Ondřej S.", "Pavla M.", "Radek B."];
     const t = window.setInterval(() => {
@@ -141,7 +150,7 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
     }, 8000);
     return () => window.clearInterval(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [a.id, a.minIncrement, a.ended]);
+  }, [a.id, a.minIncrement, a.ended, a.upcoming]);
 
   async function onBid(e: React.FormEvent) {
     e.preventDefault();
@@ -219,7 +228,42 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
 
           <aside className="space-y-5">
             <div className="surface-card sticky top-20 p-6">
-              {a.ended ? (
+              {a.upcoming ? (
+                <div className="text-center">
+                  <CalendarClock className="mx-auto h-10 w-10 text-primary" />
+                  <p className="mt-3 text-sm text-muted-foreground">Aukce začne za</p>
+                  <p className="font-display text-3xl font-extrabold">
+                    <AuctionCountdown minutes={a.startsInMinutes ?? 0} />
+                  </p>
+                  <p className="mt-2 text-sm">
+                    Vyvolávací cena <strong>{czk(a.startPrice)}</strong> · min. příhoz{" "}
+                    {czk(a.minIncrement)}
+                  </p>
+                  <button
+                    onClick={() => {
+                      store.toggleReminder(a.id);
+                      toast(a.reminded ? "Upozornění zrušeno" : "Upozorníme vás na start aukce");
+                    }}
+                    className={cn(
+                      "mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-bold",
+                      a.reminded
+                        ? "bg-accent text-accent-foreground"
+                        : "bg-primary text-primary-foreground",
+                    )}
+                  >
+                    <Bell className="h-4 w-4" />{" "}
+                    {a.reminded ? "Upozorníme vás" : "Upozornit na start"}
+                  </button>
+                  {!bidder ? (
+                    <button
+                      onClick={() => setRegister(true)}
+                      className="mt-2 w-full rounded-full border border-border py-2.5 text-sm font-semibold"
+                    >
+                      Registrovat se jako dražitel předem
+                    </button>
+                  ) : null}
+                </div>
+              ) : a.ended ? (
                 <div className="text-center">
                   <Trophy className="mx-auto h-10 w-10 text-primary" />
                   <p className="mt-3 text-sm text-muted-foreground">Aukce skončila, vydraženo za</p>

@@ -10,8 +10,8 @@ import {
   Settings,
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
-import { CURRENT_DEALER, dealerBilling, leadsSample } from "@/lib/billing";
-import { useAllVehicles } from "@/lib/store";
+import { CURRENT_DEALER, useDealerBilling, leadsSample } from "@/lib/billing";
+import { czk } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function DealerLayout() {
-  const b = dealerBilling(CURRENT_DEALER, useAllVehicles());
+  const b = useDealerBilling(CURRENT_DEALER);
   return (
     <AppShell
       title={b.dealer.name}
@@ -34,7 +34,7 @@ function DealerLayout() {
               to: "/dashboard/vozy",
               label: "Moje vozy",
               icon: Car,
-              badge: `${b.used}/${b.plan.slots}`,
+              badge: b.payg ? String(b.used) : `${b.used}/${b.plan.slots}`,
             },
             { to: "/dashboard/pridat", label: "Přidat vůz", icon: PlusCircle },
             { to: "/dashboard/aukce", label: "Aukce", icon: Gavel },
@@ -58,15 +58,23 @@ function DealerLayout() {
       footer={
         <div className="rounded-xl bg-sidebar-accent p-3 text-xs">
           <p className="font-semibold text-white">{b.plan.name}</p>
-          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-sidebar-border">
-            <div
-              className="h-full rounded-full bg-sidebar-primary"
-              style={{ width: `${(b.used / b.plan.slots) * 100}%` }}
-            />
-          </div>
-          <p className="mt-1.5 text-sidebar-foreground/60">
-            {b.used} z {b.plan.slots} slotů obsazeno
-          </p>
+          {b.payg ? (
+            <p className="mt-1.5 text-sidebar-foreground/60">
+              {b.used} vozů · tento měsíc {czk(b.total)}
+            </p>
+          ) : (
+            <>
+              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-sidebar-border">
+                <div
+                  className="h-full rounded-full bg-sidebar-primary"
+                  style={{ width: `${Math.min(100, (b.used / b.plan.slots) * 100)}%` }}
+                />
+              </div>
+              <p className="mt-1.5 text-sidebar-foreground/60">
+                {b.used} z {b.plan.slots} slotů obsazeno
+              </p>
+            </>
+          )}
         </div>
       }
     />

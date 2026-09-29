@@ -97,6 +97,12 @@ function Leasing() {
                 Pojištění, servis, pneumatiky i dálniční známka jsou v ceně. Bez akontace, bez
                 rizika ztráty hodnoty. Po skončení auto jednoduše vrátíte nebo vyměníte za nové.
               </p>
+              <Link
+                to="/leasing/firmy"
+                className="mt-6 mr-3 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+              >
+                <Building2 className="h-4 w-4" /> Seznam pro firmy (bez DPH)
+              </Link>
               <div className="mt-6 inline-flex rounded-full bg-white/10 p-1">
                 {(
                   [

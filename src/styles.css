@@ -61,7 +61,7 @@
 }
 
 :root {
-  --radius: 0.875rem;
+  --radius: 1rem;
   /* Světlý, čistý základ – značkové barvy z loga: grafitová černá + oranžová */
   --background: oklch(0.976 0.004 75);
   --foreground: oklch(0.21 0.004 60);

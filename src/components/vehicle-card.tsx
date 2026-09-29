@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Fuel, Gauge, Heart, MapPin, Settings2, ShieldCheck } from "lucide-react";
 import { CarImage } from "@/components/car-image";
+import { CompareButton } from "@/components/compare";
 import { useFavorites } from "@/hooks/use-favorites";
 import { fuels, gearboxes, labelOf } from "@/lib/catalog";
 import {
@@ -90,7 +91,10 @@ export function VehicleCard({
             </span>
           ) : null}
         </div>
-        <FavoriteButton id={vehicle.id} className="absolute right-3 top-3" />
+        <div className="absolute right-3 top-3 flex gap-1.5">
+          <CompareButton id={vehicle.id} />
+          <FavoriteButton id={vehicle.id} />
+        </div>
       </div>
       <div className="flex flex-1 flex-col p-4">
         <div className="flex items-start justify-between gap-2">

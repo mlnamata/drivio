@@ -13,6 +13,7 @@ import { useState } from "react";
 import heroCar from "@/assets/hero-car.jpg";
 import { AuctionCountdown } from "@/components/auction-countdown";
 import { AdSlot } from "@/components/ad-slot";
+import { Faq, Partners, Reviews } from "@/components/trust";
 import { BrandLogo } from "@/components/brand-logo";
 import { CarImage } from "@/components/car-image";
 import { QuickSearch } from "@/components/quick-search";
@@ -263,31 +264,35 @@ function Index() {
               </Link>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              {auctions.slice(0, 4).map((a) => {
-                const v = all.find((x) => x.id === a.vehicleId);
-                if (!v) return null;
-                return (
-                  <Link
-                    key={a.id}
-                    to="/aukce/$id"
-                    params={{ id: a.id }}
-                    className="glass-dark group flex gap-3 rounded-2xl p-3 transition-colors hover:bg-white/10"
-                  >
-                    <div className="h-16 w-24 shrink-0 overflow-hidden rounded-xl">
-                      <CarImage src={v.photos[0]!} alt={vehicleTitle(v)} />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-semibold">{vehicleTitle(v)}</p>
-                      <p className="font-display text-lg font-bold">
-                        {czk(Math.max(a.currentBid, a.startPrice))}
-                      </p>
-                      <p className="flex items-center gap-1 text-xs text-white/60">
-                        <Clock className="h-3 w-3" /> <AuctionCountdown minutes={a.endsInMinutes} />
-                      </p>
-                    </div>
-                  </Link>
-                );
-              })}
+              {auctions
+                .filter((a) => !a.ended && !a.upcoming)
+                .slice(0, 4)
+                .map((a) => {
+                  const v = all.find((x) => x.id === a.vehicleId);
+                  if (!v) return null;
+                  return (
+                    <Link
+                      key={a.id}
+                      to="/aukce/$id"
+                      params={{ id: a.id }}
+                      className="glass-dark group flex gap-3 rounded-2xl p-3 transition-colors hover:bg-white/10"
+                    >
+                      <div className="h-16 w-24 shrink-0 overflow-hidden rounded-xl">
+                        <CarImage src={v.photos[0]!} alt={vehicleTitle(v)} />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold">{vehicleTitle(v)}</p>
+                        <p className="font-display text-lg font-bold">
+                          {czk(Math.max(a.currentBid, a.startPrice))}
+                        </p>
+                        <p className="flex items-center gap-1 text-xs text-white/60">
+                          <Clock className="h-3 w-3" />{" "}
+                          <AuctionCountdown minutes={a.endsInMinutes} />
+                        </p>
+                      </div>
+                    </Link>
+                  );
+                })}
             </div>
           </div>
         </div>
@@ -325,6 +330,10 @@ function Index() {
         </div>
       </Container>
 
+      <Container className="py-12">
+        <Reviews />
+      </Container>
+
       {/* HLÍDACÍ PES + FINANCOVÁNÍ */}
       <Container className="grid gap-5 py-6 md:grid-cols-2">
         <div className="surface-card flex flex-col justify-between gap-6 p-8">
@@ -359,6 +368,12 @@ function Index() {
             Spočítat splátku <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
+      </Container>
+      <Container className="py-16">
+        <Faq />
+      </Container>
+      <Container className="pb-4">
+        <Partners />
       </Container>
     </Page>
   );

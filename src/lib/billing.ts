@@ -1,12 +1,15 @@
 import {
   dealerById,
   monthOfListing,
+  perVehicleFee,
   planById,
   slotSurcharge,
   surchargeFactor,
   vehicles,
+  type PlanId,
   type Vehicle,
 } from "./mock-data";
+import { allVehicles, useStore } from "./store";
 
 export type SlotLine = {
   vehicle: Vehicle;
@@ -19,14 +22,32 @@ export type SlotLine = {
 };
 
 /** Stejná logika jako Edge Function `billing-processor` (supabase/functions). */
-export function dealerBilling(dealerId: string, source: Vehicle[] = vehicles) {
+export function dealerBilling(
+  dealerId: string,
+  source: Vehicle[] = vehicles,
+  planOverride?: PlanId,
+) {
   const dealer = dealerById(dealerId);
-  const plan = planById(dealer.plan);
+  const plan = planById(planOverride ?? dealer.plan);
+  const payg = plan.id === "payg";
   // Sloty zabírají aktivní vozy a vozy v aukci (v aukci se neúčtuje progrese).
   const mine = source.filter((v) => v.dealerId === dealerId && v.status !== "sold");
   const lines: SlotLine[] = mine.map((v) => {
     const month = monthOfListing(v);
     const inAuction = v.status === "in_auction";
+    if (payg) {
+      const base = perVehicleFee(v.price, 1);
+      const progression = inAuction ? 0 : perVehicleFee(v.price, month) - base;
+      return {
+        vehicle: v,
+        month,
+        base,
+        progression,
+        surcharge: 0,
+        total: base + progression,
+        stale: !inAuction && month >= 4,
+      };
+    }
     const progression = inAuction ? 0 : Math.round(plan.perSlot * (surchargeFactor(month) - 1));
     const surcharge = slotSurcharge(plan, v.price);
     return {
@@ -40,7 +61,14 @@ export function dealerBilling(dealerId: string, source: Vehicle[] = vehicles) {
     };
   });
   const extras = lines.reduce((s, l) => s + l.progression + l.surcharge, 0);
-  return { dealer, plan, lines, used: mine.length, extras, total: plan.price + extras };
+  const total = payg ? lines.reduce((s, l) => s + l.total, 0) : plan.price + extras;
+  return { dealer, plan, payg, lines, used: mine.length, extras, total };
+}
+
+/** Vyúčtování autobazaru s aktuálními vozy a zvoleným tarifem z ukázkového úložiště. */
+export function useDealerBilling(dealerId: string) {
+  const s = useStore();
+  return dealerBilling(dealerId, allVehicles(s), s.dealerPlans[dealerId]);
 }
 
 export const CURRENT_DEALER = "kolbenka";

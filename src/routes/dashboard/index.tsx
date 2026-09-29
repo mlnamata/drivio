@@ -11,8 +11,8 @@ import {
   YAxis,
 } from "recharts";
 import { btn, PageHeader, Stat } from "@/components/app-shell";
-import { CURRENT_DEALER, dealerBilling, leadsSample } from "@/lib/billing";
-import { store, useAllVehicles } from "@/lib/store";
+import { CURRENT_DEALER, useDealerBilling, leadsSample } from "@/lib/billing";
+import { store } from "@/lib/store";
 import { czk, vehicleTitle } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/dashboard/")({ component: Overview });
@@ -28,7 +28,7 @@ const views = [
 ];
 
 function Overview() {
-  const b = dealerBilling(CURRENT_DEALER, useAllVehicles());
+  const b = useDealerBilling(CURRENT_DEALER);
   const stale = b.lines.filter((l) => l.stale);
   return (
     <>
@@ -70,8 +70,8 @@ function Overview() {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Stat
           label="Obsazené sloty"
-          value={`${b.used} / ${b.plan.slots}`}
-          hint={`${b.plan.slots - b.used} volných`}
+          value={b.payg ? String(b.used) : `${b.used} / ${b.plan.slots}`}
+          hint={b.payg ? "tarif Platba za vůz" : `${b.plan.slots - b.used} volných`}
         />
         <Stat
           label="Zobrazení (7 dní)"
@@ -136,8 +136,12 @@ function Overview() {
           <p className="mb-4 font-semibold">Rozpis faktury (září)</p>
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <dt className="text-muted-foreground">Paušál {b.plan.name}</dt>
-              <dd className="font-semibold">{czk(b.plan.price)}</dd>
+              <dt className="text-muted-foreground">
+                {b.payg ? `Platba za vůz (${b.used} vozů)` : `Paušál ${b.plan.name}`}
+              </dt>
+              <dd className="font-semibold">
+                {czk(b.payg ? b.lines.reduce((x, l) => x + l.base, 0) : b.plan.price)}
+              </dd>
             </div>
             {b.lines
               .filter((l) => l.progression || l.surcharge)

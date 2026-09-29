@@ -1,5 +1,17 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { BellRing, Camera, ShieldCheck, Store, Trash2, Wallet } from "lucide-react";
+import {
+  BellRing,
+  Building2,
+  Camera,
+  ShieldCheck,
+  Store,
+  Trash2,
+  User,
+  Wallet,
+} from "lucide-react";
+import { useState } from "react";
+import { PayPerVehicleCard, PlanCards } from "@/components/pricing";
+import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { CarImage } from "@/components/car-image";
 import { Breadcrumbs, Container, Page } from "@/components/site-shell";
@@ -28,6 +40,7 @@ function SellCar() {
   const navigate = useNavigate();
   const mine = useAllVehicles().filter((v) => v.dealerId === PRIVATE_SELLER && v.status !== "sold");
   const limitReached = mine.length >= FREE_PRIVATE_LISTINGS;
+  const [sellerType, setSellerType] = useState<"private" | "company">("private");
 
   return (
     <Page>
@@ -63,7 +76,50 @@ function SellCar() {
           </div>
         </div>
 
-        {limitReached ? (
+        <div className="mt-8 grid max-w-xl grid-cols-2 gap-1 rounded-full bg-muted p-1">
+          {(
+            [
+              ["private", User, "Fyzická osoba"],
+              ["company", Building2, "Firma / autobazar (IČO)"],
+            ] as const
+          ).map(([t, Icon, l]) => (
+            <button
+              key={t}
+              onClick={() => setSellerType(t)}
+              className={cn(
+                "flex items-center justify-center gap-2 rounded-full py-2.5 text-sm font-semibold transition",
+                sellerType === t ? "bg-card shadow-sm" : "text-muted-foreground",
+              )}
+            >
+              <Icon className="h-4 w-4" /> {l}
+            </button>
+          ))}
+        </div>
+
+        {sellerType === "company" ? (
+          <div className="mt-6 space-y-5">
+            <p className="max-w-2xl text-muted-foreground">
+              Firmy a autobazary inzerují placeně. Vyberte si, jestli chcete platit za každý vůz
+              zvlášť, nebo si předplatit balíček slotů a vozy v něm libovolně měnit.
+            </p>
+            <PayPerVehicleCard />
+            <PlanCards />
+            <div className="flex flex-wrap gap-3">
+              <Link
+                to="/prihlaseni"
+                className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"
+              >
+                Registrovat firmu a vložit vůz
+              </Link>
+              <Link
+                to="/cenik"
+                className="rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold"
+              >
+                Podrobný ceník a kalkulačka
+              </Link>
+            </div>
+          </div>
+        ) : limitReached ? (
           <div className="mt-8 space-y-5">
             <div className="surface-card p-6">
               <p className="text-lg font-bold">Váš inzerát</p>

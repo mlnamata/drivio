@@ -8,6 +8,7 @@ import {
   auctions as baseAuctions,
   vehicles as baseVehicles,
   type Auction,
+  type PlanId,
   type Vehicle,
 } from "./mock-data";
 import type { ListingSearch } from "./search";
@@ -33,9 +34,14 @@ type State = {
   bids: Record<string, { user: string; amount: number; at: string }[]>;
   prices: Record<string, number>;
   bidder: { name: string; email: string; acceptedAt: string } | null;
+  reminders: string[];
+  compare: string[];
+  compareLog: { ids: string[]; winner: string; at: string }[];
+  dealerPlans: Record<string, PlanId>;
 };
 
 const KEY = "drivio:demo-v1";
+export const MAX_COMPARE = 4;
 const EVENT = "drivio:store";
 const EMPTY: State = {
   added: [],
@@ -46,6 +52,10 @@ const EMPTY: State = {
   bids: {},
   prices: {},
   bidder: null,
+  reminders: [],
+  compare: [],
+  compareLog: [],
+  dealerPlans: {},
 };
 
 function read(): State {
@@ -116,23 +126,32 @@ export function useAllVehicles() {
   return allVehicles(useStore());
 }
 
-export type LiveAuction = Auction & { ended: boolean; myBest: number | null; leading: boolean };
+export type LiveAuction = Auction & {
+  ended: boolean;
+  upcoming: boolean;
+  myBest: number | null;
+  leading: boolean;
+  reminded: boolean;
+};
 
 export function useAuctions(): LiveAuction[] {
   const s = useStore();
-  const created: Auction[] = s.auctioned.map((a) => ({
-    id: `a-${a.vehicleId}`,
-    vehicleId: a.vehicleId,
-    startPrice: 1,
-    currentBid: 0,
-    bids: 0,
-    endsInMinutes: Math.max(
-      1,
-      7 * 24 * 60 - Math.floor((Date.now() - new Date(a.createdAt).getTime()) / 60_000),
-    ),
-    minIncrement: 500,
-    buyerFeeRate: 0.04,
-  }));
+  // Vůz přesunutý do aukce nejdřív 24 h čeká v galerii připravovaných, pak běží 7 dní.
+  const created: Auction[] = s.auctioned.map((a) => {
+    const elapsed = Math.floor((Date.now() - new Date(a.createdAt).getTime()) / 60_000);
+    const startsIn = 24 * 60 - elapsed;
+    return {
+      id: `a-${a.vehicleId}`,
+      vehicleId: a.vehicleId,
+      startPrice: 1,
+      currentBid: 0,
+      bids: 0,
+      startsInMinutes: startsIn,
+      endsInMinutes: Math.max(1, startsIn + 7 * 24 * 60),
+      minIncrement: 500,
+      buyerFeeRate: 0.04,
+    };
+  });
   return [...created, ...baseAuctions]
     .filter((a) => !s.sold.includes(a.vehicleId) || a.endsInMinutes < 0)
     .map((a) => {
@@ -144,6 +163,8 @@ export function useAuctions(): LiveAuction[] {
         currentBid: current,
         bids: a.bids + mine.length,
         ended: a.endsInMinutes <= 0,
+        upcoming: (a.startsInMinutes ?? 0) > 0,
+        reminded: s.reminders.includes(a.id),
         myBest,
         leading: myBest !== null && myBest >= current,
       };
@@ -207,6 +228,37 @@ export const store = {
         ].slice(0, 50),
       },
     }));
+  },
+  toggleReminder(auctionId: string) {
+    write((s) => ({
+      ...s,
+      reminders: s.reminders.includes(auctionId)
+        ? s.reminders.filter((x) => x !== auctionId)
+        : [...s.reminders, auctionId],
+    }));
+  },
+  /** Porovnání – max. 4 vozy. Vrací false, když je plno. */
+  toggleCompare(id: string) {
+    const cur = read().compare;
+    if (!cur.includes(id) && cur.length >= MAX_COMPARE) return false;
+    write((s) => ({
+      ...s,
+      compare: s.compare.includes(id) ? s.compare.filter((x) => x !== id) : [...s.compare, id],
+    }));
+    return true;
+  },
+  clearCompare() {
+    write((s) => ({ ...s, compare: [] }));
+  },
+  /** Interní záznam vyhodnocení porovnání (zákazníkovi se nezobrazuje). */
+  logComparison(ids: string[], winner: string) {
+    write((s) => ({
+      ...s,
+      compareLog: [{ ids, winner, at: new Date().toISOString() }, ...s.compareLog].slice(0, 200),
+    }));
+  },
+  setDealerPlan(dealerId: string, plan: PlanId) {
+    write((s) => ({ ...s, dealerPlans: { ...s.dealerPlans, [dealerId]: plan } }));
   },
   registerBidder(name: string, email: string) {
     write((s) => ({ ...s, bidder: { name, email, acceptedAt: new Date().toISOString() } }));

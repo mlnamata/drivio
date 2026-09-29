@@ -2,6 +2,7 @@ import { Check } from "lucide-react";
 import { useState } from "react";
 import {
   commissionFor,
+  perVehicleTiers,
   commissionTiers,
   czk,
   num,
@@ -152,6 +153,33 @@ function Row({ k, v, strong }: { k: string; v: string; strong?: boolean }) {
         {k}
       </dt>
       <dd className={cn("font-semibold tabular-nums", strong && "font-display text-lg")}>{v}</dd>
+    </div>
+  );
+}
+
+/** Tarif bez předplatného – platba za každý vůz zvlášť. */
+export function PayPerVehicleCard() {
+  return (
+    <div className="surface-card grid gap-6 p-6 md:grid-cols-[1fr_1.2fr] md:items-center md:p-8">
+      <div>
+        <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
+          Bez předplatného
+        </p>
+        <h3 className="mt-1 text-2xl font-bold">Platba za vůz</h3>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Pro firmy a menší autobazary, které nechtějí měsíční závazek. Platíte jen za vozy, které
+          máte zrovna vystavené, vždy na 30 dní. Kdykoli můžete přejít na balíček.
+        </p>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-3">
+        {perVehicleTiers.map((t) => (
+          <div key={t.label} className="rounded-2xl bg-muted p-4 text-center">
+            <p className="text-xs text-muted-foreground">{t.label}</p>
+            <p className="mt-1 font-display text-2xl font-extrabold">{czk(t.price)}</p>
+            <p className="text-xs text-muted-foreground">za 30 dní</p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

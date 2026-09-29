@@ -201,6 +201,15 @@ export function ListingFilters({ value: s, onChange, onReset }: Props) {
             onChange={(v) => onChange({ priceTo: v })}
           />
         </div>
+        <div className="mt-2">
+          <NumSelect
+            label="Měsíční splátka do"
+            value={s.monthlyTo}
+            options={[1500, 2500, 3500, 5000, 7500, 10000, 15000]}
+            fmt={(n) => `splátka do ${num(n)} Kč/měs.`}
+            onChange={(v) => onChange({ monthlyTo: v })}
+          />
+        </div>
         <div className="mt-3">
           <Check
             checked={!!s.vat}

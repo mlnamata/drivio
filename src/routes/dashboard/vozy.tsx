@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { btn, DataTable, PageHeader, StatusBadge } from "@/components/app-shell";
 import { CarImage } from "@/components/car-image";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
-import { CURRENT_DEALER, dealerBilling } from "@/lib/billing";
+import { CURRENT_DEALER, useDealerBilling } from "@/lib/billing";
 import { czk, num, vehicleTitle, type Vehicle } from "@/lib/mock-data";
 import { store, useAllVehicles } from "@/lib/store";
 
@@ -13,7 +13,7 @@ export const Route = createFileRoute("/dashboard/vozy")({ component: MyCars });
 
 function MyCars() {
   const all = useAllVehicles();
-  const b = dealerBilling(CURRENT_DEALER, all);
+  const b = useDealerBilling(CURRENT_DEALER);
   const soldList = all.filter((v) => v.dealerId === CURRENT_DEALER && v.status === "sold");
   const [q, setQ] = useState("");
   const [editing, setEditing] = useState<Vehicle | null>(null);
@@ -25,7 +25,11 @@ function MyCars() {
     <>
       <PageHeader
         title="Moje vozy"
-        desc={`${b.used} z ${b.plan.slots} slotů obsazeno · limit ceny ${b.plan.maxPrice ? czk(b.plan.maxPrice) : "bez limitu"}`}
+        desc={
+          b.payg
+            ? `${b.used} vozů · tarif Platba za vůz`
+            : `${b.used} z ${b.plan.slots} slotů obsazeno · limit ceny ${b.plan.maxPrice ? czk(b.plan.maxPrice) : "bez limitu"}`
+        }
         actions={
           <Link to="/dashboard/pridat" className={btn.primary}>
             Přidat vůz

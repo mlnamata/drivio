@@ -670,6 +670,150 @@ const seeds: Seed[] = [
     11,
     ["klima", "navigace", "acc", "kamera", "carplay"],
   ],
+  [
+    "skoda-fabia-09",
+    "skoda",
+    "Fabia",
+    "1.2 HTP Classic",
+    2009,
+    168000,
+    "benzin",
+    "manual",
+    "hatchback",
+    51,
+    1198,
+    "stribrna",
+    64000,
+    "plzenauto",
+    9,
+    ["klima"],
+  ],
+  [
+    "vw-polo-12",
+    "volkswagen",
+    "Polo",
+    "1.2 TSI Comfortline",
+    2012,
+    139000,
+    "benzin",
+    "manual",
+    "hatchback",
+    77,
+    1197,
+    "cerna",
+    99000,
+    "kolbenka",
+    4,
+    ["klima", "tempomat"],
+  ],
+  [
+    "hyundai-i20-14",
+    "hyundai",
+    "i20",
+    "1.25 Comfort",
+    2014,
+    121000,
+    "benzin",
+    "manual",
+    "hatchback",
+    63,
+    1248,
+    "bila",
+    115000,
+    "acbrno",
+    16,
+    ["klima", "parksenzory"],
+  ],
+  [
+    "toyota-yaris-13",
+    "toyota",
+    "Yaris",
+    "1.33 Dual VVT-i Active",
+    2013,
+    98000,
+    "benzin",
+    "manual",
+    "hatchback",
+    73,
+    1329,
+    "cervena",
+    129000,
+    "plzenauto",
+    23,
+    ["klima", "kamera"],
+  ],
+  [
+    "skoda-roomster-11",
+    "skoda",
+    "Roomster",
+    "1.6 TDI Style",
+    2011,
+    214000,
+    "nafta",
+    "manual",
+    "mpv",
+    66,
+    1598,
+    "modra",
+    79000,
+    "poruba",
+    31,
+    ["klima", "tazne"],
+  ],
+  [
+    "dacia-sandero-17",
+    "dacia",
+    "Sandero",
+    "0.9 TCe Stepway",
+    2017,
+    87000,
+    "lpg",
+    "manual",
+    "hatchback",
+    66,
+    898,
+    "hneda",
+    149000,
+    "acbrno",
+    6,
+    ["klima", "navigace"],
+  ],
+  [
+    "kia-rio-15",
+    "kia",
+    "Rio",
+    "1.25 CVVT Comfort",
+    2015,
+    104000,
+    "benzin",
+    "manual",
+    "hatchback",
+    62,
+    1248,
+    "seda",
+    139000,
+    "kolbenka",
+    12,
+    ["klima", "tempomat", "vyhrivane"],
+  ],
+  [
+    "ford-focus-14",
+    "ford",
+    "Focus",
+    "1.0 EcoBoost Kombi",
+    2014,
+    176000,
+    "benzin",
+    "manual",
+    "kombi",
+    92,
+    999,
+    "stribrna",
+    119000,
+    "poruba",
+    45,
+    ["klima", "tempomat", "parksenzory"],
+  ],
 ];
 
 const descriptions = [
@@ -690,7 +834,16 @@ const fakeVin = (seed: string) => {
   return out;
 };
 
-const inAuction = new Set(["opel-astra-13", "audi-a4-16", "fiat-panda-11", "vw-passat-16"]);
+const inAuction = new Set([
+  "opel-astra-13",
+  "audi-a4-16",
+  "fiat-panda-11",
+  "vw-passat-16",
+  // čekají na aukci (galerie připravovaných aukcí)
+  "renault-clio-14",
+  "dacia-duster-18",
+  "peugeot-3008-19",
+]);
 const soldInAuction = new Set(["ford-fiesta-12"]);
 
 export const vehicles: Vehicle[] = seeds.map((s, i) => {
@@ -782,7 +935,7 @@ export function priceRating(v: Vehicle): {
 
 /* ---------------------------------------------------------------- pricing */
 
-export type PlanId = "economy" | "standard" | "premium";
+export type PlanId = "economy" | "standard" | "premium" | "payg";
 
 export type Plan = {
   id: PlanId;
@@ -809,13 +962,35 @@ export const plans: Plan[] = [
   { id: "premium", name: "Garáž PREMIUM 5", price: 1990, slots: 5, maxPrice: null, perSlot: 398 },
 ];
 
-export const planById = (id: PlanId) => plans.find((p) => p.id === id)!;
+/** Bez předplatného – autobazar/firma platí za každý vůz zvlášť (30 dní). */
+export const PAYG_PLAN: Plan = {
+  id: "payg",
+  name: "Platba za vůz",
+  price: 0,
+  slots: 999,
+  maxPrice: null,
+  perSlot: 0,
+};
+
+export const planById = (id: PlanId) =>
+  id === "payg" ? PAYG_PLAN : plans.find((p) => p.id === id)!;
 
 /** Tabulková cena samostatného inzerátu v nejvyšší kategorii. */
 export const TOP_TIER_LISTING_PRICE = 499;
 
 /** Progrese poplatku podle měsíce inzerce: M1 základ, M2 +50 %, M3+ +100 %. */
 export const surchargeFactor = (month: number) => (month <= 1 ? 1 : month === 2 ? 1.5 : 2);
+
+/** Platba za vůz (bez předplatného) – cena za 30 dní podle ceny vozu. */
+export const perVehicleTiers = [
+  { upTo: 200000, price: 149, label: "Vůz do 200 000 Kč" },
+  { upTo: 700000, price: 249, label: "Vůz do 700 000 Kč" },
+  { upTo: Infinity, price: TOP_TIER_LISTING_PRICE, label: "Vůz nad 700 000 Kč" },
+];
+
+/** Poplatek za vůz v daném měsíci inzerce – platí stejná časová progrese jako u slotů. */
+export const perVehicleFee = (vehiclePrice: number, month = 1) =>
+  Math.round(perVehicleTiers.find((t) => vehiclePrice <= t.upTo)!.price * surchargeFactor(month));
 
 /** „Lamborghini" doplatek – jen pro slot s vozem nad limitem balíčku. */
 export function slotSurcharge(plan: Plan, vehiclePrice: number) {
@@ -847,6 +1022,8 @@ export type Auction = {
   buyerFeeRate: number;
   /** Minimální (rezervní) cena; pod ní se vůz neprodá. */
   reservePrice?: number;
+  /** Minuty do začátku; > 0 = vůz čeká na aukci (galerie připravovaných). */
+  startsInMinutes?: number;
 };
 
 export const auctions: Auction[] = [
@@ -891,6 +1068,44 @@ export const auctions: Auction[] = [
     buyerFeeRate: 0.04,
   },
 ];
+
+/** Připravované aukce – vozy čekající na start. */
+auctions.push(
+  {
+    id: "a-renault-clio",
+    vehicleId: "renault-clio-14",
+    startPrice: 1,
+    currentBid: 0,
+    bids: 0,
+    startsInMinutes: 300,
+    endsInMinutes: 300 + 7 * 24 * 60,
+    minIncrement: 500,
+    buyerFeeRate: 0.05,
+  },
+  {
+    id: "a-dacia-duster",
+    vehicleId: "dacia-duster-18",
+    startPrice: 1,
+    currentBid: 0,
+    bids: 0,
+    startsInMinutes: 1500,
+    endsInMinutes: 1500 + 7 * 24 * 60,
+    minIncrement: 1000,
+    buyerFeeRate: 0.04,
+    reservePrice: 180000,
+  },
+  {
+    id: "a-peugeot-3008",
+    vehicleId: "peugeot-3008-19",
+    startPrice: 1,
+    currentBid: 0,
+    bids: 0,
+    startsInMinutes: 2900,
+    endsInMinutes: 2900 + 5 * 24 * 60,
+    minIncrement: 1000,
+    buyerFeeRate: 0.04,
+  },
+);
 
 /** Ukončené aukce (historie výsledků). endsInMinutes < 0 = skončila. */
 auctions.push({

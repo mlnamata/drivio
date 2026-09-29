@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { PageHeader, Stat } from "@/components/app-shell";
-import { czk, dealers, planById } from "@/lib/mock-data";
-import { useAuctions, useVehicles } from "@/lib/store";
+import { czk, dealers, planById, vehicleTitle } from "@/lib/mock-data";
+import { useAllVehicles, useAuctions, useStore, useVehicles } from "@/lib/store";
 
 export const Route = createFileRoute("/admin/")({ component: AdminOverview });
 
@@ -19,6 +19,16 @@ function AdminOverview() {
   const vehicles = useVehicles();
   const auctions = useAuctions().filter((a) => !a.ended);
   const mrr = dealers.reduce((s, d) => s + planById(d.plan).price, 0);
+  const { compareLog } = useStore();
+  const all = useAllVehicles();
+  const wins = Object.entries(
+    compareLog.reduce<Record<string, number>>((acc, c) => {
+      acc[c.winner] = (acc[c.winner] ?? 0) + 1;
+      return acc;
+    }, {}),
+  )
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
   return (
     <>
       <PageHeader title="Přehled platformy" desc="Klíčové metriky za aktuální měsíc." />
@@ -74,6 +84,30 @@ function AdminOverview() {
             </BarChart>
           </ResponsiveContainer>
         </div>
+      </div>
+      <div className="surface-card mt-6 p-5">
+        <p className="font-semibold">Porovnávání vozů – interní vyhodnocení</p>
+        <p className="mb-4 text-sm text-muted-foreground">
+          Systém při každém porovnání vyhodnotí nejlepší nabídku (cena vůči trhu, stáří, nájezd,
+          výbava, historie). Zákazníkům se výsledek nezobrazuje.
+        </p>
+        {wins.length === 0 ? (
+          <p className="text-sm text-muted-foreground">Zatím žádná porovnání.</p>
+        ) : (
+          <ul className="space-y-1.5 text-sm">
+            {wins.map(([id, n]) => {
+              const v = all.find((x) => x.id === id);
+              return (
+                <li key={id} className="flex justify-between">
+                  <span>{v ? `${vehicleTitle(v)} ${v.trim}` : id}</span>
+                  <span className="font-semibold">
+                    vyhrál {n}× z {compareLog.filter((c) => c.ids.includes(id)).length}
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
     </>
   );

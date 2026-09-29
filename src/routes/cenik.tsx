@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Breadcrumbs, Container, Page, SectionTitle } from "@/components/site-shell";
-import { PlanCards, SlotCalculator } from "@/components/pricing";
+import { PayPerVehicleCard, PlanCards, SlotCalculator } from "@/components/pricing";
 import { commissionTiers, num } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/cenik")({
@@ -30,10 +30,22 @@ function Pricing() {
         />
         <SectionTitle
           eyebrow="Ceník pro autobazary"
-          title="Platíte za místo v garáži, ne za každý inzerát"
-          desc="Vyberte si balíček slotů podle cenové hladiny vozů. Vozy ve slotech můžete libovolně měnit."
+          title="Předplatné, nebo platba za vůz – vyberte si"
+          desc="Autobazary a firmy si volí: měsíční balíček slotů (vozy v něm libovolně měníte), nebo platbu za každý vystavený vůz bez závazku. Fyzická osoba má 1 inzerát zdarma."
         />
+        <p className="mb-3 text-sm font-semibold">
+          Varianta 1 – předplatné balíčku slotů (výhodnější při více vozech)
+        </p>
         <PlanCards />
+        <p className="mb-3 mt-10 text-sm font-semibold">Varianta 2 – platba za jednotlivý vůz</p>
+        <PayPerVehicleCard />
+        <p className="mt-4 text-sm text-muted-foreground">
+          Prodáváte jen jedno vlastní auto jako fyzická osoba? Máte{" "}
+          <a href="/prodat-auto" className="font-semibold text-primary hover:underline">
+            1 inzerát zdarma
+          </a>
+          .
+        </p>
         <div className="mt-12">
           <SlotCalculator />
         </div>

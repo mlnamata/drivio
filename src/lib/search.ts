@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { priceRating, type Vehicle } from "./mock-data";
+import { monthlyPayment, priceRating, type Vehicle } from "./mock-data";
 
 const csv = z
   .union([z.array(z.string()), z.string()])
@@ -35,6 +35,7 @@ export const listingSearchSchema = z.object({
   seatsFrom: z.coerce.number().optional().catch(undefined),
   priceRating: z.coerce.boolean().optional().catch(undefined),
   seller: z.enum(["dealer", "private"]).optional().catch(undefined),
+  monthlyTo: z.coerce.number().optional().catch(undefined),
   sort: z
     .enum(["newest", "price-asc", "price-desc", "km-asc", "year-desc"])
     .optional()
@@ -74,6 +75,7 @@ export function filterVehicles(
     if (s.accidentFree && !v.accidentFree) return false;
     if (s.serviceBook && !v.serviceBook) return false;
     if (s.cebia && !v.cebiaVerified) return false;
+    if (s.monthlyTo && monthlyPayment(v.price) > s.monthlyTo) return false;
     if (s.seller === "private" && v.dealerId !== "private") return false;
     if (s.seller === "dealer" && v.dealerId === "private") return false;
     if (s.origin && v.origin !== s.origin) return false;

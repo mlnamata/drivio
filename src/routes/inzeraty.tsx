@@ -117,6 +117,12 @@ function activeChips(
       label: s.seller === "dealer" ? "Autobazar" : "Soukromý prodejce",
       patch: { seller: undefined },
     });
+  if (s.monthlyTo)
+    out.push({
+      key: "mt",
+      label: `splátka do ${num(s.monthlyTo)} Kč`,
+      patch: { monthlyTo: undefined },
+    });
   if (s.cebia) out.push({ key: "cb", label: "Ověřeno Cebia", patch: { cebia: undefined } });
   if (s.priceRating)
     out.push({ key: "pr", label: "Výhodná cena", patch: { priceRating: undefined } });

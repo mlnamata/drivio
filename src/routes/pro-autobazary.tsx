@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, FileText, Gauge, Gavel, LayoutDashboard, ScanLine, Users } from "lucide-react";
 import { Container, Page, SectionTitle } from "@/components/site-shell";
-import { PlanCards } from "@/components/pricing";
+import { PayPerVehicleCard, PlanCards } from "@/components/pricing";
 
 export const Route = createFileRoute("/pro-autobazary")({
   head: () => ({
@@ -96,7 +96,19 @@ function ForDealers() {
       </Container>
       <Container className="pb-8">
         <SectionTitle eyebrow="Ceník" title="Balíčky slotů" />
+        <p className="mb-3 text-sm font-semibold">
+          Varianta 1 – předplatné balíčku slotů (výhodnější při více vozech)
+        </p>
         <PlanCards />
+        <p className="mb-3 mt-10 text-sm font-semibold">Varianta 2 – platba za jednotlivý vůz</p>
+        <PayPerVehicleCard />
+        <p className="mt-4 text-sm text-muted-foreground">
+          Prodáváte jen jedno vlastní auto jako fyzická osoba? Máte{" "}
+          <a href="/prodat-auto" className="font-semibold text-primary hover:underline">
+            1 inzerát zdarma
+          </a>
+          .
+        </p>
         <Link to="/cenik" className="mt-6 inline-flex text-sm font-semibold text-primary">
           Podrobný ceník a kalkulačka poplatků →
         </Link>

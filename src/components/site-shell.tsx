@@ -15,6 +15,8 @@ import {
 import { useEffect, useState, type ReactNode } from "react";
 import { Logo } from "@/components/logo";
 import { CookieBanner } from "@/components/cookie-banner";
+import { CompareBar } from "@/components/compare";
+import { UspBar } from "@/components/trust";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useStore } from "@/lib/store";
 import { brands } from "@/lib/catalog";
@@ -273,8 +275,10 @@ export function Page({ children, className }: { children: ReactNode; className?:
   return (
     <div className={cn("bg-ambient min-h-screen", className)}>
       <SiteHeader />
+      <UspBar />
       <main>{children}</main>
       <SiteFooter />
+      <CompareBar />
       <CookieBanner />
     </div>
   );

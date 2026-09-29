@@ -422,6 +422,17 @@ export function VehicleForm({
                 zveřejnění.
               </span>
             </label>
+            <label className="flex gap-2 text-xs text-muted-foreground sm:col-span-2">
+              <input
+                type="checkbox"
+                required
+                className="mt-0.5 h-4 w-4 shrink-0 accent-[var(--primary)]"
+              />
+              <span>
+                Prodávám vlastní vůz jako fyzická osoba, ne v rámci podnikání (inzerát zdarma je jen
+                pro fyzické osoby, 1 na účet).
+              </span>
+            </label>
           </section>
         ) : null}
       </div>

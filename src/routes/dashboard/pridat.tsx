@@ -3,14 +3,14 @@ import { AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/app-shell";
 import { VehicleForm } from "@/components/vehicle-form";
-import { CURRENT_DEALER, dealerBilling } from "@/lib/billing";
-import { czk, monthlyPayment, slotSurcharge } from "@/lib/mock-data";
-import { store, useAllVehicles } from "@/lib/store";
+import { CURRENT_DEALER, useDealerBilling } from "@/lib/billing";
+import { czk, monthlyPayment, perVehicleFee, slotSurcharge } from "@/lib/mock-data";
+import { store } from "@/lib/store";
 
 export const Route = createFileRoute("/dashboard/pridat")({ component: AddCar });
 
 function AddCar() {
-  const b = dealerBilling(CURRENT_DEALER, useAllVehicles());
+  const b = useDealerBilling(CURRENT_DEALER);
   const navigate = useNavigate();
   const full = b.used >= b.plan.slots;
 
@@ -38,30 +38,44 @@ function AddCar() {
                   Splátka pro zákazníky od {czk(monthlyPayment(price))}/měs.
                 </p>
               ) : null}
-              <div className="rounded-xl bg-muted p-4 text-sm">
-                <p className="flex justify-between">
-                  <span className="text-muted-foreground">Slot v balíčku</span>
-                  <span className="font-semibold">{czk(b.plan.perSlot)}</span>
-                </p>
-                <p className="mt-1 flex justify-between">
-                  <span className="text-muted-foreground">Doplatek nad limit</span>
-                  <span className="font-semibold">
-                    {surcharge ? `+ ${czk(surcharge)}` : "0 Kč"}
-                  </span>
-                </p>
-                <p className="mt-1 flex justify-between">
-                  <span className="text-muted-foreground">Volné sloty</span>
-                  <span className="font-semibold">
-                    {b.plan.slots - b.used} z {b.plan.slots}
-                  </span>
-                </p>
-                {surcharge ? (
-                  <p className="mt-2 text-xs text-muted-foreground">
-                    Cena přesahuje limit balíčku {czk(b.plan.maxPrice ?? 0)}. Doplatek platí jen pro
-                    tento slot, balíček se nemění.
+              {b.payg ? (
+                <div className="rounded-xl bg-muted p-4 text-sm">
+                  <p className="flex justify-between">
+                    <span className="text-muted-foreground">Poplatek za vůz</span>
+                    <span className="font-semibold">
+                      {price ? `${czk(perVehicleFee(price))} / 30 dní` : "149–499 Kč"}
+                    </span>
                   </p>
-                ) : null}
-              </div>
+                  <p className="mt-2 text-xs text-muted-foreground">
+                    Tarif Platba za vůz – bez předplatného. Od 2. měsíce +50 %, od 3. měsíce +100 %.
+                  </p>
+                </div>
+              ) : (
+                <div className="rounded-xl bg-muted p-4 text-sm">
+                  <p className="flex justify-between">
+                    <span className="text-muted-foreground">Slot v balíčku</span>
+                    <span className="font-semibold">{czk(b.plan.perSlot)}</span>
+                  </p>
+                  <p className="mt-1 flex justify-between">
+                    <span className="text-muted-foreground">Doplatek nad limit</span>
+                    <span className="font-semibold">
+                      {surcharge ? `+ ${czk(surcharge)}` : "0 Kč"}
+                    </span>
+                  </p>
+                  <p className="mt-1 flex justify-between">
+                    <span className="text-muted-foreground">Volné sloty</span>
+                    <span className="font-semibold">
+                      {b.plan.slots - b.used} z {b.plan.slots}
+                    </span>
+                  </p>
+                  {surcharge ? (
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Cena přesahuje limit balíčku {czk(b.plan.maxPrice ?? 0)}. Doplatek platí jen
+                      pro tento slot, balíček se nemění.
+                    </p>
+                  ) : null}
+                </div>
+              )}
             </>
           );
         }}

@@ -19,6 +19,8 @@ import { toast } from "sonner";
 import { BrandLogo } from "@/components/brand-logo";
 import { AdSlot } from "@/components/ad-slot";
 import { CarImage } from "@/components/car-image";
+import { InstallmentOptions } from "@/components/installment-options";
+import { CompareButton } from "@/components/compare";
 import { FinanceCalculator } from "@/components/finance-calculator";
 import { Breadcrumbs, Container, Page } from "@/components/site-shell";
 import { FavoriteButton, PriceRatingBadge, VehicleCard } from "@/components/vehicle-card";
@@ -61,6 +63,32 @@ export const Route = createFileRoute("/inzerat/$id")({
         { name: "description", content: `${t}. ${v.description}` },
         { property: "og:title", content: t },
         { property: "og:image", content: v.photos[0] },
+      ],
+      links: [{ rel: "canonical", href: `https://drivio.cz/inzerat/${v.id}` }],
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Car",
+            name: `${vehicleTitle(v)} ${v.trim}`,
+            brand: { "@type": "Brand", name: brandBySlug(v.brand)?.name ?? v.brand },
+            model: v.model,
+            vehicleModelDate: String(v.year),
+            mileageFromOdometer: { "@type": "QuantitativeValue", value: v.km, unitCode: "KMT" },
+            fuelType: labelOf(fuels, v.fuel),
+            vehicleTransmission: labelOf(gearboxes, v.gearbox),
+            vehicleIdentificationNumber: v.vin,
+            image: v.photos,
+            offers: {
+              "@type": "Offer",
+              price: v.price,
+              priceCurrency: "CZK",
+              availability: "https://schema.org/InStock",
+              url: `https://drivio.cz/inzerat/${v.id}`,
+            },
+          }),
+        },
       ],
     };
   },
@@ -174,6 +202,7 @@ function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
                   >
                     <Share2 className="h-4 w-4" />
                   </button>
+                  <CompareButton id={v.id} />
                   <FavoriteButton id={v.id} />
                 </div>
                 <span className="glass absolute bottom-3 left-3 rounded-full px-3 py-1 text-xs font-semibold">
@@ -220,6 +249,17 @@ function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
                 ))}
               </div>
             </section>
+
+            <div className="mt-8">
+              <InstallmentOptions
+                price={v.price}
+                onPick={() =>
+                  document
+                    .getElementById("financovani")
+                    ?.scrollIntoView({ behavior: "smooth", block: "center" })
+                }
+              />
+            </div>
 
             <section className="mt-8 surface-card p-6">
               <h2 className="mb-4 text-xl font-bold">Technické údaje</h2>
@@ -346,7 +386,9 @@ function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
               <DealerContactForm vehicleId={v.id} title={title} />
             </div>
 
-            <FinanceCalculator price={v.price} vehicleId={v.id} />
+            <div id="financovani" className="scroll-mt-24">
+              <FinanceCalculator price={v.price} vehicleId={v.id} />
+            </div>
             <Link
               to="/leasing"
               className="surface-card flex items-center justify-between gap-3 p-5 hover:border-primary/40"
