@@ -47,7 +47,7 @@ function Dashboard() {
           {[
             ["Obsazené sloty", `${used} / ${plan.slots}`],
             ["Balíček", plan.name],
-            ["Poplatky tento měsíc", czk(fees + surcharge)},
+            ["Poplatky tento měsíc", czk(fees + surcharge)],
             ["Ležáky (3 měs.+)", String(stale.length)],
           ].map(([l, v]) => (
             <div key={l as string} className="surface-card p-5">
