@@ -17,6 +17,7 @@ import { Container, Page, SectionTitle } from "@/components/site-shell";
 import { bodyTypes, brandBySlug, fuels, labelOf } from "@/lib/catalog";
 import { leaseIncluded, leaseMonthly, leasingOffers } from "@/lib/leasing";
 import { czk } from "@/lib/mock-data";
+import { useDataReady } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 const searchSchema = z.object({
@@ -48,6 +49,7 @@ export const Route = createFileRoute("/leasing/")({
 const monthlyCaps = [8000, 10000, 12000, 15000, 20000];
 
 function Leasing() {
+  useDataReady(); // překreslit po načtení nabídek z databáze
   const s = Route.useSearch();
   const navigate = useNavigate({ from: "/leasing/" });
   const set = (patch: Partial<LeaseSearch>) =>

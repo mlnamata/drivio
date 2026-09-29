@@ -126,7 +126,20 @@ export const dealers: Dealer[] = [
   },
 ];
 
-export const dealerById = (id: string) => dealers.find((d) => d.id === id)!;
+/** Autobazar podle ID; neznámé ID (např. před načtením z databáze) vrací zástupný záznam. */
+export const dealerById = (id: string): Dealer =>
+  dealers.find((d) => d.id === id) ?? {
+    id,
+    name: "Autobazar",
+    city: "",
+    region: "",
+    phone: "",
+    email: "",
+    rating: 0,
+    reviews: 0,
+    since: new Date().getFullYear(),
+    plan: "payg",
+  };
 
 /* ---------------------------------------------------------------- vehicles */
 
@@ -1135,3 +1148,14 @@ export const financePartners = [
   { id: "homecredit", name: "Home Credit", product: "Autoúvěr", rate: 0.099, maxMonths: 84 },
   { id: "cofidis", name: "Cofidis", product: "Půjčka na auto", rate: 0.079, maxMonths: 96 },
 ];
+
+/**
+ * Ostrý režim: s nastaveným Supabase se ukázková data nepoužijí – pole se naplní
+ * skutečnými daty z databáze (src/lib/remote.ts).
+ */
+export const DEMO_MODE = !import.meta.env["VITE_SUPABASE_URL"];
+if (!DEMO_MODE) {
+  vehicles.length = 0;
+  auctions.length = 0;
+  dealers.length = 0;
+}

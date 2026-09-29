@@ -8,6 +8,7 @@ import { brandBySlug, bodyTypes, fuels, labelOf } from "@/lib/catalog";
 import { LEASING_CONSENT_TEXT, submitLead } from "@/lib/leads";
 import { leaseKm, leaseMonthly, leasingOffers } from "@/lib/leasing";
 import { czk, num } from "@/lib/mock-data";
+import { useDataReady } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/leasing/firmy")({
@@ -27,6 +28,7 @@ export const Route = createFileRoute("/leasing/firmy")({
 const terms = [36, 48, 60] as const;
 
 function FleetLeasing() {
+  useDataReady(); // překreslit po načtení nabídek z databáze
   const [km, setKm] = useState(30000);
   const [body, setBody] = useState("");
   const [fuel, setFuel] = useState("");

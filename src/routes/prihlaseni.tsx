@@ -2,11 +2,22 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { Building2, User } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { z } from "zod";
 import { Logo } from "@/components/logo";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/prihlaseni")({
+  validateSearch: (s) =>
+    z
+      .object({
+        next: z
+          .string()
+          .regex(/^\/(?![/\\])/)
+          .optional()
+          .catch(undefined),
+      })
+      .parse(s),
   head: () => ({
     meta: [{ title: "Přihlášení | Drivio" }, { name: "robots", content: "noindex" }],
   }),
@@ -18,6 +29,8 @@ function Login() {
   const [tab, setTab] = useState<"login" | "register">("login");
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
+  const { next } = Route.useSearch();
+  const go = (fallback: string) => void navigate({ to: next ?? fallback });
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -28,7 +41,7 @@ function Login() {
       toast.success("Ukázkový režim", {
         description: "Přihlášení bude aktivní po napojení Supabase Auth.",
       });
-      if (mode === "dealer") void navigate({ to: "/dashboard" });
+      if (mode === "dealer" || next) go("/dashboard");
       return;
     }
     setBusy(true);
@@ -38,12 +51,19 @@ function Login() {
         : await supabase.auth.signUp({
             email,
             password,
-            options: { data: { account_type: mode, company_id: f.get("ico") ?? null } },
+            options: {
+              data: {
+                account_type: mode,
+                company_name: f.get("company") ?? null,
+                ico: f.get("ico") ?? null,
+              },
+              emailRedirectTo: `${window.location.origin}/prihlaseni`,
+            },
           });
     setBusy(false);
     if (error) return void toast.error(error.message);
     if (tab === "register") toast.success("Potvrďte registraci odkazem v e-mailu.");
-    else void navigate({ to: mode === "dealer" ? "/dashboard" : "/" });
+    else go(mode === "dealer" ? "/dashboard" : "/");
   }
 
   return (

@@ -12,6 +12,8 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
+import { toast } from "sonner";
+import { initRemote } from "@/lib/remote";
 
 function NotFoundComponent() {
   return (
@@ -133,6 +135,13 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  useEffect(() => initRemote(), []);
+  useEffect(() => {
+    const onErr = (e: Event) =>
+      toast.error("Změnu se nepodařilo uložit", { description: (e as CustomEvent<string>).detail });
+    window.addEventListener("drivio:remote-error", onErr);
+    return () => window.removeEventListener("drivio:remote-error", onErr);
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

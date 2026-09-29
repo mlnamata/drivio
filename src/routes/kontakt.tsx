@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { toast } from "sonner";
+import { submitContact } from "@/lib/forms";
 import { Breadcrumbs, Container, Page } from "@/components/site-shell";
 
 export const Route = createFileRoute("/kontakt")({
@@ -71,10 +72,26 @@ function Contact() {
           </div>
           <form
             className="surface-card h-fit space-y-3 p-6"
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
-              e.currentTarget.reset();
-              toast.success("Zpráva odeslána", { description: "Ozveme se do 1 pracovního dne." });
+              const form = e.currentTarget;
+              const f = new FormData(form);
+              try {
+                await submitContact({
+                  data: {
+                    kind: "contact",
+                    topic: String(f.get("topic") ?? ""),
+                    name: String(f.get("name") ?? ""),
+                    email: String(f.get("email") ?? ""),
+                    message: String(f.get("message") ?? ""),
+                    website: String(f.get("website") ?? ""),
+                  },
+                });
+                form.reset();
+                toast.success("Zpráva odeslána", { description: "Ozveme se do 1 pracovního dne." });
+              } catch {
+                toast.error("Zprávu se nepodařilo odeslat, zkontrolujte e-mail.");
+              }
             }}
           >
             <p className="font-display text-lg font-bold">Napište nám</p>
@@ -84,6 +101,7 @@ function Contact() {
               <option>Leasingová / finanční spolupráce</option>
               <option>Ochrana osobních údajů</option>
             </select>
+            <input name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
             <input required name="name" placeholder="Jméno" className="field" />
             <input required type="email" name="email" placeholder="E-mail" className="field" />
             <textarea required name="message" rows={5} placeholder="Zpráva" className="field" />

@@ -42,21 +42,35 @@ plochá verze pro tmavé plochy je komponenta `LogoFlat`. Barvy: grafitová `#1f
 
 ## Spuštění do produkce
 
-1. Supabase projekt v regionu **eu-central-1 (Frankfurt)**, spustit `supabase/migrations/*.sql`.
-2. Do Vaultu uložit `project_url` a `service_role_key` (používá pg_cron → `invoke_edge_function`).
-3. Nasadit Edge Function `supabase functions deploy billing-processor`.
+Web má dva režimy. **Ukázkový** (bez proměnných Supabase) běží nad daty v `src/lib/mock-data.ts`
+a akce ukládá jen do prohlížeče. **Ostrý** se zapne nastavením proměnných Supabase – pak se
+ukázková data nepoužijí vůbec, web čte a zapisuje databázi (`src/lib/remote.ts`) a administrace
+vyžaduje přihlášení.
+
+1. Založit Supabase projekt v regionu **eu-central-1 (Frankfurt)** a spustit obě migrace
+   z `supabase/migrations/` (schéma + RLS + triggery, úložiště fotek).
+2. Do Vaultu uložit `project_url` a `service_role_key` (pro pg_cron → Edge Function).
+3. Nasadit Edge Function: `supabase functions deploy billing-processor`.
 4. Proměnné prostředí:
    - web: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`
-   - reklama (volitelné): `VITE_ADSENSE_CLIENT`, `VITE_ADSENSE_SLOT_LEADERBOARD`, `VITE_ADSENSE_SLOT_RECTANGLE`,
-     `VITE_ADSENSE_SLOT_INFEED` – bez nich se na plochách zobrazuje nabídka „Zde může být vaše reklama“
-   - server: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `FAKTUROID_WEBHOOK_SECRET`
+   - server: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `FAKTUROID_WEBHOOK_SECRET`,
+     `RESEND_API_KEY` a `CONTACT_EMAIL` (kam chodí zprávy z kontaktního formuláře a poptávky reklamy)
    - Edge Function: `RESEND_API_KEY`, `FAKTUROID_ACCESS_TOKEN`, `FAKTUROID_SLUG`
-5. Resend: nastavit SPF, DKIM a DMARC pro doménu drivio.cz.
-   Migrace je otestovaná na PostgreSQL 16: kapacita slotů, limit 1 soukromého inzerátu, RLS izolace
-   autobazarů a 40 souběžných příhozů (přijat právě jeden, stav aukce konzistentní).
-6. Doplnit IČO a údaje provozovatele v `src/routes/pravni/*` a nechat texty zkontrolovat advokátem.
+   - reklama (volitelné): `VITE_ADSENSE_CLIENT`, `VITE_ADSENSE_SLOT_LEADERBOARD`,
+     `VITE_ADSENSE_SLOT_RECTANGLE`, `VITE_ADSENSE_SLOT_INFEED`
+5. **Správce portálu:** zaregistrovat se na webu a v tabulce `users` nastavit
+   `is_platform_admin = true`. Autobazar se registruje sám (Přihlásit → Autobazar → IČO); databáze
+   mu automaticky založí firmu s tarifem „platba za vůz“.
+6. Resend: nastavit SPF, DKIM a DMARC pro doménu drivio.cz. V Supabase Auth nastavit
+   přesměrování na `https://drivio.cz/prihlaseni`.
+7. Nabídky leasingu vložit do `leasing_partners` a `leasing_offers` (ručně nebo API partnera).
 
-Loga značek v `public/brands` pochází z [filippofilip95/car-logos-dataset](https://github.com/filippofilip95/car-logos-dataset) a slouží pouze k označení značky vozu.
+Otestováno na PostgreSQL 16: kapacita slotů, limit 1 soukromého inzerátu, RLS izolace
+autobazarů, registrace autobazaru, změna tarifu jen vlastníkem, 40 souběžných příhozů.
+
+**Známé omezení:** v ostrém režimu se výpis a detail vozů vykreslují až v prohlížeči (po načtení
+z databáze), vyhledávače tak dostanou jen základní obsah. Dalším krokem je načítání dat už na
+serveru (SSR loadery).
 
 ## Vývoj
 

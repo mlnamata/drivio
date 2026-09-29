@@ -11,7 +11,7 @@ import {
   YAxis,
 } from "recharts";
 import { btn, PageHeader, Stat } from "@/components/app-shell";
-import { CURRENT_DEALER, useDealerBilling, leadsSample } from "@/lib/billing";
+import { useCurrentDealer, useDealerBilling, leadsSample } from "@/lib/billing";
 import { store } from "@/lib/store";
 import { czk, vehicleTitle } from "@/lib/mock-data";
 
@@ -28,7 +28,8 @@ const views = [
 ];
 
 function Overview() {
-  const b = useDealerBilling(CURRENT_DEALER);
+  const dealerId = useCurrentDealer();
+  const b = useDealerBilling(dealerId);
   const stale = b.lines.filter((l) => l.stale);
   return (
     <>

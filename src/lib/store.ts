@@ -7,6 +7,7 @@ import { useSyncExternalStore } from "react";
 import {
   auctions as baseAuctions,
   vehicles as baseVehicles,
+  DEMO_MODE,
   type Auction,
   type PlanId,
   type Vehicle,
@@ -95,6 +96,49 @@ function write(update: (s: State) => State) {
   window.dispatchEvent(new Event(EVENT));
 }
 
+/** Změna stavu zvenčí (synchronizace se Supabase). */
+export function patchStore(update: (s: State) => State) {
+  write(update);
+}
+
+/** Zápisy do Supabase – zaregistruje je src/lib/remote.ts, když je Supabase nastavený. */
+export type RemoteHandlers = {
+  addVehicle: (v: NewVehicle & { id: string }) => Promise<void>;
+  setPrice: (id: string, price: number) => Promise<void>;
+  removeVehicle: (id: string) => Promise<void>;
+  markSold: (id: string) => Promise<void>;
+  sendToAuction: (id: string) => Promise<void>;
+  setHidden: (id: string, hidden: boolean) => Promise<void>;
+  setDealerPlan: (dealerId: string, plan: PlanId) => Promise<void>;
+};
+let remote: RemoteHandlers | null = null;
+export const setRemote = (r: RemoteHandlers) => {
+  remote = r;
+};
+export const isRemote = () => remote !== null;
+
+let remoteReady = false;
+/** Zavolá remote.ts po prvním načtení dat z databáze. */
+export function markRemoteReady() {
+  remoteReady = true;
+  // Nový objekt stavu – jinak by React (useSyncExternalStore) neviděl změnu a nepřekreslil.
+  write((s) => ({ ...s }));
+}
+/** true = data jsou k dispozici (ukázkový režim nebo načteno z databáze). */
+export function useDataReady() {
+  useStore();
+  return DEMO_MODE || remoteReady;
+}
+const run = (p: Promise<void> | undefined) =>
+  p?.catch((e: unknown) => {
+    console.error(e);
+    window.dispatchEvent(
+      new CustomEvent("drivio:remote-error", {
+        detail: e instanceof Error ? e.message : String(e),
+      }),
+    );
+  });
+
 export const useStore = () => useSyncExternalStore(subscribe, snapshot, serverSnapshot);
 
 const daysSince = (iso: string) =>
@@ -109,7 +153,8 @@ export function allVehicles(s: State): Vehicle[] {
     status: "active",
   }));
   const auctioned = new Set(s.auctioned.map((a) => a.vehicleId));
-  return [...added, ...baseVehicles].map((v) => ({
+  const baseIds = new Set(baseVehicles.map((v) => v.id));
+  return [...added.filter((v) => !baseIds.has(v.id)), ...baseVehicles].map((v) => ({
     ...v,
     price: s.prices[v.id] ?? v.price,
     status: s.sold.includes(v.id) ? "sold" : auctioned.has(v.id) ? "in_auction" : v.status,
@@ -173,22 +218,28 @@ export function useAuctions(): LiveAuction[] {
 
 export const store = {
   addVehicle(v: NewVehicle) {
-    const id = `${v.brand}-${v.model}-${Date.now().toString(36)}`
-      .toLowerCase()
-      .replace(/[^a-z0-9-]/g, "");
+    const id = remote
+      ? crypto.randomUUID()
+      : `${v.brand}-${v.model}-${Date.now().toString(36)}`.toLowerCase().replace(/[^a-z0-9-]/g, "");
     write((s) => ({ ...s, added: [{ ...v, id }, ...s.added] }));
+    void run(remote?.addVehicle({ ...v, id }));
     return id;
   },
   setPrice(id: string, price: number) {
     write((s) => ({ ...s, prices: { ...s.prices, [id]: price } }));
+    void run(remote?.setPrice(id, price));
   },
   removeAdded(id: string) {
     write((s) => ({ ...s, added: s.added.filter((v) => v.id !== id) }));
+    void run(remote?.removeVehicle(id));
   },
   markSold(id: string) {
     write((s) => ({ ...s, sold: s.sold.includes(id) ? s.sold : [...s.sold, id] }));
+    void run(remote?.markSold(id));
   },
   sendToAuction(id: string) {
+    // S databází vznikne aukce v tabulce auctions (načte se synchronizací).
+    if (remote) return void run(remote.sendToAuction(id));
     write((s) =>
       s.auctioned.some((a) => a.vehicleId === id)
         ? s
@@ -199,6 +250,7 @@ export const store = {
     );
   },
   toggleHidden(id: string) {
+    void run(remote?.setHidden(id, !read().hidden.includes(id)));
     write((s) => ({
       ...s,
       hidden: s.hidden.includes(id) ? s.hidden.filter((x) => x !== id) : [...s.hidden, id],
@@ -259,6 +311,7 @@ export const store = {
   },
   setDealerPlan(dealerId: string, plan: PlanId) {
     write((s) => ({ ...s, dealerPlans: { ...s.dealerPlans, [dealerId]: plan } }));
+    void run(remote?.setDealerPlan(dealerId, plan));
   },
   registerBidder(name: string, email: string) {
     write((s) => ({ ...s, bidder: { name, email, acceptedAt: new Date().toISOString() } }));

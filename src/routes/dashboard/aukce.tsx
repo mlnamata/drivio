@@ -1,16 +1,17 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AuctionCountdown } from "@/components/auction-countdown";
 import { DataTable, PageHeader, StatusBadge } from "@/components/app-shell";
-import { CURRENT_DEALER } from "@/lib/billing";
+import { useCurrentDealer } from "@/lib/billing";
 import { czk, vehicleTitle } from "@/lib/mock-data";
 import { useAllVehicles, useAuctions } from "@/lib/store";
 
 export const Route = createFileRoute("/dashboard/aukce")({ component: DealerAuctions });
 
 function DealerAuctions() {
+  const dealerId = useCurrentDealer();
   const vehicles = useAllVehicles();
   const auctions = useAuctions().filter(
-    (a) => vehicles.find((v) => v.id === a.vehicleId)?.dealerId === CURRENT_DEALER,
+    (a) => vehicles.find((v) => v.id === a.vehicleId)?.dealerId === dealerId,
   );
   return (
     <>

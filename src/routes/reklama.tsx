@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { BarChart3, Car, Megaphone, MousePointerClick, Target, Users } from "lucide-react";
 import { toast } from "sonner";
+import { submitContact } from "@/lib/forms";
 import { Breadcrumbs, Container, Page, SectionTitle } from "@/components/site-shell";
 import { czk } from "@/lib/mock-data";
 
@@ -115,17 +116,35 @@ function Advertising() {
           </div>
           <form
             className="surface-card space-y-3 p-6"
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
-              e.currentTarget.reset();
-              toast.success("Poptávka odeslána", {
-                description: "Mediakit a nabídku vám pošleme do 1 pracovního dne.",
-              });
+              const form = e.currentTarget;
+              const f = new FormData(form);
+              try {
+                await submitContact({
+                  data: {
+                    kind: "advertising",
+                    company: String(f.get("company") ?? ""),
+                    name: String(f.get("name") ?? ""),
+                    email: String(f.get("email") ?? ""),
+                    budget: String(f.get("budget") ?? ""),
+                    message: String(f.get("message") ?? ""),
+                    website: String(f.get("website") ?? ""),
+                  },
+                });
+                form.reset();
+                toast.success("Poptávka odeslána", {
+                  description: "Mediakit a nabídku vám pošleme do 1 pracovního dne.",
+                });
+              } catch {
+                toast.error("Poptávku se nepodařilo odeslat, zkontrolujte údaje.");
+              }
             }}
           >
             <p className="flex items-center gap-2 font-display text-lg font-bold">
               <Megaphone className="h-5 w-5 text-primary" /> Chci inzerovat
             </p>
+            <input name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden />
             <input required name="company" className="field" placeholder="Firma" />
             <div className="grid gap-3 sm:grid-cols-2">
               <input required name="name" className="field" placeholder="Kontaktní osoba" />

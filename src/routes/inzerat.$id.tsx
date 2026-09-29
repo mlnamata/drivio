@@ -22,7 +22,7 @@ import { CarImage } from "@/components/car-image";
 import { InstallmentOptions } from "@/components/installment-options";
 import { CompareButton } from "@/components/compare";
 import { FinanceCalculator } from "@/components/finance-calculator";
-import { Breadcrumbs, Container, Page } from "@/components/site-shell";
+import { Breadcrumbs, Container, Page, PageLoading } from "@/components/site-shell";
 import { FavoriteButton, PriceRatingBadge, VehicleCard } from "@/components/vehicle-card";
 import {
   bodyTypes,
@@ -44,7 +44,7 @@ import {
   vehicleTitle,
   type Vehicle,
 } from "@/lib/mock-data";
-import { useAllVehicles, useAuctions } from "@/lib/store";
+import { useAllVehicles, useAuctions, useDataReady } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/inzerat/$id")({
@@ -116,8 +116,9 @@ function Detail() {
   const { id } = Route.useParams();
   const { vehicle: fromLoader } = Route.useLoaderData();
   const all = useAllVehicles();
+  const ready = useDataReady();
   const v = all.find((x) => x.id === id) ?? fromLoader;
-  if (!v) return <NotFoundView />;
+  if (!v) return ready ? <NotFoundView /> : <PageLoading />;
   return <DetailView v={v} all={all} />;
 }
 

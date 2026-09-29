@@ -3,14 +3,15 @@ import { AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/app-shell";
 import { VehicleForm } from "@/components/vehicle-form";
-import { CURRENT_DEALER, useDealerBilling } from "@/lib/billing";
+import { useCurrentDealer, useDealerBilling } from "@/lib/billing";
 import { czk, monthlyPayment, perVehicleFee, slotSurcharge } from "@/lib/mock-data";
 import { store } from "@/lib/store";
 
 export const Route = createFileRoute("/dashboard/pridat")({ component: AddCar });
 
 function AddCar() {
-  const b = useDealerBilling(CURRENT_DEALER);
+  const dealerId = useCurrentDealer();
+  const b = useDealerBilling(dealerId);
   const navigate = useNavigate();
   const full = b.used >= b.plan.slots;
 
@@ -83,7 +84,7 @@ function AddCar() {
           const { contact: _c, ...vehicle } = v;
           store.addVehicle({
             ...vehicle,
-            dealerId: CURRENT_DEALER,
+            dealerId: dealerId,
             listedAt: new Date().toISOString(),
           });
           toast.success("Inzerát zveřejněn", { description: "Vůz je na webu a zabírá 1 slot." });

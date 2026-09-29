@@ -5,16 +5,17 @@ import { toast } from "sonner";
 import { btn, DataTable, PageHeader, StatusBadge } from "@/components/app-shell";
 import { CarImage } from "@/components/car-image";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
-import { CURRENT_DEALER, useDealerBilling } from "@/lib/billing";
+import { useCurrentDealer, useDealerBilling } from "@/lib/billing";
 import { czk, num, vehicleTitle, type Vehicle } from "@/lib/mock-data";
 import { store, useAllVehicles } from "@/lib/store";
 
 export const Route = createFileRoute("/dashboard/vozy")({ component: MyCars });
 
 function MyCars() {
+  const dealerId = useCurrentDealer();
   const all = useAllVehicles();
-  const b = useDealerBilling(CURRENT_DEALER);
-  const soldList = all.filter((v) => v.dealerId === CURRENT_DEALER && v.status === "sold");
+  const b = useDealerBilling(dealerId);
+  const soldList = all.filter((v) => v.dealerId === dealerId && v.status === "sold");
   const [q, setQ] = useState("");
   const [editing, setEditing] = useState<Vehicle | null>(null);
   const lines = b.lines.filter((l) =>

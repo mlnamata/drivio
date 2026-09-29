@@ -9,6 +9,7 @@ import {
   type PlanId,
   type Vehicle,
 } from "./mock-data";
+import { useAuth } from "./auth";
 import { allVehicles, useStore } from "./store";
 
 export type SlotLine = {
@@ -71,7 +72,14 @@ export function useDealerBilling(dealerId: string) {
   return dealerBilling(dealerId, allVehicles(s), s.dealerPlans[dealerId]);
 }
 
+/** Ukázkový autobazar pro režim bez přihlášení. */
 export const CURRENT_DEALER = "kolbenka";
+
+/** Autobazar přihlášeného uživatele (s Supabase), jinak ukázkový. */
+export function useCurrentDealer() {
+  const auth = useAuth();
+  return auth.status === "signed-in" && auth.tenantId ? auth.tenantId : CURRENT_DEALER;
+}
 
 export const invoices = [
   {

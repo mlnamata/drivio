@@ -19,6 +19,7 @@ import { CompareBar } from "@/components/compare";
 import { UspBar } from "@/components/trust";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useStore } from "@/lib/store";
+import { signOut, useAuth } from "@/lib/auth";
 import { brands } from "@/lib/catalog";
 import { cn } from "@/lib/utils";
 
@@ -65,6 +66,7 @@ export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const { ids } = useFavorites();
   const { searches } = useStore();
+  const auth = useAuth();
 
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 4);
@@ -109,12 +111,31 @@ export function SiteHeader() {
           >
             <PlusCircle className="h-4 w-4" /> Prodat auto
           </Link>
-          <Link
-            to="/prihlaseni"
-            className="ml-1 hidden items-center gap-2 rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background transition-colors hover:bg-foreground/85 sm:inline-flex"
-          >
-            <User className="h-4 w-4" /> Přihlásit
-          </Link>
+          {auth.status === "signed-in" ? (
+            <div className="ml-1 hidden items-center gap-1 sm:flex">
+              {auth.role !== "customer" ? (
+                <Link
+                  to={auth.role === "admin" ? "/admin" : "/dashboard"}
+                  className="rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background"
+                >
+                  {auth.role === "admin" ? "Správa" : "Můj autobazar"}
+                </Link>
+              ) : null}
+              <button
+                onClick={() => void signOut()}
+                className="rounded-full px-3 py-2 text-sm font-semibold text-foreground/70 hover:bg-foreground/5"
+              >
+                Odhlásit
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/prihlaseni"
+              className="ml-1 hidden items-center gap-2 rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background transition-colors hover:bg-foreground/85 sm:inline-flex"
+            >
+              <User className="h-4 w-4" /> Přihlásit
+            </Link>
+          )}
           <button
             className="inline-flex h-10 w-10 items-center justify-center rounded-full hover:bg-foreground/5 xl:hidden"
             onClick={() => setOpen((v) => !v)}
@@ -328,5 +349,15 @@ export function Breadcrumbs({ items }: { items: { to?: string; label: string }[]
         </span>
       ))}
     </nav>
+  );
+}
+
+export function PageLoading() {
+  return (
+    <Page>
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <span className="h-8 w-8 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
+      </div>
+    </Page>
   );
 }

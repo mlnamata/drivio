@@ -3,7 +3,7 @@ import { Check } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/app-shell";
 import { SlotCalculator } from "@/components/pricing";
-import { CURRENT_DEALER, dealerBilling, useDealerBilling } from "@/lib/billing";
+import { useCurrentDealer, dealerBilling, useDealerBilling } from "@/lib/billing";
 import { czk, num, PAYG_PLAN, perVehicleTiers, plans, type PlanId } from "@/lib/mock-data";
 import { store, useAllVehicles } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -11,15 +11,16 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/dashboard/predplatne")({ component: Subscription });
 
 function Subscription() {
-  const b = useDealerBilling(CURRENT_DEALER);
+  const dealerId = useCurrentDealer();
+  const b = useDealerBilling(dealerId);
   const all = useAllVehicles();
   const choose = (id: PlanId, name: string) => {
-    const next = dealerBilling(CURRENT_DEALER, all, id);
+    const next = dealerBilling(dealerId, all, id);
     if (id !== "payg" && next.used > next.plan.slots) {
       toast.error(`Balíček má jen ${next.plan.slots} slotů, máte ${next.used} aktivních vozů.`);
       return;
     }
-    store.setDealerPlan(CURRENT_DEALER, id);
+    store.setDealerPlan(dealerId, id);
     toast.success(`Tarif „${name}“ je aktivní`, {
       description: `Odhad faktury za tento měsíc: ${czk(next.total)}`,
     });

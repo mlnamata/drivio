@@ -12,6 +12,7 @@ import {
 import { brandBySlug } from "@/lib/catalog";
 import { num } from "@/lib/mock-data";
 import type { ListingSearch } from "@/lib/search";
+import { submitWatchdog } from "@/lib/forms";
 import { store } from "@/lib/store";
 
 export function describeSearch(s: ListingSearch) {
@@ -48,10 +49,11 @@ export function WatchdogDialog({ search }: { search: ListingSearch }) {
           onSubmit={(e) => {
             e.preventDefault();
             const f = new FormData(e.currentTarget);
-            store.saveSearch(
-              String(f.get("name") || describeSearch(criteria)),
-              criteria,
-              String(f.get("email") || ""),
+            const name = String(f.get("name") || describeSearch(criteria));
+            const email = String(f.get("email") || "");
+            store.saveSearch(name, criteria, email);
+            void submitWatchdog({ data: { name, email, criteria } }).catch(() =>
+              toast.error("Hlídání se nepodařilo uložit na server"),
             );
             setOpen(false);
             toast.success("Hlídací pes nastaven", {

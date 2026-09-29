@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
   Bell,
   Bot,
@@ -13,7 +13,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { AuctionCountdown } from "@/components/auction-countdown";
 import { CarImage } from "@/components/car-image";
-import { Breadcrumbs, Container, Page } from "@/components/site-shell";
+import { Breadcrumbs, Container, Page, PageLoading } from "@/components/site-shell";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { FavoriteButton } from "@/components/vehicle-card";
 import { fuels, gearboxes, labelOf } from "@/lib/catalog";
@@ -26,7 +26,14 @@ import {
   vehicleById,
   vehicleTitle,
 } from "@/lib/mock-data";
-import { store, useAllVehicles, useAuctions, useStore, type LiveAuction } from "@/lib/store";
+import {
+  store,
+  useAllVehicles,
+  useAuctions,
+  useStore,
+  type LiveAuction,
+  useDataReady,
+} from "@/lib/store";
 import { placeBid, subscribeToBids, supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 
@@ -56,8 +63,10 @@ function AuctionPage() {
   const { id } = Route.useParams();
   const auctions = useAuctions();
   const vehicles = useAllVehicles();
+  const ready = useDataReady();
   const a = auctions.find((x) => x.id === id);
   const v = a ? vehicles.find((x) => x.id === a.vehicleId) : undefined;
+  if ((!a || !v) && !ready) return <PageLoading />;
   if (!a || !v)
     return (
       <Page>
@@ -78,6 +87,7 @@ function AuctionPage() {
 type FeedItem = { user: string; amount: number; time: string; mine?: boolean };
 
 function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVehicles>[number] }) {
+  const navigate = useNavigate();
   const { bidder, bids: storedBids } = useStore();
   const seller = sellerOf(v);
   const myBids = storedBids[a.id] ?? [];
@@ -160,6 +170,12 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
       return;
     }
     if (supabase) {
+      const { data } = await supabase.auth.getSession();
+      if (!data.session) {
+        toast("Pro příhoz se přihlaste");
+        void navigate({ to: "/prihlaseni", search: { next: `/aukce/${a.id}` } });
+        return;
+      }
       try {
         await placeBid(a.id, amount);
         toast.success("Příhoz přijat");

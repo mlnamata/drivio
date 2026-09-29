@@ -1,13 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { btn, PageHeader } from "@/components/app-shell";
-import { CURRENT_DEALER } from "@/lib/billing";
+import { useCurrentDealer } from "@/lib/billing";
 import { dealerById } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/dashboard/nastaveni")({ component: Settings });
 
 function Settings() {
-  const d = dealerById(CURRENT_DEALER);
+  const dealerId = useCurrentDealer();
+  const d = dealerById(dealerId);
   return (
     <>
       <PageHeader

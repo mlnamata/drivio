@@ -73,7 +73,9 @@ create table public.subscription_plans (
 insert into public.subscription_plans (id, name, monthly_price, slots, max_vehicle_price) values
   ('economy', 'Garáž ECONOMY 10', 990, 10, 200000),
   ('standard', 'Garáž STANDARD 15', 2490, 15, 700000),
-  ('premium', 'Garáž PREMIUM 5', 1990, 5, null);
+  ('premium', 'Garáž PREMIUM 5', 1990, 5, null),
+  -- bez předplatného: platba za každý vůz (149/249/499 Kč za 30 dní dle ceny vozu)
+  ('payg', 'Platba za vůz', 0, 999, null);
 
 create table public.tenant_subscriptions (
   id uuid primary key default gen_random_uuid(),
@@ -141,7 +143,7 @@ create index vehicles_listed on public.vehicles (listed_at) where status = 'acti
 
 -- Kapacita slotů: nelze aktivovat víc vozů, než má balíček slotů.
 create or replace function public.enforce_slot_capacity()
-returns trigger language plpgsql as $$
+returns trigger language plpgsql security definer set search_path = public as $$
 declare v_slots int; v_used int;
 begin
   if new.status = 'active' and (tg_op = 'INSERT' or old.status is distinct from 'active')
@@ -404,6 +406,72 @@ create table public.saved_searches (
   created_at timestamptz not null default now()
 );
 
+-- ---------------------------------------------------------------- zprávy z formulářů
+create table public.contact_messages (
+  id uuid primary key default gen_random_uuid(),
+  kind text not null check (kind in ('contact', 'advertising')),
+  topic text,
+  company text,
+  name text not null,
+  email text not null,
+  budget text,
+  message text,
+  ip inet,
+  handled_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+-- ---------------------------------------------------------------- registrace
+-- Nový účet → profil; registrace autobazaru (account_type = dealer + IČO) → tenant,
+-- vlastník a výchozí tarif „platba za vůz“.
+create or replace function public.handle_new_user()
+returns trigger language plpgsql security definer set search_path = public as $$
+declare
+  meta jsonb := coalesce(new.raw_user_meta_data, '{}'::jsonb);
+  v_tenant uuid;
+begin
+  insert into public.users (id, full_name) values (new.id, meta ->> 'full_name')
+  on conflict (id) do nothing;
+  if meta ->> 'account_type' = 'dealer' and (meta ->> 'ico') ~ '^[0-9]{8}$' then
+    insert into public.tenants (name, ico, city, region, email)
+    values (coalesce(nullif(meta ->> 'company_name', ''), 'Autobazar'), meta ->> 'ico', '', '', new.email)
+    on conflict (ico) do nothing
+    returning id into v_tenant;
+    if v_tenant is not null then
+      insert into public.tenant_members (tenant_id, user_id, role) values (v_tenant, new.id, 'owner');
+      insert into public.tenant_subscriptions (tenant_id, plan_id) values (v_tenant, 'payg');
+    end if;
+  end if;
+  return new;
+end $$;
+
+create trigger on_auth_user_created after insert on auth.users
+  for each row execute function public.handle_new_user();
+
+-- Změna tarifu autobazaru (vlastník / správce). Nový tarif platí hned.
+create or replace function public.change_plan(p_tenant_id uuid, p_plan_id text)
+returns void language plpgsql security definer set search_path = public as $$
+declare v_slots int; v_used int;
+begin
+  if not (public.is_platform_admin() or exists (
+    select 1 from public.tenant_members
+     where tenant_id = p_tenant_id and user_id = auth.uid() and role in ('owner', 'admin'))) then
+    raise exception 'Tarif může změnit jen vlastník autobazaru';
+  end if;
+  select slots into v_slots from public.subscription_plans where id = p_plan_id and active;
+  if v_slots is null then raise exception 'Neznámý tarif'; end if;
+  select count(*) into v_used from public.vehicles
+   where tenant_id = p_tenant_id and status in ('active', 'in_auction');
+  if v_used > v_slots then
+    raise exception 'Tarif má jen % slotů, aktivních vozů je %', v_slots, v_used;
+  end if;
+  update public.tenant_subscriptions set ends_at = current_date
+   where tenant_id = p_tenant_id and ends_at is null;
+  insert into public.tenant_subscriptions (tenant_id, plan_id) values (p_tenant_id, p_plan_id);
+end $$;
+revoke all on function public.change_plan(uuid, text) from public, anon;
+grant execute on function public.change_plan(uuid, text) to authenticated;
+
 -- =====================================================================
 -- Row Level Security
 -- =====================================================================
@@ -422,6 +490,7 @@ alter table public.favorites enable row level security;
 alter table public.leasing_partners enable row level security;
 alter table public.leasing_offers enable row level security;
 alter table public.saved_searches enable row level security;
+alter table public.contact_messages enable row level security;  -- jen service role
 
 create policy users_self on public.users for all
   using (id = (select auth.uid()) or (select public.is_platform_admin()))
@@ -479,8 +548,8 @@ create policy leasing_offers_public_read on public.leasing_offers for select usi
 create policy saved_searches_own on public.saved_searches for all
   using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
 
--- Realtime pro živé aukce
-alter publication supabase_realtime add table public.bids, public.auctions;
+-- Realtime pro živé aukce a nové inzeráty
+alter publication supabase_realtime add table public.bids, public.auctions, public.vehicles;
 
 -- =====================================================================
 -- pg_cron – plánovač; těžká logika v Edge Functions (volání přes pg_net)

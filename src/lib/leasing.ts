@@ -3,7 +3,7 @@
  * „vše v ceně", volba délky pronájmu a ročního nájezdu. Po napojení se nabídky načítají
  * z tabulky `leasing_offers`, kterou plní partneři přes API (viz /pro-leasingove-spolecnosti).
  */
-import { photoPool } from "./mock-data";
+import { DEMO_MODE, photoPool } from "./mock-data";
 
 export type LeasingOffer = {
   id: string;
@@ -300,3 +300,5 @@ export const leaseIncluded = [
   "Asistenční služba 24/7",
   "Náhradní vůz při poruše",
 ];
+
+if (!DEMO_MODE) leasingOffers.length = 0;

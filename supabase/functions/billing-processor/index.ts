@@ -38,7 +38,23 @@ const progressionFactor = (month: number) => (month <= 1 ? 1 : month === 2 ? 1.5
  *   doplatek = tabulková cena inzerátu nejvyšší kategorie − podíl slotu v balíčku
  *   (např. 499 Kč − 990/10 = 400 Kč). Balíček ani ostatní sloty se nemění.
  */
+/** Tarif „platba za vůz“ – cena za 30 dní podle ceny vozu (stejně jako na webu). */
+const perVehicleBase = (price: number) => (price <= 200000 ? 149 : price <= 700000 ? 249 : 499);
+
 function slotCost(plan: Plan, v: Vehicle, now: Date, inAuction: boolean) {
+  if (plan.id === "payg") {
+    const month = listingMonth(v.listed_at, now);
+    const base = perVehicleBase(v.price);
+    const progression = inAuction ? 0 : Math.round(base * (progressionFactor(month) - 1));
+    // u platby za vůz se celý poplatek účtuje jako položka vozu (surcharge = základ)
+    return {
+      vehicle_id: v.id,
+      label: `${v.brand} ${v.model}`,
+      month,
+      progression,
+      surcharge: base,
+    };
+  }
   const perSlot = Math.round(plan.monthly_price / plan.slots);
   const month = listingMonth(v.listed_at, now);
   const progression = inAuction ? 0 : Math.round(perSlot * (progressionFactor(month) - 1)); // aukce = odpuštění

@@ -10,6 +10,7 @@ import {
   Users,
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
+import { AuthGate } from "@/components/auth-gate";
 import { dealers } from "@/lib/mock-data";
 import { useAllVehicles, useAuctions } from "@/lib/store";
 
@@ -24,33 +25,35 @@ function AdminLayout() {
   const vehicles = useAllVehicles();
   const auctions = useAuctions().filter((a) => !a.ended);
   return (
-    <AppShell
-      title="Správa portálu"
-      subtitle="Superadmin"
-      nav={[
-        {
-          items: [
-            { to: "/admin", label: "Přehled", icon: LayoutDashboard },
-            {
-              to: "/admin/autobazary",
-              label: "Autobazary",
-              icon: Building2,
-              badge: dealers.length,
-            },
-            { to: "/admin/inzeraty", label: "Inzeráty", icon: Car, badge: vehicles.length },
-            { to: "/admin/aukce", label: "Aukce", icon: Gavel, badge: auctions.length },
-            { to: "/admin/leady", label: "Leady a partneři", icon: Users },
-          ],
-        },
-        {
-          section: "Systém",
-          items: [
-            { to: "/admin/fakturace", label: "Fakturace", icon: FileText },
-            { to: "/admin/automatizace", label: "Automatizace", icon: Clock3 },
-            { to: "/admin/nastaveni", label: "Nastavení", icon: Settings },
-          ],
-        },
-      ]}
-    />
+    <AuthGate require="admin">
+      <AppShell
+        title="Správa portálu"
+        subtitle="Superadmin"
+        nav={[
+          {
+            items: [
+              { to: "/admin", label: "Přehled", icon: LayoutDashboard },
+              {
+                to: "/admin/autobazary",
+                label: "Autobazary",
+                icon: Building2,
+                badge: dealers.length,
+              },
+              { to: "/admin/inzeraty", label: "Inzeráty", icon: Car, badge: vehicles.length },
+              { to: "/admin/aukce", label: "Aukce", icon: Gavel, badge: auctions.length },
+              { to: "/admin/leady", label: "Leady a partneři", icon: Users },
+            ],
+          },
+          {
+            section: "Systém",
+            items: [
+              { to: "/admin/fakturace", label: "Fakturace", icon: FileText },
+              { to: "/admin/automatizace", label: "Automatizace", icon: Clock3 },
+              { to: "/admin/nastaveni", label: "Nastavení", icon: Settings },
+            ],
+          },
+        ]}
+      />
+    </AuthGate>
   );
 }

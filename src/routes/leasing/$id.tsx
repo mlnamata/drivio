@@ -1,27 +1,31 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Building2, Check, Truck, User } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 import { BrandLogo } from "@/components/brand-logo";
 import { CarImage } from "@/components/car-image";
-import { Breadcrumbs, Container, Page } from "@/components/site-shell";
+import { Breadcrumbs, Container, Page, PageLoading } from "@/components/site-shell";
 import { brandBySlug, fuels, gearboxes, labelOf } from "@/lib/catalog";
 import { LEASING_CONSENT_TEXT, submitLead } from "@/lib/leads";
-import { leaseIncluded, leaseKm, leaseMonthly, leaseMonths, leasingOfferById } from "@/lib/leasing";
+import {
+  leaseIncluded,
+  leaseKm,
+  leaseMonthly,
+  leaseMonths,
+  leasingOfferById,
+  type LeasingOffer,
+} from "@/lib/leasing";
+import { useDataReady } from "@/lib/store";
 import { czk, num } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/leasing/$id")({
   validateSearch: (s) =>
     z.object({ business: z.coerce.boolean().optional().catch(undefined) }).parse(s),
-  loader: ({ params }) => {
-    const offer = leasingOfferById(params.id);
-    if (!offer) throw notFound();
-    return { offer };
-  },
+  loader: ({ params }) => ({ offer: leasingOfferById(params.id) ?? null }),
   head: ({ loaderData }) => ({
-    meta: loaderData
+    meta: loaderData?.offer
       ? [
           {
             title: `${brandBySlug(loaderData.offer.brand)?.name} ${loaderData.offer.model} na operativní leasing | Drivio`,
@@ -33,7 +37,11 @@ export const Route = createFileRoute("/leasing/$id")({
         ]
       : [{ title: "Nabídka nenalezena | Drivio" }],
   }),
-  notFoundComponent: () => (
+  component: LeaseDetail,
+});
+
+function OfferNotFound() {
+  return (
     <Page>
       <Container className="py-24 text-center">
         <h1 className="text-3xl font-bold">Nabídka už není dostupná</h1>
@@ -45,12 +53,19 @@ export const Route = createFileRoute("/leasing/$id")({
         </Link>
       </Container>
     </Page>
-  ),
-  component: LeaseDetail,
-});
+  );
+}
 
 function LeaseDetail() {
-  const { offer: o } = Route.useLoaderData();
+  const { id } = Route.useParams();
+  const { offer: fromLoader } = Route.useLoaderData();
+  const ready = useDataReady();
+  const o = leasingOfferById(id) ?? fromLoader;
+  if (!o) return ready ? <OfferNotFound /> : <PageLoading />;
+  return <LeaseDetailView o={o} />;
+}
+
+function LeaseDetailView({ o }: { o: LeasingOffer }) {
   const search = Route.useSearch();
   const brand = brandBySlug(o.brand);
   const [months, setMonths] = useState(48);
