@@ -23,10 +23,10 @@ export const Route = createFileRoute("/aukce")({
 });
 
 function Auctions() {
-  const main = auctions[0];
+  const main = auctions[0]!;
   const [bid, setBid] = useState(main.currentBid + 500);
   const [feed, setFeed] = useState(bidFeed);
-  const current = feed[0].amount;
+  const current = feed[0]!.amount;
 
   return (
     <Page>

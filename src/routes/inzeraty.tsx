@@ -36,7 +36,7 @@ function Listings() {
   const [sort, setSort] = useState<"price" | "age">("price");
 
   const list = useMemo(() => {
-    const r = priceRanges[range];
+    const r = priceRanges[range]!;
     return vehicles
       .filter(
         (v) =>

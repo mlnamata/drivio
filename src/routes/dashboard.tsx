@@ -22,7 +22,7 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function Dashboard() {
-  const plan = plans[0];
+  const plan = plans[0]!;
   const mine = vehicles.slice(0, 5);
   const used = mine.length;
   const fees = mine.reduce(

@@ -27,8 +27,8 @@ const TOP_RATE = 499;
 function Pricing() {
   const [planIdx, setPlanIdx] = useState(0);
   const [price, setPrice] = useState(2000000);
-  const plan = plans[planIdx];
-  const limit = [200000, 700000, Infinity][planIdx];
+  const plan = plans[planIdx]!;
+  const limit = [200000, 700000, Infinity][planIdx]!;
   const over = price > limit;
   const surcharge = over ? Math.max(0, TOP_RATE - plan.perSlot) : 0;
 
