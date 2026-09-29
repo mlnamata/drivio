@@ -19,7 +19,7 @@ export const Route = createFileRoute("/aukce")({
       },
     ],
   }),
-  component: Auctions;
+  component: Auctions,
 });
 
 function Auctions() {
