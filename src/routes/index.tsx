@@ -10,7 +10,6 @@ import {
   Wallet,
 } from "lucide-react";
 import { useState } from "react";
-import heroCar from "@/assets/hero-car.jpg";
 import { AuctionCountdown } from "@/components/auction-countdown";
 import { AdSlot } from "@/components/ad-slot";
 import { Faq, Partners, Reviews } from "@/components/trust";
@@ -20,7 +19,7 @@ import { QuickSearch } from "@/components/quick-search";
 import { Container, Page, SectionTitle } from "@/components/site-shell";
 import { VehicleCard } from "@/components/vehicle-card";
 import { bodyTypes, brands } from "@/lib/catalog";
-import { czk, num, vehicleTitle } from "@/lib/mock-data";
+import { czk, monthlyPayment, num, vehicleTitle } from "@/lib/mock-data";
 import { useAllVehicles, useAuctions, useVehicles } from "@/lib/store";
 
 export const Route = createFileRoute("/")({
@@ -80,34 +79,119 @@ function Index() {
     .sort((a, b) => a.listedDays - b.listedDays)
     .slice(0, 8);
   const top = list.filter((v) => v.top).slice(0, 4);
+  const heroCards = [...list].sort((a, b) => b.price - a.price).slice(6, 10);
   const shownBrands = allBrands ? brands : brands.filter((b) => b.popular);
 
   return (
     <Page>
-      {/* HERO */}
-      <Container className="pt-6">
-        <section className="relative isolate overflow-hidden rounded-[2rem]">
-          <img
-            src={heroCar}
-            alt=""
-            width={1600}
-            height={1008}
-            className="absolute inset-0 -z-10 h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 -z-10 bg-gradient-to-r from-[oklch(0.16_0.004_60/0.88)] via-[oklch(0.16_0.004_60/0.6)] to-[oklch(0.16_0.004_60/0.25)]" />
-          <div className="px-5 pb-8 pt-10 md:px-10 md:pb-10 md:pt-14">
-            <p className="glass-dark mb-4 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium text-white/90">
-              <BadgeCheck className="h-4 w-4 text-primary" /> {num(list.length)} vozů od prověřených
-              autobazarů
-            </p>
-            <h1 className="max-w-3xl text-3xl font-extrabold leading-[1.08] text-white md:text-5xl">
-              Najděte své další auto. <span className="text-primary">Rychle a férově.</span>
-            </h1>
-            <div className="mt-8">
-              <QuickSearch />
+      {/* HERO – světlý, bez fotky na pozadí (styl driveto.cz) */}
+      <section className="relative overflow-hidden border-b border-border bg-gradient-to-b from-accent/70 via-background to-background">
+        <div className="pointer-events-none absolute -right-40 -top-40 h-[32rem] w-[32rem] rounded-full bg-primary/10 blur-3xl" />
+        <div className="pointer-events-none absolute -left-32 top-24 h-72 w-72 rounded-full bg-primary/5 blur-3xl" />
+        <Container className="relative pb-12 pt-10 md:pb-16 md:pt-14">
+          <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-center">
+            <div>
+              <p className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold shadow-sm">
+                <BadgeCheck className="h-4 w-4 text-primary" /> {num(list.length)} vozů od
+                prověřených prodejců
+              </p>
+              <h1 className="mt-5 text-4xl font-extrabold leading-[1.05] tracking-tight md:text-[3.4rem]">
+                Auto, které si můžete dovolit.
+                <span className="mt-2 block text-primary">Koupě, splátky i leasing.</span>
+              </h1>
+              <p className="mt-5 max-w-xl text-lg text-muted-foreground">
+                Ojetá auta s ověřenou historií a splátkou na první pohled, operativní leasing se
+                vším v ceně a aukce od 1 Kč. Na jednom místě.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm font-medium">
+                {[
+                  [ShieldCheck, "Historie ověřená Cebia"],
+                  [Wallet, "Splátky bez akontace"],
+                  [Gavel, "Aukce od 1 Kč"],
+                ].map(([Icon, t]) => {
+                  const I = Icon as typeof ShieldCheck;
+                  return (
+                    <span key={t as string} className="flex items-center gap-2">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/12 text-primary">
+                        <I className="h-4 w-4" />
+                      </span>
+                      {t as string}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Oblíbené nabídky se splátkou */}
+            <div className="hidden rounded-3xl border border-border bg-card p-5 shadow-[var(--shadow-lift)] lg:block">
+              <div className="mb-3 flex items-center justify-between">
+                <p className="font-bold">Oblíbené nabídky</p>
+                <Link to="/inzeraty" className="text-sm font-semibold text-primary">
+                  Všechny →
+                </Link>
+              </div>
+              <ul className="divide-y divide-border">
+                {heroCards.map((v) => (
+                  <li key={v.id}>
+                    <Link
+                      to="/inzerat/$id"
+                      params={{ id: v.id }}
+                      className="group flex items-center gap-4 py-3"
+                    >
+                      <span className="h-16 w-24 shrink-0 overflow-hidden rounded-xl bg-muted">
+                        <CarImage src={v.photos[0]!} alt={vehicleTitle(v)} />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-semibold group-hover:text-primary">
+                          {vehicleTitle(v)}
+                        </span>
+                        <span className="block text-xs text-muted-foreground">
+                          {v.year} · {num(v.km)} km · {czk(v.price)}
+                        </span>
+                      </span>
+                      <span className="text-right">
+                        <span className="block font-display text-lg font-extrabold text-primary">
+                          {czk(monthlyPayment(v.price))}
+                        </span>
+                        <span className="block text-[11px] text-muted-foreground">měsíčně</span>
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
-        </section>
+
+          <div className="mt-10">
+            <QuickSearch />
+          </div>
+        </Container>
+      </section>
+
+      {/* PODLE SPLÁTKY (driveto.cz) */}
+      <Container className="pt-12">
+        <SectionTitle eyebrow="Podle rozpočtu" title="Kolik chcete měsíčně splácet?" />
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          {[2500, 3500, 5000, 8000].map((m) => {
+            const count = list.filter((v) => monthlyPayment(v.price) <= m).length;
+            return (
+              <Link
+                key={m}
+                to="/inzeraty"
+                search={{ monthlyTo: m, sort: "price-desc" }}
+                className="lift group rounded-3xl border border-border bg-card p-5"
+              >
+                <p className="text-sm text-muted-foreground">splátka do</p>
+                <p className="font-display text-2xl font-extrabold group-hover:text-primary md:text-3xl">
+                  {czk(m)}
+                </p>
+                <p className="mt-3 inline-flex rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">
+                  {count} vozů →
+                </p>
+              </Link>
+            );
+          })}
+        </div>
       </Container>
 
       {/* ZNAČKY */}

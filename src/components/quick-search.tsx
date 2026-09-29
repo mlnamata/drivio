@@ -67,7 +67,7 @@ export function QuickSearch() {
         e.preventDefault();
         void navigate({ to: "/inzeraty", search: cleanSearch(s) });
       }}
-      className="glass rounded-3xl p-4 md:p-6"
+      className="rounded-3xl border border-border bg-card p-4 shadow-[var(--shadow-lift)] md:p-6"
     >
       <div className="mb-4 flex gap-1 overflow-x-auto">
         {categories.map((c) => {

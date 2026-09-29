@@ -79,7 +79,9 @@ export function SiteHeader() {
     <header
       className={cn(
         "sticky top-0 z-50 border-b transition-all",
-        scrolled ? "glass border-x-0 border-t-0" : "border-border bg-card",
+        scrolled
+          ? "border-border bg-card/95 shadow-[0_8px_24px_-16px_oklch(0.2_0.005_60/0.35)] backdrop-blur-md"
+          : "border-border bg-card",
       )}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-4">
