@@ -10,11 +10,29 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AukceRouteImport } from './routes/aukce'
+import { Route as CenikRouteImport } from './routes/cenik'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as InzeratyRouteImport } from './routes/inzeraty'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AukceRoute = AukceRouteImport.update({
+  id: '/aukce',
+  path: '/aukce',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CenikRoute = CenikRouteImport.update({
+  id: '/cenik',
+  path: '/cenik',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InzeratyRoute = InzeratyRouteImport.update({
@@ -25,27 +43,39 @@ const InzeratyRoute = InzeratyRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/aukce': typeof AukceRoute
+  '/cenik': typeof CenikRoute
+  '/dashboard': typeof DashboardRoute
   '/inzeraty': typeof InzeratyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/aukce': typeof AukceRoute
+  '/cenik': typeof CenikRoute
+  '/dashboard': typeof DashboardRoute
   '/inzeraty': typeof InzeratyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/aukce': typeof AukceRoute
+  '/cenik': typeof CenikRoute
+  '/dashboard': typeof DashboardRoute
   '/inzeraty': typeof InzeratyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/inzeraty'
+  fullPaths: '/' | '/aukce' | '/cenik' | '/dashboard' | '/inzeraty'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/inzeraty'
-  id: '__root__' | '/' | '/inzeraty'
+  to: '/' | '/aukce' | '/cenik' | '/dashboard' | '/inzeraty'
+  id: '__root__' | '/' | '/aukce' | '/cenik' | '/dashboard' | '/inzeraty'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AukceRoute: typeof AukceRoute
+  CenikRoute: typeof CenikRoute
+  DashboardRoute: typeof DashboardRoute
   InzeratyRoute: typeof InzeratyRoute
 }
 
@@ -56,6 +86,27 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/aukce': {
+      id: '/aukce'
+      path: '/aukce'
+      fullPath: '/aukce'
+      preLoaderRoute: typeof AukceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cenik': {
+      id: '/cenik'
+      path: '/cenik'
+      fullPath: '/cenik'
+      preLoaderRoute: typeof CenikRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/inzeraty': {
@@ -70,6 +121,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AukceRoute: AukceRoute,
+  CenikRoute: CenikRoute,
+  DashboardRoute: DashboardRoute,
   InzeratyRoute: InzeratyRoute,
 }
 export const routeTree = rootRouteImport
