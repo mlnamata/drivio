@@ -7,8 +7,14 @@ export const CONSENT_VERSION = "2026-09-v1";
 export const CONSENT_TEXT =
   "Souhlasím se zpracováním osobních údajů a jejich předáním vybraným finančním partnerům (Essox, Home Credit, Cofidis) za účelem zpracování nabídky financování.";
 
+export const LEASING_CONSENT_TEXT =
+  "Souhlasím se zpracováním osobních údajů a jejich předáním leasingové společnosti, která nabídku operativního leasingu poskytuje, za účelem přípravy nabídky.";
+
 export const leadSchema = z.object({
-  kind: z.enum(["financing", "dealer_contact"]),
+  kind: z.enum(["financing", "dealer_contact", "leasing"]),
+  offerId: z.string().max(80).optional(),
+  kmPerYear: z.number().int().min(5000).max(100000).optional(),
+  business: z.boolean().optional(),
   vehicleId: z.string().optional(),
   name: z.string().trim().min(2, "Vyplňte jméno").max(120),
   email: z.string().trim().email("Neplatný e-mail"),
@@ -34,7 +40,12 @@ export const submitLead = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const record = {
       ...data,
-      consent_text: data.kind === "financing" ? CONSENT_TEXT : null,
+      consent_text:
+        data.kind === "financing"
+          ? CONSENT_TEXT
+          : data.kind === "leasing"
+            ? LEASING_CONSENT_TEXT
+            : null,
       consent_version: CONSENT_VERSION,
       consent_at: new Date().toISOString(),
       consent_ip: getRequestIP({ xForwardedFor: true }) ?? null,
@@ -61,6 +72,9 @@ export const submitLead = createServerFn({ method: "POST" })
           message: record.message ?? null,
           requested_amount: record.amount ?? null,
           requested_months: record.months ?? null,
+          requested_km_year: record.kmPerYear ?? null,
+          offer_ref: record.offerId ?? null,
+          is_business: record.business ?? false,
           consent_text: record.consent_text,
           consent_version: record.consent_version,
           consent_at: record.consent_at,

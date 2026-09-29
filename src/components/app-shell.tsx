@@ -2,7 +2,7 @@ import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import type { LucideIcon } from "lucide-react";
 import { ExternalLink, Menu, X } from "lucide-react";
 import { useState, type ReactNode } from "react";
-import { LogoMark } from "@/components/logo";
+import { LogoFlat } from "@/components/logo";
 import { cn } from "@/lib/utils";
 
 export type NavItem = { to: string; label: string; icon: LucideIcon; badge?: string | number };
@@ -25,10 +25,9 @@ export function AppShell({
   const sidebar = (
     <div className="flex h-full flex-col">
       <Link to="/" className="flex items-center gap-2.5 px-5 py-5">
-        <LogoMark className="text-sidebar-primary" />
         <div className="leading-tight">
-          <p className="font-display text-base font-extrabold text-white">drivio</p>
-          <p className="text-[11px] text-sidebar-foreground/60">{subtitle}</p>
+          <LogoFlat className="text-[1.45rem]" />
+          <p className="mt-1 text-[11px] text-sidebar-foreground/60">{subtitle}</p>
         </div>
       </Link>
       <nav className="flex-1 space-y-6 overflow-y-auto px-3 py-2">

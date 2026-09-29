@@ -1,9 +1,17 @@
 import { Link } from "@tanstack/react-router";
-import { Fuel, Gauge, Heart, MapPin, Settings2 } from "lucide-react";
+import { Fuel, Gauge, Heart, MapPin, Settings2, ShieldCheck } from "lucide-react";
 import { CarImage } from "@/components/car-image";
 import { useFavorites } from "@/hooks/use-favorites";
 import { fuels, gearboxes, labelOf } from "@/lib/catalog";
-import { czk, dealerById, monthlyPayment, num, vehicleTitle, type Vehicle } from "@/lib/mock-data";
+import {
+  czk,
+  sellerOf,
+  monthlyPayment,
+  num,
+  priceRating,
+  vehicleTitle,
+  type Vehicle,
+} from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 
 export function FavoriteButton({ id, className }: { id: string; className?: string }) {
@@ -41,7 +49,7 @@ export function VehicleCard({
   vehicle: Vehicle;
   layout?: "grid" | "list";
 }) {
-  const dealer = dealerById(vehicle.dealerId);
+  const dealer = sellerOf(vehicle);
   const title = vehicleTitle(vehicle);
   const isNew = vehicle.listedDays <= 7;
 
@@ -65,7 +73,12 @@ export function VehicleCard({
           alt={title}
           className="transition-transform duration-500 group-hover:scale-[1.04]"
         />
-        <div className="absolute left-3 top-3 flex gap-1.5">
+        <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
+          {vehicle.top ? (
+            <span className="rounded-full bg-foreground px-2.5 py-1 text-[11px] font-bold text-background">
+              TOP
+            </span>
+          ) : null}
           {isNew ? (
             <span className="rounded-full bg-primary px-2.5 py-1 text-[11px] font-semibold text-primary-foreground">
               Nové
@@ -80,7 +93,17 @@ export function VehicleCard({
         <FavoriteButton id={vehicle.id} className="absolute right-3 top-3" />
       </div>
       <div className="flex flex-1 flex-col p-4">
-        <h3 className="truncate text-base font-semibold">{title}</h3>
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="truncate text-base font-semibold">{title}</h3>
+          {vehicle.cebiaVerified ? (
+            <span
+              title="Historie ověřena Cebia"
+              className="inline-flex shrink-0 items-center gap-1 rounded-full bg-success/12 px-2 py-0.5 text-[10px] font-bold text-success"
+            >
+              <ShieldCheck className="h-3 w-3" /> Cebia
+            </span>
+          ) : null}
+        </div>
         <p className="truncate text-sm text-muted-foreground">
           {vehicle.year} · {vehicle.trim}
         </p>
@@ -99,12 +122,48 @@ export function VehicleCard({
           </span>
         </div>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">
-          <p className="font-display text-xl font-extrabold">{czk(vehicle.price)}</p>
+          <div>
+            <p className="font-display text-xl font-extrabold">{czk(vehicle.price)}</p>
+            <PriceRatingBadge vehicle={vehicle} />
+          </div>
           <p className="whitespace-nowrap rounded-full bg-accent px-2.5 py-1 text-xs font-semibold text-accent-foreground">
             od {czk(monthlyPayment(vehicle.price))}/měs.
           </p>
         </div>
       </div>
     </Link>
+  );
+}
+
+const ratingTone = {
+  great: "text-success",
+  good: "text-success",
+  fair: "text-muted-foreground",
+  high: "text-[oklch(0.55_0.14_60)]",
+} as const;
+
+export function PriceRatingBadge({ vehicle, className }: { vehicle: Vehicle; className?: string }) {
+  const r = priceRating(vehicle);
+  return (
+    <p
+      className={cn(
+        "flex items-center gap-1 text-[11px] font-semibold",
+        ratingTone[r.tone],
+        className,
+      )}
+    >
+      <span className="flex gap-0.5" aria-hidden>
+        {[0, 1, 2, 3].map((i) => (
+          <span
+            key={i}
+            className={cn(
+              "h-1.5 w-2.5 rounded-full",
+              i < { great: 4, good: 3, fair: 2, high: 1 }[r.tone] ? "bg-current" : "bg-border",
+            )}
+          />
+        ))}
+      </span>
+      {r.label}
+    </p>
   );
 }

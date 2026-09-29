@@ -14,12 +14,15 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as CenikRouteImport } from './routes/cenik'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as FinancovaniRouteImport } from './routes/financovani'
+import { Route as HlidaciPesRouteImport } from './routes/hlidaci-pes'
 import { Route as InzeratyRouteImport } from './routes/inzeraty'
 import { Route as KontaktRouteImport } from './routes/kontakt'
 import { Route as OblibeneRouteImport } from './routes/oblibene'
 import { Route as PrihlaseniRouteImport } from './routes/prihlaseni'
 import { Route as ProAutobazaryRouteImport } from './routes/pro-autobazary'
 import { Route as ProLeasingoveSpolecnostiRouteImport } from './routes/pro-leasingove-spolecnosti'
+import { Route as ProdatAutoRouteImport } from './routes/prodat-auto'
+import { Route as ReklamaRouteImport } from './routes/reklama'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminAukceRouteImport } from './routes/admin/aukce'
 import { Route as AdminAutobazaryRouteImport } from './routes/admin/autobazary'
@@ -39,6 +42,8 @@ import { Route as DashboardPredplatneRouteImport } from './routes/dashboard/pred
 import { Route as DashboardPridatRouteImport } from './routes/dashboard/pridat'
 import { Route as DashboardVozyRouteImport } from './routes/dashboard/vozy'
 import { Route as InzeratIdRouteImport } from './routes/inzerat.$id'
+import { Route as LeasingIndexRouteImport } from './routes/leasing/index'
+import { Route as LeasingIdRouteImport } from './routes/leasing/$id'
 import { Route as PravniCookiesRouteImport } from './routes/pravni/cookies'
 import { Route as PravniObchodniPodminkyRouteImport } from './routes/pravni/obchodni-podminky'
 import { Route as PravniOchranaOsobnichUdajuRouteImport } from './routes/pravni/ochrana-osobnich-udaju'
@@ -67,6 +72,11 @@ const DashboardRoute = DashboardRouteImport.update({
 const FinancovaniRoute = FinancovaniRouteImport.update({
   id: '/financovani',
   path: '/financovani',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HlidaciPesRoute = HlidaciPesRouteImport.update({
+  id: '/hlidaci-pes',
+  path: '/hlidaci-pes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InzeratyRoute = InzeratyRouteImport.update({
@@ -100,6 +110,16 @@ const ProLeasingoveSpolecnostiRoute =
     path: '/pro-leasingove-spolecnosti',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ProdatAutoRoute = ProdatAutoRouteImport.update({
+  id: '/prodat-auto',
+  path: '/prodat-auto',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReklamaRoute = ReklamaRouteImport.update({
+  id: '/reklama',
+  path: '/reklama',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -195,6 +215,16 @@ const InzeratIdRoute = InzeratIdRouteImport.update({
   path: '/inzerat/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LeasingIndexRoute = LeasingIndexRouteImport.update({
+  id: '/leasing/',
+  path: '/leasing/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LeasingIdRoute = LeasingIdRouteImport.update({
+  id: '/leasing/$id',
+  path: '/leasing/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PravniCookiesRoute = PravniCookiesRouteImport.update({
   id: '/pravni/cookies',
   path: '/pravni/cookies',
@@ -223,12 +253,15 @@ export interface FileRoutesByFullPath {
   '/cenik': typeof CenikRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/financovani': typeof FinancovaniRoute
+  '/hlidaci-pes': typeof HlidaciPesRoute
   '/inzeraty': typeof InzeratyRoute
   '/kontakt': typeof KontaktRoute
   '/oblibene': typeof OblibeneRoute
   '/prihlaseni': typeof PrihlaseniRoute
   '/pro-autobazary': typeof ProAutobazaryRoute
   '/pro-leasingove-spolecnosti': typeof ProLeasingoveSpolecnostiRoute
+  '/prodat-auto': typeof ProdatAutoRoute
+  '/reklama': typeof ReklamaRoute
   '/admin/aukce': typeof AdminAukceRoute
   '/admin/autobazary': typeof AdminAutobazaryRoute
   '/admin/automatizace': typeof AdminAutomatizaceRoute
@@ -245,24 +278,29 @@ export interface FileRoutesByFullPath {
   '/dashboard/pridat': typeof DashboardPridatRoute
   '/dashboard/vozy': typeof DashboardVozyRoute
   '/inzerat/$id': typeof InzeratIdRoute
+  '/leasing/$id': typeof LeasingIdRoute
   '/pravni/cookies': typeof PravniCookiesRoute
   '/pravni/obchodni-podminky': typeof PravniObchodniPodminkyRoute
   '/pravni/ochrana-osobnich-udaju': typeof PravniOchranaOsobnichUdajuRoute
   '/admin/': typeof AdminIndexRoute
   '/aukce/': typeof AukceIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/leasing/': typeof LeasingIndexRoute
   '/api/webhooks/fakturoid': typeof ApiWebhooksFakturoidRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cenik': typeof CenikRoute
   '/financovani': typeof FinancovaniRoute
+  '/hlidaci-pes': typeof HlidaciPesRoute
   '/inzeraty': typeof InzeratyRoute
   '/kontakt': typeof KontaktRoute
   '/oblibene': typeof OblibeneRoute
   '/prihlaseni': typeof PrihlaseniRoute
   '/pro-autobazary': typeof ProAutobazaryRoute
   '/pro-leasingove-spolecnosti': typeof ProLeasingoveSpolecnostiRoute
+  '/prodat-auto': typeof ProdatAutoRoute
+  '/reklama': typeof ReklamaRoute
   '/admin/aukce': typeof AdminAukceRoute
   '/admin/autobazary': typeof AdminAutobazaryRoute
   '/admin/automatizace': typeof AdminAutomatizaceRoute
@@ -279,12 +317,14 @@ export interface FileRoutesByTo {
   '/dashboard/pridat': typeof DashboardPridatRoute
   '/dashboard/vozy': typeof DashboardVozyRoute
   '/inzerat/$id': typeof InzeratIdRoute
+  '/leasing/$id': typeof LeasingIdRoute
   '/pravni/cookies': typeof PravniCookiesRoute
   '/pravni/obchodni-podminky': typeof PravniObchodniPodminkyRoute
   '/pravni/ochrana-osobnich-udaju': typeof PravniOchranaOsobnichUdajuRoute
   '/admin': typeof AdminIndexRoute
   '/aukce': typeof AukceIndexRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/leasing': typeof LeasingIndexRoute
   '/api/webhooks/fakturoid': typeof ApiWebhooksFakturoidRoute
 }
 export interface FileRoutesById {
@@ -294,12 +334,15 @@ export interface FileRoutesById {
   '/cenik': typeof CenikRoute
   '/dashboard': typeof DashboardRouteWithChildren
   '/financovani': typeof FinancovaniRoute
+  '/hlidaci-pes': typeof HlidaciPesRoute
   '/inzeraty': typeof InzeratyRoute
   '/kontakt': typeof KontaktRoute
   '/oblibene': typeof OblibeneRoute
   '/prihlaseni': typeof PrihlaseniRoute
   '/pro-autobazary': typeof ProAutobazaryRoute
   '/pro-leasingove-spolecnosti': typeof ProLeasingoveSpolecnostiRoute
+  '/prodat-auto': typeof ProdatAutoRoute
+  '/reklama': typeof ReklamaRoute
   '/admin/aukce': typeof AdminAukceRoute
   '/admin/autobazary': typeof AdminAutobazaryRoute
   '/admin/automatizace': typeof AdminAutomatizaceRoute
@@ -316,12 +359,14 @@ export interface FileRoutesById {
   '/dashboard/pridat': typeof DashboardPridatRoute
   '/dashboard/vozy': typeof DashboardVozyRoute
   '/inzerat/$id': typeof InzeratIdRoute
+  '/leasing/$id': typeof LeasingIdRoute
   '/pravni/cookies': typeof PravniCookiesRoute
   '/pravni/obchodni-podminky': typeof PravniObchodniPodminkyRoute
   '/pravni/ochrana-osobnich-udaju': typeof PravniOchranaOsobnichUdajuRoute
   '/admin/': typeof AdminIndexRoute
   '/aukce/': typeof AukceIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/leasing/': typeof LeasingIndexRoute
   '/api/webhooks/fakturoid': typeof ApiWebhooksFakturoidRoute
 }
 export interface FileRouteTypes {
@@ -332,12 +377,15 @@ export interface FileRouteTypes {
     | '/cenik'
     | '/dashboard'
     | '/financovani'
+    | '/hlidaci-pes'
     | '/inzeraty'
     | '/kontakt'
     | '/oblibene'
     | '/prihlaseni'
     | '/pro-autobazary'
     | '/pro-leasingove-spolecnosti'
+    | '/prodat-auto'
+    | '/reklama'
     | '/admin/aukce'
     | '/admin/autobazary'
     | '/admin/automatizace'
@@ -354,24 +402,29 @@ export interface FileRouteTypes {
     | '/dashboard/pridat'
     | '/dashboard/vozy'
     | '/inzerat/$id'
+    | '/leasing/$id'
     | '/pravni/cookies'
     | '/pravni/obchodni-podminky'
     | '/pravni/ochrana-osobnich-udaju'
     | '/admin/'
     | '/aukce/'
     | '/dashboard/'
+    | '/leasing/'
     | '/api/webhooks/fakturoid'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/cenik'
     | '/financovani'
+    | '/hlidaci-pes'
     | '/inzeraty'
     | '/kontakt'
     | '/oblibene'
     | '/prihlaseni'
     | '/pro-autobazary'
     | '/pro-leasingove-spolecnosti'
+    | '/prodat-auto'
+    | '/reklama'
     | '/admin/aukce'
     | '/admin/autobazary'
     | '/admin/automatizace'
@@ -388,12 +441,14 @@ export interface FileRouteTypes {
     | '/dashboard/pridat'
     | '/dashboard/vozy'
     | '/inzerat/$id'
+    | '/leasing/$id'
     | '/pravni/cookies'
     | '/pravni/obchodni-podminky'
     | '/pravni/ochrana-osobnich-udaju'
     | '/admin'
     | '/aukce'
     | '/dashboard'
+    | '/leasing'
     | '/api/webhooks/fakturoid'
   id:
     | '__root__'
@@ -402,12 +457,15 @@ export interface FileRouteTypes {
     | '/cenik'
     | '/dashboard'
     | '/financovani'
+    | '/hlidaci-pes'
     | '/inzeraty'
     | '/kontakt'
     | '/oblibene'
     | '/prihlaseni'
     | '/pro-autobazary'
     | '/pro-leasingove-spolecnosti'
+    | '/prodat-auto'
+    | '/reklama'
     | '/admin/aukce'
     | '/admin/autobazary'
     | '/admin/automatizace'
@@ -424,12 +482,14 @@ export interface FileRouteTypes {
     | '/dashboard/pridat'
     | '/dashboard/vozy'
     | '/inzerat/$id'
+    | '/leasing/$id'
     | '/pravni/cookies'
     | '/pravni/obchodni-podminky'
     | '/pravni/ochrana-osobnich-udaju'
     | '/admin/'
     | '/aukce/'
     | '/dashboard/'
+    | '/leasing/'
     | '/api/webhooks/fakturoid'
   fileRoutesById: FileRoutesById
 }
@@ -439,18 +499,23 @@ export interface RootRouteChildren {
   CenikRoute: typeof CenikRoute
   DashboardRoute: typeof DashboardRouteWithChildren
   FinancovaniRoute: typeof FinancovaniRoute
+  HlidaciPesRoute: typeof HlidaciPesRoute
   InzeratyRoute: typeof InzeratyRoute
   KontaktRoute: typeof KontaktRoute
   OblibeneRoute: typeof OblibeneRoute
   PrihlaseniRoute: typeof PrihlaseniRoute
   ProAutobazaryRoute: typeof ProAutobazaryRoute
   ProLeasingoveSpolecnostiRoute: typeof ProLeasingoveSpolecnostiRoute
+  ProdatAutoRoute: typeof ProdatAutoRoute
+  ReklamaRoute: typeof ReklamaRoute
   AukceIdRoute: typeof AukceIdRoute
   InzeratIdRoute: typeof InzeratIdRoute
+  LeasingIdRoute: typeof LeasingIdRoute
   PravniCookiesRoute: typeof PravniCookiesRoute
   PravniObchodniPodminkyRoute: typeof PravniObchodniPodminkyRoute
   PravniOchranaOsobnichUdajuRoute: typeof PravniOchranaOsobnichUdajuRoute
   AukceIndexRoute: typeof AukceIndexRoute
+  LeasingIndexRoute: typeof LeasingIndexRoute
   ApiWebhooksFakturoidRoute: typeof ApiWebhooksFakturoidRoute
 }
 
@@ -489,6 +554,13 @@ declare module '@tanstack/react-router' {
       path: '/financovani'
       fullPath: '/financovani'
       preLoaderRoute: typeof FinancovaniRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/hlidaci-pes': {
+      id: '/hlidaci-pes'
+      path: '/hlidaci-pes'
+      fullPath: '/hlidaci-pes'
+      preLoaderRoute: typeof HlidaciPesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/inzeraty': {
@@ -531,6 +603,20 @@ declare module '@tanstack/react-router' {
       path: '/pro-leasingove-spolecnosti'
       fullPath: '/pro-leasingove-spolecnosti'
       preLoaderRoute: typeof ProLeasingoveSpolecnostiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/prodat-auto': {
+      id: '/prodat-auto'
+      path: '/prodat-auto'
+      fullPath: '/prodat-auto'
+      preLoaderRoute: typeof ProdatAutoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reklama': {
+      id: '/reklama'
+      path: '/reklama'
+      fullPath: '/reklama'
+      preLoaderRoute: typeof ReklamaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -666,6 +752,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InzeratIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/leasing/': {
+      id: '/leasing/'
+      path: '/leasing'
+      fullPath: '/leasing/'
+      preLoaderRoute: typeof LeasingIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/leasing/$id': {
+      id: '/leasing/$id'
+      path: '/leasing/$id'
+      fullPath: '/leasing/$id'
+      preLoaderRoute: typeof LeasingIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pravni/cookies': {
       id: '/pravni/cookies'
       path: '/pravni/cookies'
@@ -753,18 +853,23 @@ const rootRouteChildren: RootRouteChildren = {
   CenikRoute: CenikRoute,
   DashboardRoute: DashboardRouteWithChildren,
   FinancovaniRoute: FinancovaniRoute,
+  HlidaciPesRoute: HlidaciPesRoute,
   InzeratyRoute: InzeratyRoute,
   KontaktRoute: KontaktRoute,
   OblibeneRoute: OblibeneRoute,
   PrihlaseniRoute: PrihlaseniRoute,
   ProAutobazaryRoute: ProAutobazaryRoute,
   ProLeasingoveSpolecnostiRoute: ProLeasingoveSpolecnostiRoute,
+  ProdatAutoRoute: ProdatAutoRoute,
+  ReklamaRoute: ReklamaRoute,
   AukceIdRoute: AukceIdRoute,
   InzeratIdRoute: InzeratIdRoute,
+  LeasingIdRoute: LeasingIdRoute,
   PravniCookiesRoute: PravniCookiesRoute,
   PravniObchodniPodminkyRoute: PravniObchodniPodminkyRoute,
   PravniOchranaOsobnichUdajuRoute: PravniOchranaOsobnichUdajuRoute,
   AukceIndexRoute: AukceIndexRoute,
+  LeasingIndexRoute: LeasingIndexRoute,
   ApiWebhooksFakturoidRoute: ApiWebhooksFakturoidRoute,
 }
 export const routeTree = rootRouteImport

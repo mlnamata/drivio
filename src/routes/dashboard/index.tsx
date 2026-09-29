@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import { btn, PageHeader, Stat } from "@/components/app-shell";
 import { CURRENT_DEALER, dealerBilling, leadsSample } from "@/lib/billing";
+import { store, useAllVehicles } from "@/lib/store";
 import { czk, vehicleTitle } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/dashboard/")({ component: Overview });
@@ -27,7 +28,7 @@ const views = [
 ];
 
 function Overview() {
-  const b = dealerBilling(CURRENT_DEALER);
+  const b = dealerBilling(CURRENT_DEALER, useAllVehicles());
   const stale = b.lines.filter((l) => l.stale);
   return (
     <>
@@ -54,11 +55,12 @@ function Overview() {
           </p>
           <button
             className={btn.primary}
-            onClick={() =>
-              toast.success("Vůz odeslán do aukce", {
-                description: "Aukce začne zítra v 18:00 a potrvá 7 dní.",
-              })
-            }
+            onClick={() => {
+              store.sendToAuction(l.vehicle.id);
+              toast.success("Vůz je v aukci od 1 Kč", {
+                description: "Aukce běží 7 dní, progrese za tento měsíc je odpuštěna.",
+              });
+            }}
           >
             <Gavel className="h-4 w-4" /> Přesunout do aukce
           </button>

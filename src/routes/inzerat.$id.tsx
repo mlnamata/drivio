@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   BadgeCheck,
   CalendarDays,
@@ -17,10 +17,11 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { BrandLogo } from "@/components/brand-logo";
+import { AdSlot } from "@/components/ad-slot";
 import { CarImage } from "@/components/car-image";
 import { FinanceCalculator } from "@/components/finance-calculator";
 import { Breadcrumbs, Container, Page } from "@/components/site-shell";
-import { FavoriteButton, VehicleCard } from "@/components/vehicle-card";
+import { FavoriteButton, PriceRatingBadge, VehicleCard } from "@/components/vehicle-card";
 import {
   bodyTypes,
   brandBySlug,
@@ -34,24 +35,25 @@ import {
 import { submitLead } from "@/lib/leads";
 import {
   czk,
-  dealerById,
+  sellerOf,
   monthlyPayment,
   num,
   vehicleById,
-  vehicles,
   vehicleTitle,
+  type Vehicle,
 } from "@/lib/mock-data";
+import { useAllVehicles, useAuctions } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/inzerat/$id")({
-  loader: ({ params }) => {
-    const vehicle = vehicleById(params.id);
-    if (!vehicle) throw notFound();
-    return { vehicle };
-  },
+  // Vůz přidaný v administraci (ukázkový režim) existuje jen v prohlížeči – dohledá se na klientu.
+  loader: ({ params }) => ({ vehicle: vehicleById(params.id) ?? null }),
   head: ({ loaderData }) => {
     const v = loaderData?.vehicle;
-    if (!v) return { meta: [{ title: "Inzerát nenalezen | Drivio" }] };
+    if (!v)
+      return {
+        meta: [{ title: "Inzerát | Drivio" }, { name: "robots", content: "noindex" }],
+      };
     const t = `${vehicleTitle(v)} ${v.trim}, ${v.year}, ${num(v.km)} km – ${czk(v.price)}`;
     return {
       meta: [
@@ -62,7 +64,11 @@ export const Route = createFileRoute("/inzerat/$id")({
       ],
     };
   },
-  notFoundComponent: () => (
+  component: Detail,
+});
+
+function NotFoundView() {
+  return (
     <Page>
       <Container className="py-24 text-center">
         <h1 className="text-3xl font-bold">Inzerát už není k dispozici</h1>
@@ -75,19 +81,30 @@ export const Route = createFileRoute("/inzerat/$id")({
         </Link>
       </Container>
     </Page>
-  ),
-  component: Detail,
-});
+  );
+}
 
 function Detail() {
-  const { vehicle: v } = Route.useLoaderData();
-  const dealer = dealerById(v.dealerId);
+  const { id } = Route.useParams();
+  const { vehicle: fromLoader } = Route.useLoaderData();
+  const all = useAllVehicles();
+  const v = all.find((x) => x.id === id) ?? fromLoader;
+  if (!v) return <NotFoundView />;
+  return <DetailView v={v} all={all} />;
+}
+
+function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
+  const auctions = useAuctions();
+  const auction = auctions.find((a) => a.vehicleId === v.id);
+  const dealer = sellerOf(v);
   const brand = brandBySlug(v.brand);
   const title = vehicleTitle(v);
   const [photo, setPhoto] = useState(0);
   const [showPhone, setShowPhone] = useState(false);
-  const similar = vehicles
-    .filter((x) => x.id !== v.id && (x.body === v.body || x.brand === v.brand))
+  const similar = all
+    .filter(
+      (x) => x.id !== v.id && x.status === "active" && (x.body === v.body || x.brand === v.brand),
+    )
     .slice(0, 4);
 
   const params: [typeof Gauge, string, string][] = [
@@ -122,6 +139,24 @@ function Detail() {
           ]}
         />
 
+        {v.status !== "active" ? (
+          <div className="mb-5 flex flex-col gap-3 rounded-2xl border border-primary/40 bg-accent p-4 text-sm text-accent-foreground sm:flex-row sm:items-center sm:justify-between">
+            <p className="font-semibold">
+              {v.status === "sold"
+                ? "Tento vůz je již prodaný."
+                : "Tento vůz se právě draží v aukci od 1 Kč."}
+            </p>
+            {v.status === "in_auction" && auction ? (
+              <Link
+                to="/aukce/$id"
+                params={{ id: auction.id }}
+                className="rounded-full bg-primary px-4 py-2 text-center font-semibold text-primary-foreground"
+              >
+                Přejít do aukce
+              </Link>
+            ) : null}
+          </div>
+        ) : null}
         <div className="grid gap-8 lg:grid-cols-[1fr_380px]">
           <div className="min-w-0">
             {/* Galerie */}
@@ -219,27 +254,53 @@ function Detail() {
               <p className="leading-relaxed text-foreground/85">{v.description}</p>
             </section>
 
-            <section className="mt-8 surface-card flex flex-col gap-4 p-6 sm:flex-row sm:items-center">
-              <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-success/15 text-success">
-                <ShieldCheck className="h-6 w-6" />
-              </span>
-              <div className="flex-1">
-                <p className="font-semibold">VIN prověřen</p>
-                <p className="text-sm text-muted-foreground">
-                  Vůz není evidován v databázi odcizených vozidel. Parametry odpovídají dekódovanému
-                  VIN.
-                </p>
+            <section className="mt-8 surface-card p-6">
+              <div className="flex items-center gap-3">
+                <span
+                  className={cn(
+                    "inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl",
+                    v.cebiaVerified
+                      ? "bg-success/15 text-success"
+                      : "bg-muted text-muted-foreground",
+                  )}
+                >
+                  <ShieldCheck className="h-6 w-6" />
+                </span>
+                <div>
+                  <p className="font-semibold">
+                    {v.cebiaVerified ? "Historie ověřena Cebia" : "Prověřte si historii vozu"}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {v.cebiaVerified
+                      ? "Prodejce nechal vůz prověřit v 5 základních parametrech."
+                      : "Prodejce zatím ověření nedoložil. Report můžete objednat sami."}
+                  </p>
+                </div>
               </div>
-              <button
-                onClick={() =>
-                  toast("Kompletní historie vozu", {
-                    description: "Report Cebia / carVertical bude dostupný po napojení API.",
-                  })
-                }
-                className="rounded-full border border-border px-4 py-2 text-sm font-semibold hover:border-primary/40"
-              >
-                Historie vozu
-              </button>
+              {v.cebiaVerified ? (
+                <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+                  {[
+                    "VIN odpovídá vozu",
+                    "Rok výroby ověřen",
+                    "Není evidován jako odcizený",
+                    "Bez aktivního financování",
+                    "Stav tachometru bez podezření",
+                  ].map((t) => (
+                    <li key={t} className="flex items-center gap-2 text-sm">
+                      <Check className="h-4 w-4 text-success" /> {t}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <a
+                  href={`https://www.cebia.cz/?vin=${v.vin}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-4 inline-flex rounded-full border border-border px-4 py-2 text-sm font-semibold hover:border-primary/40"
+                >
+                  Prověřit VIN {v.vin} u Cebia
+                </a>
+              )}
             </section>
           </div>
 
@@ -256,18 +317,25 @@ function Detail() {
                 </span>
                 <div>
                   <p className="flex items-center gap-1 font-semibold">
-                    {dealer.name} <BadgeCheck className="h-4 w-4 text-primary" />
+                    {dealer.name}{" "}
+                    {dealer.isDealer ? <BadgeCheck className="h-4 w-4 text-primary" /> : null}
                   </p>
-                  <p className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Star className="h-3.5 w-3.5 fill-warning text-warning" />{" "}
-                    {dealer.rating.toLocaleString("cs-CZ")} ({dealer.reviews} hodnocení) · od{" "}
-                    {dealer.since}
-                  </p>
+                  {dealer.isDealer && dealer.rating ? (
+                    <p className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Star className="h-3.5 w-3.5 fill-warning text-warning" />{" "}
+                      {dealer.rating.toLocaleString("cs-CZ")} ({dealer.reviews} hodnocení) · od{" "}
+                      {dealer.since}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">Soukromý prodejce</p>
+                  )}
                 </div>
               </div>
               <p className="mt-3 flex items-center gap-1.5 text-sm text-muted-foreground">
-                <MapPin className="h-4 w-4" /> {dealer.city},{" "}
-                {dealer.region === "Praha" ? "Praha" : `${dealer.region} kraj`}
+                <MapPin className="h-4 w-4" /> {dealer.city}
+                {dealer.region
+                  ? `, ${dealer.region === "Praha" ? "Praha" : `${dealer.region} kraj`}`
+                  : ""}
               </p>
               <button
                 onClick={() => setShowPhone(true)}
@@ -279,6 +347,17 @@ function Detail() {
             </div>
 
             <FinanceCalculator price={v.price} vehicleId={v.id} />
+            <Link
+              to="/leasing"
+              className="surface-card flex items-center justify-between gap-3 p-5 hover:border-primary/40"
+            >
+              <span>
+                <span className="block font-semibold">Raději nové auto na operativní leasing?</span>
+                <span className="text-sm text-muted-foreground">Vše v ceně, bez akontace.</span>
+              </span>
+              <span className="text-sm font-semibold text-primary">Nabídky →</span>
+            </Link>
+            <AdSlot format="rectangle" />
           </aside>
         </div>
 
@@ -307,6 +386,7 @@ function Detail() {
           </div>
         </div>
         <p className="mt-4 font-display text-3xl font-extrabold">{czk(v.price)}</p>
+        <PriceRatingBadge vehicle={v} className="mt-1 text-xs" />
         <p className="text-sm text-muted-foreground">
           {v.vatDeductible ? `${czk(Math.round(v.price / 1.21))} bez DPH · ` : ""}
           nebo{" "}

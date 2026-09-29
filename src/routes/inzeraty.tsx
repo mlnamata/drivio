@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { BellRing, LayoutGrid, List, SlidersHorizontal, X } from "lucide-react";
-import { useMemo } from "react";
-import { toast } from "sonner";
+import { LayoutGrid, List, SlidersHorizontal, X } from "lucide-react";
+import { Fragment, useMemo } from "react";
+import { AdSlot } from "@/components/ad-slot";
 import { ListingFilters } from "@/components/listing-filters";
 import { Breadcrumbs, Container, Page } from "@/components/site-shell";
 import { VehicleCard } from "@/components/vehicle-card";
@@ -16,7 +16,7 @@ import {
   gearboxes,
   labelOf,
 } from "@/lib/catalog";
-import { dealerById, num } from "@/lib/mock-data";
+import { sellerOf, num } from "@/lib/mock-data";
 import {
   cleanSearch,
   filterVehicles,
@@ -24,7 +24,9 @@ import {
   PAGE_SIZE,
   type ListingSearch,
 } from "@/lib/search";
+import { useVehicles } from "@/lib/store";
 import { cn } from "@/lib/utils";
+import { WatchdogDialog } from "@/components/watchdog-dialog";
 
 export const Route = createFileRoute("/inzeraty")({
   validateSearch: (s) => listingSearchSchema.parse(s),
@@ -109,6 +111,24 @@ function activeChips(
     out.push({ key: "af", label: "Nehavarované", patch: { accidentFree: undefined } });
   if (s.serviceBook)
     out.push({ key: "sb", label: "Servisní knížka", patch: { serviceBook: undefined } });
+  if (s.seller)
+    out.push({
+      key: "sl",
+      label: s.seller === "dealer" ? "Autobazar" : "Soukromý prodejce",
+      patch: { seller: undefined },
+    });
+  if (s.cebia) out.push({ key: "cb", label: "Ověřeno Cebia", patch: { cebia: undefined } });
+  if (s.priceRating)
+    out.push({ key: "pr", label: "Výhodná cena", patch: { priceRating: undefined } });
+  if (s.origin)
+    out.push({
+      key: "or",
+      label: s.origin === "cz" ? "Původ ČR" : "Dovoz",
+      patch: { origin: undefined },
+    });
+  if (s.doors) out.push({ key: "dr", label: `${s.doors} dveří`, patch: { doors: undefined } });
+  if (s.seatsFrom)
+    out.push({ key: "st", label: `od ${s.seatsFrom} míst`, patch: { seatsFrom: undefined } });
   return out;
 }
 
@@ -125,7 +145,11 @@ function Listings() {
     });
   const reset = () => void navigate({ search: { category: search.category }, replace: true });
 
-  const all = useMemo(() => filterVehicles(search, (v) => dealerById(v.dealerId).region), [search]);
+  const source = useVehicles();
+  const all = useMemo(
+    () => filterVehicles(source, search, (v) => sellerOf(v).region),
+    [source, search],
+  );
   const page = search.page ?? 1;
   const pages = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
   const list = all.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
@@ -164,9 +188,8 @@ function Listings() {
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[290px_1fr]">
           <aside className="hidden lg:block">
-            <div className="surface-card sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto px-5 py-4">
-              {filters}
-            </div>
+            <div className="surface-card px-5 py-4">{filters}</div>
+            <AdSlot format="rectangle" className="mt-5" />
           </aside>
 
           <div>
@@ -196,16 +219,7 @@ function Listings() {
                 ))}
               </select>
               <div className="ml-auto flex items-center gap-2">
-                <button
-                  onClick={() =>
-                    toast.success("Hlídací pes nastaven", {
-                      description: "Nové vozy podle filtru vám pošleme e-mailem.",
-                    })
-                  }
-                  className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold hover:border-primary/40"
-                >
-                  <BellRing className="h-4 w-4 text-primary" /> Hlídat
-                </button>
+                <WatchdogDialog search={search} />
                 <div className="flex rounded-full border border-border bg-card p-1">
                   {(["grid", "list"] as const).map((v) => (
                     <button
@@ -262,8 +276,11 @@ function Listings() {
                   view === "grid" ? "sm:grid-cols-2 xl:grid-cols-3" : "grid-cols-1",
                 )}
               >
-                {list.map((v) => (
-                  <VehicleCard key={v.id} vehicle={v} layout={view} />
+                {list.map((v, i) => (
+                  <Fragment key={v.id}>
+                    <VehicleCard vehicle={v} layout={view} />
+                    {i === 5 ? <AdSlot format="infeed" /> : null}
+                  </Fragment>
                 ))}
               </div>
             )}

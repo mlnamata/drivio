@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Drivio design system — světlý "glass" vzhled, kobaltový akcent, zákaznický portál.
+ * Drivio design system — světlý "glass" vzhled, černá + oranžová podle loga, zákaznický portál.
  * All colors are oklch tokens. Never hardcode colors in components.
  */
 
@@ -57,54 +57,55 @@
   --color-auction: var(--auction);
   --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-logo: "Exo 2", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
   --radius: 0.875rem;
-  /* Světlý, čistý základ – jedna akcentní barva (kobalt), žádné duhové přechody */
-  --background: oklch(0.975 0.004 255);
-  --foreground: oklch(0.2 0.03 262);
+  /* Světlý, čistý základ – značkové barvy z loga: grafitová černá + oranžová */
+  --background: oklch(0.976 0.004 75);
+  --foreground: oklch(0.21 0.004 60);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2 0.03 262);
+  --card-foreground: oklch(0.21 0.004 60);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2 0.03 262);
-  --primary: oklch(0.52 0.2 262);
+  --popover-foreground: oklch(0.21 0.004 60);
+  --primary: oklch(0.665 0.185 45);
   --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.945 0.008 255);
-  --secondary-foreground: oklch(0.25 0.03 262);
-  --muted: oklch(0.955 0.006 255);
-  --muted-foreground: oklch(0.5 0.02 260);
-  --accent: oklch(0.94 0.03 262);
-  --accent-foreground: oklch(0.35 0.15 262);
+  --secondary: oklch(0.945 0.006 70);
+  --secondary-foreground: oklch(0.25 0.005 60);
+  --muted: oklch(0.955 0.005 70);
+  --muted-foreground: oklch(0.5 0.01 60);
+  --accent: oklch(0.955 0.035 60);
+  --accent-foreground: oklch(0.47 0.15 42);
   --destructive: oklch(0.58 0.21 25);
   --destructive-foreground: oklch(0.99 0 0);
   --success: oklch(0.6 0.14 155);
   --success-foreground: oklch(0.99 0 0);
   --warning: oklch(0.72 0.16 60);
   --warning-foreground: oklch(0.2 0.04 60);
-  --auction: oklch(0.64 0.19 35);
-  --border: oklch(0.91 0.008 255);
-  --input: oklch(0.89 0.01 255);
-  --ring: oklch(0.52 0.2 262);
-  --chart-1: oklch(0.52 0.2 262);
+  --auction: oklch(0.6 0.21 25);
+  --border: oklch(0.91 0.006 70);
+  --input: oklch(0.88 0.008 70);
+  --ring: oklch(0.665 0.185 45);
+  --chart-1: oklch(0.665 0.185 45);
   --chart-2: oklch(0.6 0.14 155);
-  --chart-3: oklch(0.64 0.19 35);
-  --chart-4: oklch(0.7 0.1 220);
+  --chart-3: oklch(0.32 0.005 60);
+  --chart-4: oklch(0.8 0.12 65);
   --chart-5: oklch(0.72 0.16 60);
-  --sidebar: oklch(0.2 0.03 262);
-  --sidebar-foreground: oklch(0.92 0.01 255);
-  --sidebar-primary: oklch(0.7 0.15 262);
+  --sidebar: oklch(0.19 0.004 60);
+  --sidebar-foreground: oklch(0.92 0.005 70);
+  --sidebar-primary: oklch(0.72 0.17 50);
   --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.27 0.035 262);
+  --sidebar-accent: oklch(0.27 0.005 60);
   --sidebar-accent-foreground: oklch(0.99 0 0);
-  --sidebar-border: oklch(0.3 0.03 262);
-  --sidebar-ring: oklch(0.7 0.15 262);
+  --sidebar-border: oklch(0.3 0.005 60);
+  --sidebar-ring: oklch(0.72 0.17 50);
 
   --glass-bg: oklch(1 0 0 / 0.62);
   --glass-border: oklch(1 0 0 / 0.75);
-  --glass-shadow: 0 1px 0 oklch(1 0 0 / 0.8) inset, 0 20px 50px -24px oklch(0.25 0.06 262 / 0.35);
-  --shadow-card: 0 1px 2px oklch(0.2 0.03 262 / 0.05), 0 12px 32px -18px oklch(0.2 0.03 262 / 0.22);
-  --shadow-lift: 0 2px 4px oklch(0.2 0.03 262 / 0.06), 0 24px 48px -20px oklch(0.2 0.03 262 / 0.3);
+  --glass-shadow: 0 1px 0 oklch(1 0 0 / 0.8) inset, 0 20px 50px -24px oklch(0.2 0.01 60 / 0.3);
+  --shadow-card: 0 1px 2px oklch(0.2 0.005 60 / 0.05), 0 12px 32px -18px oklch(0.2 0.005 60 / 0.2);
+  --shadow-lift: 0 2px 4px oklch(0.2 0.005 60 / 0.06), 0 24px 48px -20px oklch(0.2 0.005 60 / 0.28);
 }
 
 @layer base {
@@ -145,7 +146,7 @@
 }
 
 @utility glass-dark {
-  background-color: oklch(0.2 0.03 262 / 0.55);
+  background-color: oklch(0.18 0.004 60 / 0.55);
   border: 1px solid oklch(1 0 0 / 0.14);
   backdrop-filter: blur(16px) saturate(140%);
   -webkit-backdrop-filter: blur(16px) saturate(140%);
@@ -161,12 +162,12 @@
   }
 }
 
-/* Jemné pozadí stránky – jednobarevné kobaltové odlesky, žádná duha */
+/* Jemné pozadí stránky – decentní oranžové odlesky, žádná duha */
 @utility bg-ambient {
   background-color: var(--background);
   background-image:
-    radial-gradient(60rem 30rem at 85% -10%, oklch(0.52 0.2 262 / 0.09), transparent 60%),
-    radial-gradient(40rem 24rem at -10% 10%, oklch(0.52 0.2 262 / 0.06), transparent 60%);
+    radial-gradient(60rem 30rem at 85% -10%, oklch(0.7 0.17 50 / 0.08), transparent 60%),
+    radial-gradient(40rem 24rem at -10% 10%, oklch(0.7 0.17 50 / 0.05), transparent 60%);
 }
 
 @utility field {
@@ -182,6 +183,6 @@
     box-shadow 0.15s;
   &:focus {
     border-color: var(--ring);
-    box-shadow: 0 0 0 3px oklch(0.52 0.2 262 / 0.15);
+    box-shadow: 0 0 0 3px oklch(0.665 0.185 45 / 0.18);
   }
 }

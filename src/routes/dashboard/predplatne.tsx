@@ -3,13 +3,14 @@ import { toast } from "sonner";
 import { PageHeader } from "@/components/app-shell";
 import { SlotCalculator } from "@/components/pricing";
 import { CURRENT_DEALER, dealerBilling } from "@/lib/billing";
+import { useAllVehicles } from "@/lib/store";
 import { czk, num, plans } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/dashboard/predplatne")({ component: Subscription });
 
 function Subscription() {
-  const b = dealerBilling(CURRENT_DEALER);
+  const b = dealerBilling(CURRENT_DEALER, useAllVehicles());
   return (
     <>
       <PageHeader

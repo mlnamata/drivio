@@ -5,15 +5,22 @@ Projekt je napojený na [Lovable](https://lovable.dev/projects/8a75518a-56e0-427
 
 ## Struktura webu
 
-| Pro zákazníky (hlavička) | Pro klienty (patička) | Administrace |
-| --- | --- | --- |
-| `/` úvod s rychlým hledáním, značkami a karoseriemi | `/pro-autobazary`, `/cenik` | `/dashboard` – autobazar (vozy, přidání přes VIN, aukce, poptávky, faktury, předplatné, nastavení) |
-| `/inzeraty` – výpis s kompletními filtry v URL | `/pro-leasingove-spolecnosti` | `/admin` – správa portálu (autobazary, moderace, aukce, leady, fakturace, pg_cron, nastavení) |
-| `/inzerat/:id` – detail, kalkulačka splátek, kontakt | `/pravni/*` – VOP, GDPR, cookies | `/api/webhooks/fakturoid` – webhook úhrad (HMAC + idempotence) |
-| `/aukce`, `/aukce/:id` – živé aukce od 1 Kč | `/kontakt` | |
-| `/financovani`, `/oblibene`, `/prihlaseni` | | |
+Logo: `public/brand/drivio-logo-original.png` (originál), `drivio-logo.webp` (průhledné, pro světlá pozadí),
+plochá verze pro tmavé plochy je komponenta `LogoFlat`. Barvy: grafitová `#1f1e1d` + oranžová `#ea7930`.
 
-Bez nastaveného Supabase běží web nad ukázkovými daty (`src/lib/mock-data.ts`).
+| Zákazníci (hlavička) | Klienti a partneři (patička) | Administrace |
+| --- | --- | --- |
+| `/` – vyhledávání ve stylu sauto.cz, značky, karoserie, TOP nabídky | `/pro-autobazary`, `/cenik` | `/dashboard` – autobazar: vozy, přidání přes VIN, aukce, poptávky, faktury, předplatné |
+| `/inzeraty` – filtry v URL (vč. Cebia, hodnocení ceny, prodejce, původ, dveře/místa), hlídací pes, reklama ve výpisu | `/pro-leasingove-spolecnosti` | `/admin` – správa portálu: autobazary, moderace, aukce, leady, fakturace, pg_cron |
+| `/inzerat/:id` – detail, Cebia, hodnocení ceny, kontakt, kalkulačka splátek | `/reklama` – formáty a ceník pro inzerenty | `/api/webhooks/fakturoid` – webhook úhrad (HMAC + idempotence) |
+| `/leasing`, `/leasing/:id` – operativní leasing (styl Driveto), konfigurátor, poptávka | `/pravni/*`, `/kontakt` | |
+| `/aukce`, `/aukce/:id` – dražby od 1 Kč, registrace dražitele, auto-příhoz, anti-sniping | | |
+| `/prodat-auto` – soukromá osoba: 1 inzerát zdarma na účet | | |
+| `/financovani`, `/hlidaci-pes`, `/oblibene`, `/prihlaseni` | | |
+
+**Ukázkový režim:** bez nastaveného Supabase běží web nad daty v `src/lib/mock-data.ts` a akce
+(přidání vozu, prodej, aukce, příhozy, hlídací pes, změna ceny) se ukládají do `localStorage`
+(`src/lib/store.ts`), takže je vše proklikatelné a navzájem propojené.
 
 ## Spuštění do produkce
 
@@ -22,9 +29,13 @@ Bez nastaveného Supabase běží web nad ukázkovými daty (`src/lib/mock-data.
 3. Nasadit Edge Function `supabase functions deploy billing-processor`.
 4. Proměnné prostředí:
    - web: `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`
+   - reklama (volitelné): `VITE_ADSENSE_CLIENT`, `VITE_ADSENSE_SLOT_LEADERBOARD`, `VITE_ADSENSE_SLOT_RECTANGLE`,
+     `VITE_ADSENSE_SLOT_INFEED` – bez nich se na plochách zobrazuje nabídka „Zde může být vaše reklama“
    - server: `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `FAKTUROID_WEBHOOK_SECRET`
    - Edge Function: `RESEND_API_KEY`, `FAKTUROID_ACCESS_TOKEN`, `FAKTUROID_SLUG`
 5. Resend: nastavit SPF, DKIM a DMARC pro doménu drivio.cz.
+   Migrace je otestovaná na PostgreSQL 16: kapacita slotů, limit 1 soukromého inzerátu, RLS izolace
+   autobazarů a 40 souběžných příhozů (přijat právě jeden, stav aukce konzistentní).
 6. Doplnit IČO a údaje provozovatele v `src/routes/pravni/*` a nechat texty zkontrolovat advokátem.
 
 Loga značek v `public/brands` pochází z [filippofilip95/car-logos-dataset](https://github.com/filippofilip95/car-logos-dataset) a slouží pouze k označení značky vozu.

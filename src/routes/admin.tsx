@@ -10,7 +10,8 @@ import {
   Users,
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
-import { auctions, dealers, vehicles } from "@/lib/mock-data";
+import { dealers } from "@/lib/mock-data";
+import { useAllVehicles, useAuctions } from "@/lib/store";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -20,6 +21,8 @@ export const Route = createFileRoute("/admin")({
 });
 
 function AdminLayout() {
+  const vehicles = useAllVehicles();
+  const auctions = useAuctions().filter((a) => !a.ended);
   return (
     <AppShell
       title="Správa portálu"

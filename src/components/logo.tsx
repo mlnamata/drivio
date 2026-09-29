@@ -1,45 +1,55 @@
 import { cn } from "@/lib/utils";
 
 /**
- * Značka Drivio: písmeno „D", jehož dřík je přerušovaná dělicí čára silnice –
- * pohyb, cesta, rychlý prodej. Jednobarevné, funguje i v 16 px.
+ * Oficiální logo Drivio (3D wordmark, černá + oranžová) – pro světlá pozadí.
+ * Zdroj: public/brand/drivio-logo-original.png, průhledná verze drivio-logo.webp.
  */
-export function LogoMark({ className }: { className?: string }) {
+export function Logo({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 32 32" aria-hidden className={cn("h-8 w-8 text-primary", className)}>
-      <rect width="32" height="32" rx="9" fill="currentColor" />
-      <path
-        d="M11 8.5h5a7.5 7.5 0 0 1 0 15h-5"
-        fill="none"
-        stroke="white"
-        strokeWidth="3.2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M11 8.5v15"
-        fill="none"
-        stroke="white"
-        strokeWidth="3.2"
-        strokeLinecap="round"
-        strokeDasharray="3.4 4.4"
-      />
-    </svg>
+    <img
+      src="/brand/drivio-logo.webp"
+      alt="Drivio"
+      width={633}
+      height={160}
+      className={cn("h-8 w-auto select-none", className)}
+      draggable={false}
+    />
   );
 }
 
-export function Logo({ className, light }: { className?: string; light?: boolean }) {
+/** Plochá verze wordmarku pro tmavá pozadí (administrace). */
+export function LogoFlat({ className }: { className?: string }) {
   return (
-    <span className={cn("inline-flex items-center gap-2", className)}>
-      <LogoMark />
-      <span
-        className={cn(
-          "font-display text-[1.35rem] font-extrabold lowercase tracking-[-0.04em]",
-          light ? "text-white" : "text-foreground",
-        )}
-      >
-        drivio
-      </span>
+    <span
+      className={cn(
+        "font-logo inline-flex items-baseline text-[1.6rem] font-black uppercase italic leading-none tracking-[-0.03em]",
+        className,
+      )}
+      aria-label="Drivio"
+    >
+      <span className="text-white">DRıVı</span>
+      <span className="text-primary">O</span>
     </span>
+  );
+}
+
+/** Symbol – oranžové „O" z loga. Favicon a malé plochy. */
+export function LogoMark({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 32 32" aria-hidden className={cn("h-8 w-8", className)}>
+      <rect width="32" height="32" rx="8" fill="#1f1e1d" />
+      <g transform="translate(16 16) skewX(-14)">
+        <rect
+          x="-10"
+          y="-8"
+          width="20"
+          height="16"
+          rx="8"
+          fill="none"
+          stroke="#ea7930"
+          strokeWidth="4.2"
+        />
+      </g>
+    </svg>
   );
 }

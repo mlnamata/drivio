@@ -30,7 +30,7 @@ export function monthlyPayment(principal: number, months = DEFAULT_MONTHS, rate 
 const u = (id: string) =>
   `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=1200&q=70`;
 
-const photoPool = [
+export const photoPool = [
   u("1503376780353-7e6692767b70"),
   u("1552519507-da3b142c6e3d"),
   u("1541899481282-d53bffe3c35d"),
@@ -158,7 +158,42 @@ export type Vehicle = {
   firstOwner: boolean;
   accidentFree: boolean;
   description: string;
+  doors: number;
+  seats: number;
+  /** "cz" = původem z ČR, "import" = dovoz. */
+  origin: "cz" | "import";
+  /** Historie ověřena (Cebia: VIN, rok, odcizení, financování, tachometr). */
+  cebiaVerified: boolean;
+  /** Topovaný inzerát (placené zvýraznění). */
+  top: boolean;
+  status: "active" | "in_auction" | "sold";
+  /** Soukromý prodejce (dealerId === "private"). */
+  privateSeller?: { name: string; city: string; region: string; phone: string };
 };
+
+export const PRIVATE_SELLER = "private";
+
+export type Seller = {
+  name: string;
+  city: string;
+  region: string;
+  phone: string;
+  email?: string;
+  isDealer: boolean;
+  rating?: number;
+  reviews?: number;
+  since?: number;
+};
+
+/** Prodejce vozu – autobazar nebo soukromá osoba. */
+export function sellerOf(v: Vehicle): Seller {
+  if (v.dealerId === PRIVATE_SELLER || !dealers.some((d) => d.id === v.dealerId)) {
+    const p = v.privateSeller ?? { name: "Soukromý prodejce", city: "", region: "", phone: "" };
+    return { ...p, isDealer: false };
+  }
+  const d = dealerById(v.dealerId);
+  return { ...d, isDealer: true };
+}
 
 type Seed = [
   string,
@@ -655,6 +690,9 @@ const fakeVin = (seed: string) => {
   return out;
 };
 
+const inAuction = new Set(["opel-astra-13", "audi-a4-16", "fiat-panda-11", "vw-passat-16"]);
+const soldInAuction = new Set(["ford-fiesta-12"]);
+
 export const vehicles: Vehicle[] = seeds.map((s, i) => {
   const [
     id,
@@ -708,12 +746,39 @@ export const vehicles: Vehicle[] = seeds.map((s, i) => {
     firstOwner: i % 4 === 1,
     accidentFree: i % 5 !== 3,
     description: descriptions[i % descriptions.length]!,
+    doors: body === "kupe" || body === "kabriolet" ? 3 : body === "dodavka" ? 4 : 5,
+    seats: body === "mpv" ? 7 : body === "dodavka" ? 3 : 5,
+    origin: i % 3 === 1 ? "import" : "cz",
+    cebiaVerified: i % 3 !== 0,
+    top: i % 7 === 2,
+    status: soldInAuction.has(id) ? "sold" : inAuction.has(id) ? "in_auction" : "active",
   };
 });
 
 export const vehicleById = (id: string) => vehicles.find((v) => v.id === id);
 export const vehicleTitle = (v: Vehicle) => `${brandBySlug(v.brand)?.name ?? v.brand} ${v.model}`;
 export const monthOfListing = (v: Vehicle) => Math.floor(v.listedDays / 30) + 1;
+
+/**
+ * Hodnocení ceny (jako „hodnocení ceny" na sauto.cz) – porovnání s odhadem tržní ceny
+ * podle stáří, nájezdu a výkonu. Po napojení dat nahradit mediánem podobných inzerátů.
+ */
+export function priceRating(v: Vehicle): {
+  label: string;
+  tone: "great" | "good" | "fair" | "high";
+} {
+  const age = Math.max(0, 2026 - v.year);
+  const expected =
+    800_000 *
+    Math.pow(0.92, age) *
+    Math.max(0.4, 1 - v.km / 700_000) *
+    (Math.max(v.powerKw || 80, 40) / 110);
+  const r = v.price / expected;
+  if (r < 0.85) return { label: "Výhodná cena", tone: "great" };
+  if (r < 1.05) return { label: "Dobrá cena", tone: "good" };
+  if (r < 1.3) return { label: "Férová cena", tone: "fair" };
+  return { label: "Vyšší cena", tone: "high" };
+}
 
 /* ---------------------------------------------------------------- pricing */
 
@@ -780,6 +845,8 @@ export type Auction = {
   endsInMinutes: number;
   minIncrement: number;
   buyerFeeRate: number;
+  /** Minimální (rezervní) cena; pod ní se vůz neprodá. */
+  reservePrice?: number;
 };
 
 export const auctions: Auction[] = [
@@ -824,6 +891,18 @@ export const auctions: Auction[] = [
     buyerFeeRate: 0.04,
   },
 ];
+
+/** Ukončené aukce (historie výsledků). endsInMinutes < 0 = skončila. */
+auctions.push({
+  id: "a-ford-fiesta",
+  vehicleId: "ford-fiesta-12",
+  startPrice: 1,
+  currentBid: 41500,
+  bids: 88,
+  endsInMinutes: -2 * 24 * 60,
+  minIncrement: 500,
+  buyerFeeRate: 0.05,
+});
 
 export const auctionById = (id: string) => auctions.find((a) => a.id === id);
 

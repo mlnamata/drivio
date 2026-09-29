@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
 import { CURRENT_DEALER, dealerBilling, leadsSample } from "@/lib/billing";
+import { useAllVehicles } from "@/lib/store";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -20,7 +21,7 @@ export const Route = createFileRoute("/dashboard")({
 });
 
 function DealerLayout() {
-  const b = dealerBilling(CURRENT_DEALER);
+  const b = dealerBilling(CURRENT_DEALER, useAllVehicles());
   return (
     <AppShell
       title={b.dealer.name}

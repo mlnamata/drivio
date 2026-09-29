@@ -8,7 +8,7 @@ create extension if not exists pg_net;
 create type public.member_role as enum ('owner', 'admin', 'seller');
 create type public.vehicle_status as enum ('draft', 'active', 'in_auction', 'sold', 'archived');
 create type public.auction_status as enum ('scheduled', 'live', 'ended', 'cancelled');
-create type public.lead_kind as enum ('financing', 'dealer_contact');
+create type public.lead_kind as enum ('financing', 'dealer_contact', 'leasing');
 create type public.lead_status as enum ('new', 'sent', 'replied', 'approved', 'rejected', 'funded', 'anonymized');
 create type public.invoice_status as enum ('draft', 'issued', 'paid', 'overdue', 'cancelled');
 
@@ -89,7 +89,14 @@ create unique index tenant_subscriptions_one_active
 -- ---------------------------------------------------------------- vozy
 create table public.vehicles (
   id uuid primary key default gen_random_uuid(),
-  tenant_id uuid not null references public.tenants (id) on delete cascade,
+  -- autobazar (tenant) NEBO soukromá osoba (owner_user_id)
+  tenant_id uuid references public.tenants (id) on delete cascade,
+  owner_user_id uuid references public.users (id) on delete cascade,
+  seller_name text,
+  seller_phone text,
+  seller_city text,
+  seller_region text,
+  paid_until timestamptz,                     -- placený další soukromý inzerát
   subscription_id uuid references public.tenant_subscriptions (id),
   status public.vehicle_status not null default 'draft',
   vin char(17) not null check (vin ~ '^[A-HJ-NPR-Z0-9]{17}$'),
@@ -118,9 +125,16 @@ create table public.vehicles (
   listed_at timestamptz,                      -- začátek počítání progrese
   sold_at timestamptz,
   sold_price integer,
+  cebia_verified boolean not null default false,
+  is_top boolean not null default false,
+  doors smallint,
+  seats smallint,
+  origin text check (origin in ('cz', 'import')),
   created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
+  updated_at timestamptz not null default now(),
+  check ((tenant_id is not null) <> (owner_user_id is not null))
 );
+create index vehicles_owner on public.vehicles (owner_user_id) where owner_user_id is not null;
 create index vehicles_search on public.vehicles (status, brand, model, price);
 create index vehicles_tenant on public.vehicles (tenant_id, status);
 create index vehicles_listed on public.vehicles (listed_at) where status = 'active';
@@ -130,7 +144,18 @@ create or replace function public.enforce_slot_capacity()
 returns trigger language plpgsql as $$
 declare v_slots int; v_used int;
 begin
-  if new.status = 'active' and (tg_op = 'INSERT' or old.status is distinct from 'active') then
+  if new.status = 'active' and (tg_op = 'INSERT' or old.status is distinct from 'active')
+     and new.tenant_id is null then
+    -- Soukromá osoba: 1 aktivní inzerát zdarma na účet, další jen placený.
+    select count(*) into v_used from public.vehicles
+     where owner_user_id = new.owner_user_id and tenant_id is null
+       and status in ('active', 'in_auction') and id <> new.id
+       and (paid_until is null or paid_until < now());
+    if v_used >= 1 and (new.paid_until is null or new.paid_until < now()) then
+      raise exception 'Soukromá osoba může mít zdarma 1 aktivní inzerát';
+    end if;
+    new.listed_at := coalesce(new.listed_at, now());
+  elsif new.status = 'active' and (tg_op = 'INSERT' or old.status is distinct from 'active') then
     select p.slots into v_slots
       from public.tenant_subscriptions s join public.subscription_plans p on p.id = s.plan_id
      where s.tenant_id = new.tenant_id and s.ends_at is null;
@@ -254,6 +279,9 @@ create table public.leads (
   message text,
   requested_amount integer,
   requested_months smallint,
+  requested_km_year integer,                  -- operativní leasing: roční nájezd
+  offer_ref text,                             -- id nabídky leasingu
+  is_business boolean not null default false,
   partner text,                               -- 'essox' | 'homecredit' | 'cofidis'
   partner_reference text,
   partner_response jsonb,
@@ -266,7 +294,7 @@ create table public.leads (
   user_agent text,
   marketing_consent boolean not null default false,
   created_at timestamptz not null default now(),
-  check (kind <> 'financing' or consent_text is not null)
+  check (kind = 'dealer_contact' or consent_text is not null)
 );
 create index leads_tenant on public.leads (tenant_id, created_at desc);
 
@@ -332,6 +360,50 @@ create table public.favorites (
   primary key (user_id, vehicle_id)
 );
 
+-- ---------------------------------------------------------------- operativní leasing
+create table public.leasing_partners (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  ico char(8) unique,
+  leads_endpoint text,                        -- kam posíláme poptávky (HMAC podepsané)
+  active boolean not null default true,
+  created_at timestamptz not null default now()
+);
+
+create table public.leasing_offers (
+  id uuid primary key default gen_random_uuid(),
+  partner_id uuid not null references public.leasing_partners (id) on delete cascade,
+  external_id text,                           -- ID nabídky v systému partnera (API import)
+  brand text not null,
+  model text not null,
+  trim text,
+  body text,
+  fuel text,
+  gearbox text,
+  power_kw smallint,
+  condition text not null default 'nove' check (condition in ('nove', 'ojete')),
+  base_monthly integer not null check (base_monthly > 0),   -- vč. DPH, 48 měs., 20 000 km/rok
+  price_matrix jsonb,                         -- volitelně přesné ceny {"36":{"15000":9990,...}}
+  in_stock boolean not null default false,
+  delivery_days smallint,
+  photos text[] not null default '{}',
+  active boolean not null default true,
+  updated_at timestamptz not null default now(),
+  unique (partner_id, external_id)
+);
+create index leasing_offers_active on public.leasing_offers (active, brand, base_monthly);
+
+-- ---------------------------------------------------------------- hlídací pes
+create table public.saved_searches (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid references public.users (id) on delete cascade,
+  email text not null,
+  name text not null,
+  criteria jsonb not null,
+  last_notified_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
 -- =====================================================================
 -- Row Level Security
 -- =====================================================================
@@ -347,6 +419,9 @@ alter table public.leads enable row level security;
 alter table public.invoices enable row level security;
 alter table public.webhook_events enable row level security;  -- bez politik = jen service role
 alter table public.favorites enable row level security;
+alter table public.leasing_partners enable row level security;
+alter table public.leasing_offers enable row level security;
+alter table public.saved_searches enable row level security;
 
 create policy users_self on public.users for all
   using (id = (select auth.uid()) or (select public.is_platform_admin()))
@@ -366,14 +441,18 @@ create policy subs_member_read on public.tenant_subscriptions for select
 
 -- Inzeráty: veřejně jen aktivní/aukce; autobazar spravuje jen své.
 create policy vehicles_public_read on public.vehicles for select
-  using (status in ('active', 'in_auction') or tenant_id in (select public.my_tenant_ids()) or (select public.is_platform_admin()));
+  using (status in ('active', 'in_auction') or tenant_id in (select public.my_tenant_ids())
+         or owner_user_id = (select auth.uid()) or (select public.is_platform_admin()));
 create policy vehicles_member_write on public.vehicles for insert
-  with check (tenant_id in (select public.my_tenant_ids()));
+  with check (tenant_id in (select public.my_tenant_ids())
+              or (tenant_id is null and owner_user_id = (select auth.uid())));
 create policy vehicles_member_update on public.vehicles for update
-  using (tenant_id in (select public.my_tenant_ids()) or (select public.is_platform_admin()))
-  with check (tenant_id in (select public.my_tenant_ids()) or (select public.is_platform_admin()));
+  using (tenant_id in (select public.my_tenant_ids()) or owner_user_id = (select auth.uid())
+         or (select public.is_platform_admin()))
+  with check (tenant_id in (select public.my_tenant_ids()) or owner_user_id = (select auth.uid())
+              or (select public.is_platform_admin()));
 create policy vehicles_member_delete on public.vehicles for delete
-  using (tenant_id in (select public.my_tenant_ids()));
+  using (tenant_id in (select public.my_tenant_ids()) or owner_user_id = (select auth.uid()));
 
 create policy auctions_public_read on public.auctions for select using (true);
 create policy auctions_member_insert on public.auctions for insert
@@ -391,6 +470,13 @@ create policy invoices_member_read on public.invoices for select
   using (tenant_id in (select public.my_tenant_ids()) or (select public.is_platform_admin()));
 
 create policy favorites_own on public.favorites for all
+  using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
+
+-- Nabídky leasingu jsou veřejné; zápis jen service role (API import partnerů).
+create policy leasing_partners_public_read on public.leasing_partners for select using (active);
+create policy leasing_offers_public_read on public.leasing_offers for select using (active);
+
+create policy saved_searches_own on public.saved_searches for all
   using (user_id = (select auth.uid())) with check (user_id = (select auth.uid()));
 
 -- Realtime pro živé aukce

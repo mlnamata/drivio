@@ -2,11 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { DataTable, PageHeader, StatusBadge } from "@/components/app-shell";
 import { dealerBilling } from "@/lib/billing";
+import { useAllVehicles } from "@/lib/store";
 import { czk, dealers } from "@/lib/mock-data";
 
 export const Route = createFileRoute("/admin/autobazary")({ component: Tenants });
 
 function Tenants() {
+  const vehicles = useAllVehicles();
   return (
     <>
       <PageHeader
@@ -17,7 +19,7 @@ function Tenants() {
         head={["Autobazar", "Lokalita", "Balíček", "Sloty", "Odhad faktury", "Hodnocení", ""]}
       >
         {dealers.map((d) => {
-          const b = dealerBilling(d.id);
+          const b = dealerBilling(d.id, vehicles);
           return (
             <tr key={d.id}>
               <td>

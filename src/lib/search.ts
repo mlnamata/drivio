@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { vehicles, type Vehicle } from "./mock-data";
+import { priceRating, type Vehicle } from "./mock-data";
 
 const csv = z
   .union([z.array(z.string()), z.string()])
@@ -29,6 +29,12 @@ export const listingSearchSchema = z.object({
   vat: z.coerce.boolean().optional().catch(undefined),
   accidentFree: z.coerce.boolean().optional().catch(undefined),
   serviceBook: z.coerce.boolean().optional().catch(undefined),
+  cebia: z.coerce.boolean().optional().catch(undefined),
+  origin: z.enum(["cz", "import"]).optional().catch(undefined),
+  doors: z.coerce.number().optional().catch(undefined),
+  seatsFrom: z.coerce.number().optional().catch(undefined),
+  priceRating: z.coerce.boolean().optional().catch(undefined),
+  seller: z.enum(["dealer", "private"]).optional().catch(undefined),
   sort: z
     .enum(["newest", "price-asc", "price-desc", "km-asc", "year-desc"])
     .optional()
@@ -41,9 +47,13 @@ export type ListingSearch = z.infer<typeof listingSearchSchema>;
 
 export const PAGE_SIZE = 12;
 
-export function filterVehicles(s: ListingSearch, dealerRegion: (v: Vehicle) => string): Vehicle[] {
+export function filterVehicles(
+  source: Vehicle[],
+  s: ListingSearch,
+  dealerRegion: (v: Vehicle) => string,
+): Vehicle[] {
   const q = s.q?.trim().toLowerCase();
-  const list = vehicles.filter((v) => {
+  const list = source.filter((v) => {
     if (s.category && v.category !== s.category) return false;
     if (s.brand && v.brand !== s.brand) return false;
     if (s.model && v.model !== s.model) return false;
@@ -63,6 +73,13 @@ export function filterVehicles(s: ListingSearch, dealerRegion: (v: Vehicle) => s
     if (s.vat && !v.vatDeductible) return false;
     if (s.accidentFree && !v.accidentFree) return false;
     if (s.serviceBook && !v.serviceBook) return false;
+    if (s.cebia && !v.cebiaVerified) return false;
+    if (s.seller === "private" && v.dealerId !== "private") return false;
+    if (s.seller === "dealer" && v.dealerId === "private") return false;
+    if (s.origin && v.origin !== s.origin) return false;
+    if (s.doors && v.doors !== s.doors) return false;
+    if (s.seatsFrom && v.seats < s.seatsFrom) return false;
+    if (s.priceRating && !["great", "good"].includes(priceRating(v).tone)) return false;
     if (q && !`${v.brand} ${v.model} ${v.trim}`.toLowerCase().includes(q)) return false;
     return true;
   });
@@ -74,7 +91,9 @@ export function filterVehicles(s: ListingSearch, dealerRegion: (v: Vehicle) => s
     "km-asc": (a, b) => a.km - b.km,
     "year-desc": (a, b) => b.year - a.year,
   };
-  return list.sort(sorters[s.sort ?? "newest"]);
+  const sorted = list.sort(sorters[s.sort ?? "newest"]);
+  // Topované inzeráty jsou při výchozím řazení nahoře (jako na sauto.cz).
+  return s.sort ? sorted : [...sorted.filter((v) => v.top), ...sorted.filter((v) => !v.top)];
 }
 
 /** Odstraní prázdné hodnoty, aby URL zůstala čistá. */

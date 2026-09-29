@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { PageHeader, Stat } from "@/components/app-shell";
-import { auctions, czk, dealers, planById, vehicles } from "@/lib/mock-data";
+import { czk, dealers, planById } from "@/lib/mock-data";
+import { useAuctions, useVehicles } from "@/lib/store";
 
 export const Route = createFileRoute("/admin/")({ component: AdminOverview });
 
@@ -15,6 +16,8 @@ const revenue = [
 ];
 
 function AdminOverview() {
+  const vehicles = useVehicles();
+  const auctions = useAuctions().filter((a) => !a.ended);
   const mrr = dealers.reduce((s, d) => s + planById(d.plan).price, 0);
   return (
     <>

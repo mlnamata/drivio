@@ -19,13 +19,15 @@ export type SlotLine = {
 };
 
 /** Stejná logika jako Edge Function `billing-processor` (supabase/functions). */
-export function dealerBilling(dealerId: string) {
+export function dealerBilling(dealerId: string, source: Vehicle[] = vehicles) {
   const dealer = dealerById(dealerId);
   const plan = planById(dealer.plan);
-  const mine = vehicles.filter((v) => v.dealerId === dealerId);
+  // Sloty zabírají aktivní vozy a vozy v aukci (v aukci se neúčtuje progrese).
+  const mine = source.filter((v) => v.dealerId === dealerId && v.status !== "sold");
   const lines: SlotLine[] = mine.map((v) => {
     const month = monthOfListing(v);
-    const progression = Math.round(plan.perSlot * (surchargeFactor(month) - 1));
+    const inAuction = v.status === "in_auction";
+    const progression = inAuction ? 0 : Math.round(plan.perSlot * (surchargeFactor(month) - 1));
     const surcharge = slotSurcharge(plan, v.price);
     return {
       vehicle: v,
@@ -34,7 +36,7 @@ export function dealerBilling(dealerId: string) {
       progression,
       surcharge,
       total: plan.perSlot + progression + surcharge,
-      stale: month >= 4,
+      stale: !inAuction && month >= 4,
     };
   });
   const extras = lines.reduce((s, l) => s + l.progression + l.surcharge, 0);

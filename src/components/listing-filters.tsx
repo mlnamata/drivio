@@ -336,7 +336,49 @@ export function ListingFilters({ value: s, onChange, onReset }: Props) {
         ))}
       </Group>
 
+      <Group title="Prodejce">
+        <div className="flex flex-wrap gap-1.5">
+          {(
+            [
+              [undefined, "Všichni"],
+              ["dealer", "Autobazar"],
+              ["private", "Soukromý"],
+            ] as const
+          ).map(([v, l]) => (
+            <Chip key={l} active={s.seller === v} onClick={() => onChange({ seller: v })}>
+              {l}
+            </Chip>
+          ))}
+        </div>
+      </Group>
+
+      <Group title="Ověření a cena">
+        <Check
+          checked={!!s.cebia}
+          onChange={() => onChange({ cebia: !s.cebia || undefined })}
+          label="Ověřená historie (Cebia)"
+        />
+        <Check
+          checked={!!s.priceRating}
+          onChange={() => onChange({ priceRating: !s.priceRating || undefined })}
+          label="Jen výhodná a dobrá cena"
+        />
+      </Group>
+
       <Group title="Stav a historie" defaultOpen={false}>
+        <div className="mb-2 flex flex-wrap gap-1.5">
+          {(
+            [
+              [undefined, "Vše"],
+              ["cz", "Původ ČR"],
+              ["import", "Dovoz"],
+            ] as const
+          ).map(([v, l]) => (
+            <Chip key={l} active={s.origin === v} onClick={() => onChange({ origin: v })}>
+              {l}
+            </Chip>
+          ))}
+        </div>
         <Check
           checked={!!s.accidentFree}
           onChange={() => onChange({ accidentFree: !s.accidentFree || undefined })}
@@ -347,6 +389,31 @@ export function ListingFilters({ value: s, onChange, onReset }: Props) {
           onChange={() => onChange({ serviceBook: !s.serviceBook || undefined })}
           label="Servisní knížka"
         />
+      </Group>
+
+      <Group title="Dveře a místa" defaultOpen={false}>
+        <div className="flex flex-wrap gap-1.5">
+          {[3, 4, 5].map((d) => (
+            <Chip
+              key={d}
+              active={s.doors === d}
+              onClick={() => onChange({ doors: s.doors === d ? undefined : d })}
+            >
+              {d} dveře
+            </Chip>
+          ))}
+        </div>
+        <div className="mt-2 flex flex-wrap gap-1.5">
+          {[2, 5, 7].map((n) => (
+            <Chip
+              key={n}
+              active={s.seatsFrom === n}
+              onClick={() => onChange({ seatsFrom: s.seatsFrom === n ? undefined : n })}
+            >
+              od {n} míst
+            </Chip>
+          ))}
+        </div>
       </Group>
 
       <Group title="Lokalita" defaultOpen={false}>

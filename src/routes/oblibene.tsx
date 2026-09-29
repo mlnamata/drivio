@@ -3,7 +3,7 @@ import { Heart } from "lucide-react";
 import { Breadcrumbs, Container, Page } from "@/components/site-shell";
 import { VehicleCard } from "@/components/vehicle-card";
 import { useFavorites } from "@/hooks/use-favorites";
-import { vehicles } from "@/lib/mock-data";
+import { useAllVehicles } from "@/lib/store";
 
 export const Route = createFileRoute("/oblibene")({
   head: () => ({
@@ -14,6 +14,7 @@ export const Route = createFileRoute("/oblibene")({
 
 function Favorites() {
   const { ids } = useFavorites();
+  const vehicles = useAllVehicles();
   const list = vehicles.filter((v) => ids.includes(v.id));
   return (
     <Page>
