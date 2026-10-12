@@ -5,7 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Drivio design system — světlý "glass" vzhled, černá + oranžová podle loga, zákaznický portál.
+ * Drivio design system — čistý vzhled inzertního portálu, grafit + oranžová podle loga.
+ * Světlý vzhled je v :root, tmavý ve třídě .dark na <html> (přepíná src/lib/theme.ts).
  * All colors are oklch tokens. Never hardcode colors in components.
  */
 
@@ -55,57 +56,114 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-auction: var(--auction);
+  --color-logo-plate: var(--logo-plate);
   --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-logo: "Exo 2", ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
-  --radius: 1rem;
-  /* Světlý, čistý základ – značkové barvy z loga: grafitová černá + oranžová */
-  --background: oklch(0.976 0.004 75);
-  --foreground: oklch(0.21 0.004 60);
+  --radius: 0.625rem;
+  /* Čistý neutrální základ (styl inzertních portálů), značkové barvy z loga: grafit + oranžová */
+  --background: oklch(0.972 0.003 250);
+  --foreground: oklch(0.2 0.012 260);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.21 0.004 60);
+  --card-foreground: oklch(0.2 0.012 260);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.21 0.004 60);
-  --primary: oklch(0.665 0.185 45);
+  --popover-foreground: oklch(0.2 0.012 260);
+  --primary: oklch(0.645 0.19 44);
   --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.945 0.006 70);
-  --secondary-foreground: oklch(0.25 0.005 60);
-  --muted: oklch(0.955 0.005 70);
-  --muted-foreground: oklch(0.5 0.01 60);
-  --accent: oklch(0.955 0.035 60);
+  --secondary: oklch(0.955 0.004 250);
+  --secondary-foreground: oklch(0.25 0.012 260);
+  --muted: oklch(0.958 0.004 250);
+  --muted-foreground: oklch(0.49 0.014 260);
+  --accent: oklch(0.962 0.032 58);
   --accent-foreground: oklch(0.47 0.15 42);
   --destructive: oklch(0.58 0.21 25);
   --destructive-foreground: oklch(0.99 0 0);
-  --success: oklch(0.6 0.14 155);
+  --success: oklch(0.57 0.14 155);
   --success-foreground: oklch(0.99 0 0);
   --warning: oklch(0.72 0.16 60);
   --warning-foreground: oklch(0.2 0.04 60);
   --auction: oklch(0.6 0.21 25);
-  --border: oklch(0.91 0.006 70);
-  --input: oklch(0.88 0.008 70);
-  --ring: oklch(0.665 0.185 45);
-  --chart-1: oklch(0.665 0.185 45);
-  --chart-2: oklch(0.6 0.14 155);
-  --chart-3: oklch(0.32 0.005 60);
+  --border: oklch(0.912 0.005 255);
+  --input: oklch(0.87 0.007 255);
+  --ring: oklch(0.645 0.19 44);
+  --chart-1: oklch(0.645 0.19 44);
+  --chart-2: oklch(0.57 0.14 155);
+  --chart-3: oklch(0.32 0.012 260);
   --chart-4: oklch(0.8 0.12 65);
   --chart-5: oklch(0.72 0.16 60);
-  --sidebar: oklch(0.19 0.004 60);
-  --sidebar-foreground: oklch(0.92 0.005 70);
+  --sidebar: oklch(0.205 0.012 260);
+  --sidebar-foreground: oklch(0.92 0.005 255);
   --sidebar-primary: oklch(0.72 0.17 50);
   --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.27 0.005 60);
+  --sidebar-accent: oklch(0.28 0.012 260);
   --sidebar-accent-foreground: oklch(0.99 0 0);
-  --sidebar-border: oklch(0.3 0.005 60);
+  --sidebar-border: oklch(0.31 0.012 260);
   --sidebar-ring: oklch(0.72 0.17 50);
 
-  --glass-bg: oklch(1 0 0 / 0.62);
-  --glass-border: oklch(1 0 0 / 0.75);
-  --glass-shadow: 0 1px 0 oklch(1 0 0 / 0.8) inset, 0 20px 50px -24px oklch(0.2 0.01 60 / 0.3);
-  --shadow-card: 0 1px 2px oklch(0.2 0.005 60 / 0.05), 0 12px 32px -18px oklch(0.2 0.005 60 / 0.2);
-  --shadow-lift: 0 2px 4px oklch(0.2 0.005 60 / 0.06), 0 24px 48px -20px oklch(0.2 0.005 60 / 0.28);
+  /* Podklad pod loga značek – loga jsou kreslená pro světlé pozadí */
+  --logo-plate: oklch(1 0 0);
+
+  --glass-bg: oklch(1 0 0 / 0.86);
+  --glass-border: oklch(1 0 0 / 0.9);
+  --glass-shadow: 0 1px 2px oklch(0.2 0.01 260 / 0.12);
+  --shadow-card: 0 1px 2px oklch(0.2 0.01 260 / 0.05);
+  --shadow-lift: 0 1px 2px oklch(0.2 0.01 260 / 0.06), 0 14px 30px -16px oklch(0.2 0.01 260 / 0.28);
+
+  color-scheme: light;
+}
+
+/* Tmavý vzhled – stejný grafit a oranžová, jen obrácené plochy. Oranžová zůstává beze změny. */
+.dark {
+  --background: oklch(0.165 0.007 260);
+  --foreground: oklch(0.945 0.004 255);
+  --card: oklch(0.205 0.008 260);
+  --card-foreground: oklch(0.945 0.004 255);
+  --popover: oklch(0.225 0.009 260);
+  --popover-foreground: oklch(0.945 0.004 255);
+  --primary: oklch(0.645 0.19 44);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.255 0.008 260);
+  --secondary-foreground: oklch(0.93 0.004 255);
+  --muted: oklch(0.245 0.008 260);
+  --muted-foreground: oklch(0.71 0.012 260);
+  --accent: oklch(0.29 0.045 50);
+  --accent-foreground: oklch(0.82 0.11 60);
+  --destructive: oklch(0.63 0.2 25);
+  --destructive-foreground: oklch(0.99 0 0);
+  --success: oklch(0.64 0.15 155);
+  --success-foreground: oklch(0.99 0 0);
+  --warning: oklch(0.77 0.15 70);
+  --warning-foreground: oklch(0.2 0.04 60);
+  --auction: oklch(0.64 0.2 25);
+  --border: oklch(0.295 0.009 260);
+  --input: oklch(0.365 0.01 260);
+  --ring: oklch(0.645 0.19 44);
+  --chart-1: oklch(0.68 0.18 46);
+  --chart-2: oklch(0.66 0.15 155);
+  --chart-3: oklch(0.76 0.01 260);
+  --chart-4: oklch(0.8 0.12 65);
+  --chart-5: oklch(0.77 0.15 70);
+  --sidebar: oklch(0.215 0.009 260);
+  --sidebar-foreground: oklch(0.92 0.005 255);
+  --sidebar-primary: oklch(0.72 0.17 50);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.285 0.01 260);
+  --sidebar-accent-foreground: oklch(0.99 0 0);
+  --sidebar-border: oklch(0.31 0.01 260);
+  --sidebar-ring: oklch(0.72 0.17 50);
+
+  --logo-plate: oklch(0.95 0.003 255);
+
+  --glass-bg: oklch(0.205 0.008 260 / 0.86);
+  --glass-border: oklch(1 0 0 / 0.09);
+  --glass-shadow: 0 1px 2px oklch(0 0 0 / 0.4);
+  --shadow-card: 0 1px 2px oklch(0 0 0 / 0.3);
+  --shadow-lift: 0 1px 2px oklch(0 0 0 / 0.4), 0 16px 32px -16px oklch(0 0 0 / 0.75);
+
+  color-scheme: dark;
 }
 
 @layer base {
@@ -125,7 +183,7 @@
   h3,
   .font-display {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    letter-spacing: -0.012em;
   }
 }
 
@@ -141,8 +199,8 @@
   background-color: var(--glass-bg);
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
-  backdrop-filter: blur(18px) saturate(160%);
-  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 @utility glass-dark {
@@ -154,20 +212,17 @@
 
 @utility lift {
   transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease;
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
   &:hover {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
     box-shadow: var(--shadow-lift);
   }
 }
 
-/* Jemné pozadí stránky – decentní oranžové odlesky, žádná duha */
 @utility bg-ambient {
   background-color: var(--background);
-  background-image:
-    radial-gradient(60rem 30rem at 85% -10%, oklch(0.7 0.17 50 / 0.08), transparent 60%),
-    radial-gradient(40rem 24rem at -10% 10%, oklch(0.7 0.17 50 / 0.05), transparent 60%);
 }
 
 @utility field {
@@ -183,6 +238,6 @@
     box-shadow 0.15s;
   &:focus {
     border-color: var(--ring);
-    box-shadow: 0 0 0 3px oklch(0.665 0.185 45 / 0.18);
+    box-shadow: 0 0 0 3px oklch(0.645 0.19 44 / 0.18);
   }
 }

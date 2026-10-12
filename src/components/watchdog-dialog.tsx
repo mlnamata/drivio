@@ -9,21 +9,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { brandBySlug } from "@/lib/catalog";
-import { num } from "@/lib/mock-data";
+import { filterChips } from "@/components/listing-filters";
 import type { ListingSearch } from "@/lib/search";
 import { submitWatchdog } from "@/lib/forms";
 import { store } from "@/lib/store";
 
 export function describeSearch(s: ListingSearch) {
-  const parts: string[] = [];
-  if (s.brand)
-    parts.push(`${brandBySlug(s.brand)?.name ?? s.brand}${s.model ? ` ${s.model}` : ""}`);
-  if (s.priceTo) parts.push(`do ${num(s.priceTo)} Kč`);
-  if (s.yearFrom) parts.push(`od roku ${s.yearFrom}`);
-  if (s.kmTo) parts.push(`do ${num(s.kmTo)} km`);
-  if (s.fuel?.length) parts.push(s.fuel.join(", "));
-  if (s.body?.length) parts.push(s.body.join(", "));
+  const parts = filterChips(s).map((c) => c.label);
   return parts.length ? parts.join(" · ") : "Všechna auta";
 }
 
@@ -34,7 +26,7 @@ export function WatchdogDialog({ search }: { search: ListingSearch }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold hover:border-primary/50">
+        <button className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold hover:border-primary/50">
           <BellRing className="h-4 w-4 text-primary" /> Hlídat
         </button>
       </DialogTrigger>
@@ -75,7 +67,7 @@ export function WatchdogDialog({ search }: { search: ListingSearch }) {
             </Link>
             .
           </p>
-          <button className="w-full rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
+          <button className="w-full rounded-lg bg-primary py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
             Začít hlídat
           </button>
         </form>

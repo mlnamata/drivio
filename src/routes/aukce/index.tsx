@@ -69,7 +69,7 @@ function AuctionHub() {
     <Page>
       <Container className="py-8">
         <Breadcrumbs items={[{ to: "/", label: "Drivio" }, { label: "Aukce" }]} />
-        <div className="overflow-hidden rounded-[2rem] bg-sidebar p-8 text-white md:p-12">
+        <div className="overflow-hidden rounded-2xl bg-sidebar p-8 text-white md:p-12">
           <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-end">
             <div>
               <p className="inline-flex items-center gap-2 rounded-full bg-primary/20 px-3 py-1 text-xs font-semibold text-primary">
@@ -98,12 +98,12 @@ function AuctionHub() {
         </div>
 
         {/* Navigace po sekcích jedné stránky */}
-        <nav className="glass sticky top-16 z-30 mt-6 flex gap-1 overflow-x-auto rounded-full p-1">
+        <nav className="glass sticky top-16 z-30 mt-6 flex gap-1 overflow-x-auto rounded-xl p-1">
           {sections.map((s) => (
             <a
               key={s.id}
               href={`#${s.id}`}
-              className="shrink-0 rounded-full px-4 py-2 text-sm font-semibold text-foreground/75 transition hover:bg-foreground hover:text-background"
+              className="shrink-0 rounded-lg px-4 py-2 text-sm font-semibold text-foreground/75 transition hover:bg-foreground hover:text-background"
             >
               {s.label} <span className="ml-1 text-xs opacity-70">{s.count}</span>
             </a>
@@ -181,7 +181,7 @@ function AuctionHub() {
                         );
                       }}
                       className={cn(
-                        "inline-flex w-full items-center justify-center gap-2 rounded-full py-2.5 text-sm font-semibold",
+                        "inline-flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold",
                         a.reminded
                           ? "bg-accent text-accent-foreground"
                           : "bg-foreground text-background hover:bg-foreground/85",

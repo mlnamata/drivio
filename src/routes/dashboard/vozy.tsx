@@ -199,7 +199,7 @@ function MyCars() {
               className="field text-lg font-semibold"
               autoFocus
             />
-            <button className="w-full rounded-full bg-primary py-2.5 text-sm font-semibold text-primary-foreground">
+            <button className="w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-primary-foreground">
               Uložit
             </button>
           </form>

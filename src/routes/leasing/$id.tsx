@@ -47,7 +47,7 @@ function OfferNotFound() {
         <h1 className="text-3xl font-bold">Nabídka už není dostupná</h1>
         <Link
           to="/leasing"
-          className="mt-6 inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+          className="mt-6 inline-flex rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
         >
           Zobrazit nabídky leasingu
         </Link>
@@ -166,7 +166,7 @@ function LeaseDetailView({ o }: { o: LeasingOffer }) {
 
           <aside>
             <div className="surface-card sticky top-20 p-6">
-              <div className="grid grid-cols-2 gap-1 rounded-full bg-muted p-1">
+              <div className="grid grid-cols-2 gap-1 rounded-xl bg-muted p-1">
                 {(
                   [
                     [false, User, "Soukromě"],
@@ -177,7 +177,7 @@ function LeaseDetailView({ o }: { o: LeasingOffer }) {
                     key={l}
                     onClick={() => setBusiness(b)}
                     className={cn(
-                      "flex items-center justify-center gap-2 rounded-full py-2 text-sm font-semibold",
+                      "flex items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold",
                       business === b ? "bg-card shadow-sm" : "text-muted-foreground",
                     )}
                   >
@@ -275,7 +275,7 @@ function LeaseDetailView({ o }: { o: LeasingOffer }) {
                   </label>
                   <button
                     disabled={busy}
-                    className="w-full rounded-full bg-primary py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+                    className="w-full rounded-lg bg-primary py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
                   >
                     {busy ? "Odesílám…" : "Nezávazně poptat"}
                   </button>

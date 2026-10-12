@@ -2,7 +2,8 @@
  * Ukázková data pro frontend. Po napojení Supabase se nahradí dotazy na tabulky
  * `vehicles`, `tenants`, `auctions`, `bids` (viz supabase/migrations).
  */
-import { brandBySlug } from "./catalog";
+import { brandBySlug, conditions, TAG, tagValue } from "./catalog";
+import { demoPhotos } from "./demo-photos";
 
 export const czk = (v: number) =>
   new Intl.NumberFormat("cs-CZ", {
@@ -186,6 +187,17 @@ export type Vehicle = {
 
 export const PRIVATE_SELLER = "private";
 
+/** Stav vozu ze štítku ve výbavě (předváděcí / nové / veterán), jinak ojetý. */
+export const conditionOf = (v: Pick<Vehicle, "equipment">) =>
+  conditions.find((c) => c.value !== "ojete" && v.equipment.includes(c.value))?.value ?? "ojete";
+
+/** Počet předchozích majitelů; undefined = prodejce neuvedl. */
+export function ownersOf(v: Pick<Vehicle, "equipment" | "firstOwner">) {
+  const n = Number(tagValue(v.equipment, TAG.owners));
+  if (n > 0) return n;
+  return v.firstOwner ? 1 : undefined;
+}
+
 export type Seller = {
   name: string;
   city: string;
@@ -259,7 +271,7 @@ const seeds: Seed[] = [
     "kombi",
     110,
     1968,
-    "seda",
+    "hneda",
     279000,
     "acbrno",
     44,
@@ -277,7 +289,7 @@ const seeds: Seed[] = [
     "hatchback",
     44,
     1242,
-    "cervena",
+    "stribrna",
     89000,
     "poruba",
     95,
@@ -324,7 +336,7 @@ const seeds: Seed[] = [
     "hatchback",
     54,
     1149,
-    "modra",
+    "bila",
     119000,
     "acbrno",
     38,
@@ -432,7 +444,7 @@ const seeds: Seed[] = [
     "kombi",
     118,
     1482,
-    "modra",
+    "stribrna",
     469000,
     "acbrno",
     28,
@@ -605,7 +617,7 @@ const seeds: Seed[] = [
     "suv",
     143,
     2488,
-    "cervena",
+    "bila",
     459000,
     "kolbenka",
     52,
@@ -634,14 +646,14 @@ const seeds: Seed[] = [
     "seat",
     "Leon",
     "1.5 TSI FR",
-    2019,
+    2020,
     76000,
     "benzin",
     "manual",
     "hatchback",
     110,
     1498,
-    "seda",
+    "stribrna",
     349000,
     "plzenauto",
     8,
@@ -677,7 +689,7 @@ const seeds: Seed[] = [
     "suv",
     95,
     1373,
-    "zelena",
+    "seda",
     399000,
     "poruba",
     11,
@@ -713,7 +725,7 @@ const seeds: Seed[] = [
     "hatchback",
     77,
     1197,
-    "cerna",
+    "cervena",
     99000,
     "kolbenka",
     4,
@@ -749,7 +761,7 @@ const seeds: Seed[] = [
     "hatchback",
     73,
     1329,
-    "cervena",
+    "stribrna",
     129000,
     "plzenauto",
     23,
@@ -785,7 +797,7 @@ const seeds: Seed[] = [
     "hatchback",
     66,
     898,
-    "hneda",
+    "stribrna",
     149000,
     "acbrno",
     6,
@@ -803,7 +815,7 @@ const seeds: Seed[] = [
     "hatchback",
     62,
     1248,
-    "seda",
+    "stribrna",
     139000,
     "kolbenka",
     12,
@@ -859,6 +871,104 @@ const inAuction = new Set([
 ]);
 const soldInAuction = new Set(["ford-fiesta-12"]);
 
+const SPORT_TRIM = /M Sport|AMG|\bFR\b|S line|R-Line|Sportline|\bGT\b|\bRS\b/;
+
+function emissionFor(year: number, fuel: string) {
+  if (fuel === "elektro") return undefined;
+  if (year >= 2019) return "euro6d";
+  if (year >= 2015) return "euro6";
+  if (year >= 2011) return "euro5";
+  if (year >= 2006) return "euro4";
+  return "euro3";
+}
+
+/** Doplní ukázkovým vozům výbavu, emise, interiér a historii, aby šlo zkoušet všechny filtry. */
+function demoEquipment(s: Seed, i: number, firstOwner: boolean) {
+  const [, , , trim, year, , fuel, gearbox, body, , , color, price, , , base] = s;
+  const out = new Set(base.filter((e) => e !== "klima"));
+  const add = (...e: string[]) => e.forEach((x) => out.add(x));
+  const has = (e: string) => base.includes(e);
+
+  add("abs", "airbag-ridic", "airbag-spolujezdec", "centralni-zamek", "imobilizer", "el-okna");
+  add("posilovac", "isofix", "radio", "el-zrcatka");
+  if (year >= 2011) add("esp", "asr", "palubni-pocitac", "dalkove-zamykani");
+  if (year >= 2014) add("airbagy-bocni", "airbagy-hlavove", "bluetooth", "usb", "tlak-pneu");
+  if (year >= 2014) add("denni-sviceni", "alu", "rozjezd-kopec");
+  if (year >= 2014 && fuel !== "elektro") add("start-stop");
+  if (year >= 2016 || price > 250000) add("multifunkcni-volant", "handsfree");
+  if (year >= 2018) add("nouzove-brzdeni", "ecall", "dotykovy-displej", "omezovac");
+  if (year >= 2018 && i % 3 !== 0) add("jizdni-pruh", "znacky");
+  if (year >= 2019 && i % 2 === 0) add("unava", "dab");
+  if (has("acc")) add("tempomat", "kolize");
+  if (has("navigace")) add("dotykovy-displej", i % 2 ? "hlasove-ovladani" : "dab");
+  if (has("carplay")) add("bluetooth", "usb");
+  if (has("kamera")) add("parksenzory");
+  if (has("led")) add("denni-sviceni", "svetelny-senzor", "destovy-senzor");
+  if (price > 400000) add("keyless", "keyless-start", "virtualni-pristroje", "sklopna-zrcatka");
+  if (price > 400000)
+    add("parksenzory-predni", "parksenzory", "el-parkovaci-brzda", "loketni-operka");
+  if (price > 400000 && i % 2) add("el-vika", "vyhrivany-volant", "mrtvy-uhel");
+  if (price > 550000) add("ambientni-osvetleni", "bezdratove-nabijeni", "prurez", "kozeny-volant");
+  if (price > 900000)
+    add("head-up", "kamera-360", "premium-audio", "vzduchovy-podvozek", "pamet-sedadel");
+  if (has("kuze") && price > 500000) add("el-sedadla", "bederni-operka");
+  if (gearbox === "automat" && SPORT_TRIM.test(trim)) add("palky");
+  if (SPORT_TRIM.test(trim)) add("sportovni-paket", "sportovni-sedadla", "sportovni-podvozek");
+  if (color !== "bila" && i % 3 !== 2) add("metaliza");
+  if (body === "kombi") add("stresni-ostriny", i % 2 ? "dvojita-podlaha" : "sitova-prepazka");
+  if (body === "suv") add("stresni-ostriny", "sjezd-kopec");
+  if (body === "kombi" || body === "mpv" || body === "suv") add("delena-sedadla");
+  if (body === "dodavka") add("posuvne-dvere", "rezerva");
+  if (has("panorama")) add("zaclonky");
+  if (i % 4 === 3) add("zimni-pneu");
+  if (i % 9 === 4) add("celorocni-pneu");
+  if (fuel === "elektro")
+    add(
+      "rychlonabijeni",
+      "tepelne-cerpadlo",
+      "nabijeci-kabel",
+      "baterie-vlastni",
+      `${TAG.range}:560`,
+    );
+
+  // klimatizace – jedna úroveň
+  if (base.includes("klima"))
+    add(
+      price > 900000
+        ? "klima-4z"
+        : price > 300000
+          ? "klima-2z"
+          : year >= 2016
+            ? "klima-auto"
+            : "klima",
+    );
+  const emission = emissionFor(year, fuel);
+  if (emission) add(emission);
+  // interiér
+  add(has("kuze") ? "kuze" : price > 350000 && i % 2 ? "castecne-kuze" : "latka");
+  add(
+    has("kuze") && i % 3 === 0
+      ? "interier-hnedy"
+      : i % 7 === 3
+        ? "interier-bezovy"
+        : i % 4 === 1
+          ? "interier-sedy"
+          : "interier-cerny",
+  );
+  // historie a nabídka
+  if (i % 2 === 0) add("nekurak");
+  if (i % 5 === 0) add("garazovane");
+  if (i % 3 === 1) add("servis-znacka");
+  if (price > 300000 && i % 3 === 0) add("zaruka");
+  if (i % 4 === 2) add("doruceni");
+  if (i % 6 === 1) add("protiucet");
+  add(`${TAG.owners}:${firstOwner ? 1 : year < 2012 ? 3 : 2 + (i % 3 === 0 ? 1 : 0)}`);
+  const stkMonth = 3 + ((i * 7) % 24);
+  const d = new Date(2026, 9 + stkMonth, 1);
+  add(`${TAG.stk}:${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+  return [...out];
+}
+
 export const vehicles: Vehicle[] = seeds.map((s, i) => {
   const [
     id,
@@ -876,8 +986,8 @@ export const vehicles: Vehicle[] = seeds.map((s, i) => {
     price,
     dealerId,
     listedDays,
-    eq,
   ] = s;
+  const firstOwner = i % 4 === 1;
   return {
     id,
     brand,
@@ -903,20 +1013,20 @@ export const vehicles: Vehicle[] = seeds.map((s, i) => {
     condition: "ojete",
     price,
     vatDeductible: price > 400000 || i % 4 === 0,
-    equipment: eq,
-    photos: [0, 1, 2, 3].map((k) => photoPool[(i + k * 2) % photoPool.length]!),
+    equipment: demoEquipment(s, i, firstOwner),
+    photos: demoPhotos[id] ?? [0, 1, 2, 3].map((k) => photoPool[(i + k * 2) % photoPool.length]!),
     dealerId,
     listedDays,
     vin: fakeVin(id),
     serviceBook: i % 3 !== 2,
-    firstOwner: i % 4 === 1,
+    firstOwner,
     accidentFree: i % 5 !== 3,
     description: descriptions[i % descriptions.length]!,
     doors: body === "kupe" || body === "kabriolet" ? 3 : body === "dodavka" ? 4 : 5,
     seats: body === "mpv" ? 7 : body === "dodavka" ? 3 : 5,
     origin: i % 3 === 1 ? "import" : "cz",
     cebiaVerified: i % 3 !== 0,
-    top: i % 7 === 2,
+    top: i % 6 === 1,
     status: soldInAuction.has(id) ? "sold" : inAuction.has(id) ? "in_auction" : "active",
   };
 });

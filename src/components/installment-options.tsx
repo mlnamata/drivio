@@ -24,13 +24,13 @@ export function InstallmentOptions({ price, onPick }: { price: number; onPick?: 
             Vyberte akontaci a dobu splácení. Orientační výpočet, bez vlivu na registr.
           </p>
         </div>
-        <div className="flex gap-1 rounded-full bg-muted p-1">
+        <div className="flex gap-1 rounded-xl bg-muted p-1">
           {financePartners.map((p) => (
             <button
               key={p.id}
               onClick={() => setPartnerId(p.id)}
               className={cn(
-                "rounded-full px-3 py-1.5 text-xs font-semibold",
+                "rounded-lg px-3 py-1.5 text-xs font-semibold",
                 partnerId === p.id ? "bg-card shadow-sm" : "text-muted-foreground",
               )}
             >
@@ -96,7 +96,7 @@ export function InstallmentOptions({ price, onPick }: { price: number; onPick?: 
         {onPick ? (
           <button
             onClick={onPick}
-            className="shrink-0 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground"
+            className="shrink-0 rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground"
           >
             Chci tuto variantu
           </button>

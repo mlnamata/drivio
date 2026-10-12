@@ -105,7 +105,7 @@ function Contact() {
             <input required name="name" placeholder="Jméno" className="field" />
             <input required type="email" name="email" placeholder="E-mail" className="field" />
             <textarea required name="message" rows={5} placeholder="Zpráva" className="field" />
-            <button className="w-full rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground">
+            <button className="w-full rounded-lg bg-primary py-3 text-sm font-semibold text-primary-foreground">
               Odeslat
             </button>
           </form>

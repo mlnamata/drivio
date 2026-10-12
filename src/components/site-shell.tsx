@@ -17,6 +17,7 @@ import { Logo } from "@/components/logo";
 import { CookieBanner } from "@/components/cookie-banner";
 import { CompareBar } from "@/components/compare";
 import { UspBar } from "@/components/trust";
+import { ThemeSwitch, ThemeToggle } from "@/components/theme-toggle";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useStore } from "@/lib/store";
 import { signOut, useAuth } from "@/lib/auth";
@@ -78,15 +79,13 @@ export function SiteHeader() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 border-b transition-all",
-        scrolled
-          ? "border-border bg-card/95 shadow-[0_8px_24px_-16px_oklch(0.2_0.005_60/0.35)] backdrop-blur-md"
-          : "border-border bg-card",
+        "sticky top-0 z-50 border-b border-border bg-card transition-shadow",
+        scrolled && "shadow-[0_6px_20px_-14px_oklch(0.2_0.01_260/0.35)]",
       )}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-4">
         <Link to="/" aria-label="Drivio – úvod" className="shrink-0">
-          <Logo className="h-7 md:h-8" />
+          <Logo className="h-8 md:h-9" />
         </Link>
         <nav className="hidden items-center gap-0.5 xl:flex">
           {nav.map((i) => (
@@ -94,7 +93,12 @@ export function SiteHeader() {
               key={i.label}
               to={i.to}
               {...("search" in i ? { search: i.search } : {})}
-              className="rounded-lg px-3 py-2 text-sm font-semibold text-foreground/75 transition-colors hover:bg-foreground/5 hover:text-foreground"
+              className="relative rounded-lg px-3 py-2 text-sm font-semibold text-foreground/75 transition-colors hover:bg-foreground/5 hover:text-foreground"
+              activeOptions={{ includeSearch: "search" in i }}
+              activeProps={{
+                className:
+                  "text-foreground after:absolute after:inset-x-3 after:-bottom-[13px] after:h-0.5 after:rounded-full after:bg-primary",
+              }}
             >
               {i.label}
             </Link>
@@ -107,9 +111,10 @@ export function SiteHeader() {
           <IconLink to="/oblibene" label="Oblíbené" count={ids.length}>
             <Heart className="h-5 w-5" />
           </IconLink>
+          <ThemeToggle />
           <Link
             to="/prodat-auto"
-            className="ml-1 hidden items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 md:inline-flex"
+            className="ml-1 hidden items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 md:inline-flex"
           >
             <PlusCircle className="h-4 w-4" /> Prodat auto
           </Link>
@@ -118,14 +123,14 @@ export function SiteHeader() {
               {auth.role !== "customer" ? (
                 <Link
                   to={auth.role === "admin" ? "/admin" : "/dashboard"}
-                  className="rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background"
+                  className="rounded-lg bg-foreground px-4 py-2 text-sm font-semibold text-background"
                 >
                   {auth.role === "admin" ? "Správa" : "Můj autobazar"}
                 </Link>
               ) : null}
               <button
                 onClick={() => void signOut()}
-                className="rounded-full px-3 py-2 text-sm font-semibold text-foreground/70 hover:bg-foreground/5"
+                className="rounded-lg px-3 py-2 text-sm font-semibold text-foreground/70 hover:bg-foreground/5"
               >
                 Odhlásit
               </button>
@@ -133,7 +138,7 @@ export function SiteHeader() {
           ) : (
             <Link
               to="/prihlaseni"
-              className="ml-1 hidden items-center gap-2 rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background transition-colors hover:bg-foreground/85 sm:inline-flex"
+              className="ml-1 hidden items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-semibold transition-colors hover:border-foreground/30 hover:bg-foreground/5 sm:inline-flex"
             >
               <User className="h-4 w-4" /> Přihlásit
             </Link>
@@ -223,7 +228,7 @@ const footerCols: { title: string; links: { to: string; label: string }[] }[] = 
 
 export function SiteFooter() {
   return (
-    <footer className="mt-24 border-t border-border bg-card">
+    <footer className="mt-20 border-t border-border bg-card">
       <div className="mx-auto max-w-7xl px-4 py-14">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1fr]">
           <div>
@@ -232,6 +237,10 @@ export function SiteFooter() {
               Ojetá auta od prověřených autobazarů. Férové ceny, splátka na první pohled a aukce od
               1 Kč.
             </p>
+            <p className="mb-2 mt-6 text-xs font-bold uppercase tracking-[0.16em] text-foreground">
+              Vzhled webu
+            </p>
+            <ThemeSwitch />
           </div>
           {footerCols.map((c) => (
             <div key={c.title}>
@@ -284,6 +293,9 @@ export function SiteFooter() {
             <Link to="/pravni/cookies" className="hover:text-primary">
               Cookies
             </Link>
+            <Link to="/pravni/zdroje-fotografii" className="hover:text-primary">
+              Zdroje fotografií
+            </Link>
             <Link to="/admin" className="hover:text-primary">
               Správa portálu
             </Link>
@@ -308,25 +320,23 @@ export function Page({ children, className }: { children: ReactNode; className?:
 }
 
 export function SectionTitle({
-  eyebrow,
   title,
   desc,
+  action,
   className,
 }: {
-  eyebrow?: string;
   title: string;
   desc?: string;
+  action?: ReactNode;
   className?: string;
 }) {
   return (
-    <div className={cn("mb-8 max-w-2xl", className)}>
-      {eyebrow ? (
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-          {eyebrow}
-        </p>
-      ) : null}
-      <h2 className="text-2xl font-bold md:text-3xl">{title}</h2>
-      {desc ? <p className="mt-3 text-muted-foreground">{desc}</p> : null}
+    <div className={cn("mb-6 flex flex-wrap items-end justify-between gap-x-6 gap-y-2", className)}>
+      <div className="max-w-2xl">
+        <h2 className="text-2xl font-bold md:text-[1.75rem]">{title}</h2>
+        {desc ? <p className="mt-1.5 text-muted-foreground">{desc}</p> : null}
+      </div>
+      {action ? <div className="shrink-0 text-sm font-semibold text-primary">{action}</div> : null}
     </div>
   );
 }

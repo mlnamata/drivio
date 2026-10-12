@@ -25,7 +25,7 @@ export function UspBar() {
 /**
  * UKÁZKOVÉ recenze – před spuštěním nahraďte skutečnými (např. z Google recenzí).
  * Zveřejňovat vymyšlené recenze je podle zákona o ochraně spotřebitele zakázané,
- * proto jsou na webu označené štítkem „Ukázka“.
+ * proto se záznamy se `sample: true` na webu nezobrazují.
  */
 const reviews: { name: string; city: string; text: string; car: string; sample?: boolean }[] = [
   {
@@ -51,26 +51,16 @@ const reviews: { name: string; city: string; text: string; car: string; sample?:
   },
 ];
 
+/** Zobrazí se, až budou na webu skutečné recenze – ukázkové by působily nedůvěryhodně. */
 export function Reviews() {
-  if (reviews.length === 0) return null;
+  const real = reviews.filter((r) => !r.sample);
+  if (real.length === 0) return null;
   return (
-    <div>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-            Zkušenosti zákazníků
-          </p>
-          <h2 className="text-2xl font-bold md:text-3xl">Co o nás říkají</h2>
-        </div>
-      </div>
-      <div className="mt-8 grid gap-5 md:grid-cols-3">
-        {reviews.map((r) => (
-          <figure key={r.name} className="surface-card relative flex flex-col justify-between p-6">
-            {r.sample ? (
-              <span className="absolute right-4 top-4 rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                Ukázka
-              </span>
-            ) : null}
+    <div className="mx-auto max-w-7xl px-4 pt-14">
+      <h2 className="mb-6 text-2xl font-bold md:text-[1.75rem]">Co o nás říkají zákazníci</h2>
+      <div className="grid gap-4 md:grid-cols-3">
+        {real.map((r) => (
+          <figure key={r.name} className="surface-card flex flex-col justify-between p-6">
             <blockquote className="text-foreground/85">„{r.text}“</blockquote>
             <figcaption className="mt-5 flex items-center gap-3">
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent font-bold text-accent-foreground">
@@ -105,10 +95,8 @@ export function Partners() {
   ];
   return (
     <div className="text-center">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-        Spolupracujeme
-      </p>
-      <div className="mt-5 flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+      <p className="text-sm font-medium text-muted-foreground">Spolupracujeme</p>
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
         {names.map((n) => (
           <span key={n} className="font-display text-lg font-extrabold text-foreground/35">
             {n}
@@ -146,16 +134,13 @@ export function Faq() {
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_1.6fr]">
       <div>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-          Nápověda
-        </p>
-        <h2 className="text-2xl font-bold md:text-3xl">Časté dotazy</h2>
+        <h2 className="text-2xl font-bold md:text-[1.75rem]">Časté dotazy</h2>
         <p className="mt-3 text-muted-foreground">
           Nenašli jste odpověď? Napište nám, odpovídáme obvykle do hodiny.
         </p>
         <a
           href="/kontakt"
-          className="mt-5 inline-flex rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background"
+          className="mt-5 inline-flex rounded-lg bg-foreground px-5 py-2.5 text-sm font-semibold text-background"
         >
           Kontaktovat podporu
         </a>

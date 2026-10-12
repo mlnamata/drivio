@@ -1,23 +1,24 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { BadgeCheck, Flag, LayoutGrid, List, ScanLine, ShieldCheck, X } from "lucide-react";
+import {
+  BadgeCheck,
+  Flag,
+  LayoutGrid,
+  List,
+  ScanLine,
+  Search,
+  ShieldCheck,
+  SlidersHorizontal,
+  X,
+} from "lucide-react";
 import { Fragment, useMemo } from "react";
 import { AdSlot } from "@/components/ad-slot";
-import { ListingFilters } from "@/components/listing-filters";
+import { filterChips, ListingFilters } from "@/components/listing-filters";
 import { Breadcrumbs, Container, Page } from "@/components/site-shell";
 import { VehicleCard } from "@/components/vehicle-card";
 import { FilterDialog } from "@/components/filter-dialog";
+import { brandBySlug } from "@/lib/catalog";
 import {
-  bodyTypes,
-  brandBySlug,
-  colors,
-  drives,
-  equipment,
-  fuels,
-  gearboxes,
-  labelOf,
-} from "@/lib/catalog";
-import { sellerOf, num } from "@/lib/mock-data";
-import {
+  activeFilterCount,
   cleanSearch,
   filterVehicles,
   listingSearchSchema,
@@ -50,93 +51,8 @@ const sortOptions: { value: NonNullable<ListingSearch["sort"]>; label: string }[
   { value: "price-desc", label: "Nejdražší" },
   { value: "km-asc", label: "Nejméně najeto" },
   { value: "year-desc", label: "Nejmladší" },
+  { value: "power-desc", label: "Nejvyšší výkon" },
 ];
-
-function activeChips(
-  s: ListingSearch,
-): { key: string; label: string; patch: Partial<ListingSearch> }[] {
-  const out: { key: string; label: string; patch: Partial<ListingSearch> }[] = [];
-  if (s.q) out.push({ key: "q", label: `„${s.q}"`, patch: { q: undefined } });
-  if (s.brand)
-    out.push({
-      key: "brand",
-      label: brandBySlug(s.brand)?.name ?? s.brand,
-      patch: { brand: undefined, model: undefined },
-    });
-  if (s.model) out.push({ key: "model", label: s.model, patch: { model: undefined } });
-  if (s.priceFrom)
-    out.push({ key: "pf", label: `od ${num(s.priceFrom)} Kč`, patch: { priceFrom: undefined } });
-  if (s.priceTo)
-    out.push({ key: "pt", label: `do ${num(s.priceTo)} Kč`, patch: { priceTo: undefined } });
-  if (s.yearFrom)
-    out.push({ key: "yf", label: `rok od ${s.yearFrom}`, patch: { yearFrom: undefined } });
-  if (s.yearTo) out.push({ key: "yt", label: `rok do ${s.yearTo}`, patch: { yearTo: undefined } });
-  if (s.kmTo) out.push({ key: "km", label: `do ${num(s.kmTo)} km`, patch: { kmTo: undefined } });
-  if (s.powerFrom)
-    out.push({ key: "pw", label: `od ${s.powerFrom} kW`, patch: { powerFrom: undefined } });
-  s.fuel?.forEach((f) =>
-    out.push({
-      key: `f-${f}`,
-      label: labelOf(fuels, f),
-      patch: { fuel: s.fuel!.filter((x) => x !== f) },
-    }),
-  );
-  s.body?.forEach((b) =>
-    out.push({
-      key: `b-${b}`,
-      label: labelOf(bodyTypes, b),
-      patch: { body: s.body!.filter((x) => x !== b) },
-    }),
-  );
-  s.color?.forEach((c) =>
-    out.push({
-      key: `c-${c}`,
-      label: labelOf(colors, c),
-      patch: { color: s.color!.filter((x) => x !== c) },
-    }),
-  );
-  s.equipment?.forEach((e) =>
-    out.push({
-      key: `e-${e}`,
-      label: labelOf(equipment, e),
-      patch: { equipment: s.equipment!.filter((x) => x !== e) },
-    }),
-  );
-  if (s.gearbox)
-    out.push({ key: "g", label: labelOf(gearboxes, s.gearbox), patch: { gearbox: undefined } });
-  if (s.drive) out.push({ key: "d", label: labelOf(drives, s.drive), patch: { drive: undefined } });
-  if (s.region) out.push({ key: "r", label: s.region, patch: { region: undefined } });
-  if (s.vat) out.push({ key: "vat", label: "Odpočet DPH", patch: { vat: undefined } });
-  if (s.accidentFree)
-    out.push({ key: "af", label: "Nehavarované", patch: { accidentFree: undefined } });
-  if (s.serviceBook)
-    out.push({ key: "sb", label: "Servisní knížka", patch: { serviceBook: undefined } });
-  if (s.seller)
-    out.push({
-      key: "sl",
-      label: s.seller === "dealer" ? "Autobazar" : "Soukromý prodejce",
-      patch: { seller: undefined },
-    });
-  if (s.monthlyTo)
-    out.push({
-      key: "mt",
-      label: `splátka do ${num(s.monthlyTo)} Kč`,
-      patch: { monthlyTo: undefined },
-    });
-  if (s.cebia) out.push({ key: "cb", label: "Ověřeno Cebia", patch: { cebia: undefined } });
-  if (s.priceRating)
-    out.push({ key: "pr", label: "Výhodná cena", patch: { priceRating: undefined } });
-  if (s.origin)
-    out.push({
-      key: "or",
-      label: s.origin === "cz" ? "Původ ČR" : "Dovoz",
-      patch: { origin: undefined },
-    });
-  if (s.doors) out.push({ key: "dr", label: `${s.doors} dveří`, patch: { doors: undefined } });
-  if (s.seatsFrom)
-    out.push({ key: "st", label: `od ${s.seatsFrom} míst`, patch: { seatsFrom: undefined } });
-  return out;
-}
 
 function Listings() {
   const search = Route.useSearch();
@@ -150,19 +66,23 @@ function Listings() {
       resetScroll: false,
     });
   const reset = () => void navigate({ search: { category: search.category }, replace: true });
+  const applyAll = (next: ListingSearch) =>
+    void navigate({
+      search: { ...next, view: search.view, sort: search.sort },
+      replace: true,
+      resetScroll: false,
+    });
 
   const source = useVehicles();
-  const all = useMemo(
-    () => filterVehicles(source, search, (v) => sellerOf(v).region),
-    [source, search],
-  );
+  const all = useMemo(() => filterVehicles(source, search), [source, search]);
   const cebiaPct = source.length
     ? Math.round((source.filter((v) => v.cebiaVerified).length / source.length) * 100)
     : 0;
   const page = search.page ?? 1;
   const pages = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
   const list = all.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-  const chips = activeChips(search);
+  const chips = filterChips(search);
+  const active = activeFilterCount(search);
   const view = search.view ?? "grid";
   const brand = search.brand ? brandBySlug(search.brand) : undefined;
   const heading = brand
@@ -171,32 +91,39 @@ function Listings() {
       ? "Užitková vozidla"
       : "Ojetá auta na prodej";
 
-  const filters = <ListingFilters value={search} onChange={(p) => update(p)} onReset={reset} />;
-
   return (
     <Page>
-      <Container className="py-8">
+      <Container className="py-6">
         <Breadcrumbs items={[{ to: "/", label: "Drivio" }, { label: "Inzeráty" }]} />
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="text-3xl font-extrabold md:text-4xl">{heading}</h1>
+            <h1 className="text-3xl font-extrabold md:text-[2.2rem]">{heading}</h1>
             <p className="mt-1 text-muted-foreground">
-              {cars(all.length)} {plural(all.length, "odpovídá", "odpovídají", "odpovídá")} vašemu
-              hledání
+              <strong className="font-semibold text-foreground">{cars(all.length)}</strong>{" "}
+              {plural(all.length, "odpovídá", "odpovídají", "odpovídá")} vašemu hledání
             </p>
           </div>
-          <input
-            defaultValue={search.q}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") update({ q: e.currentTarget.value || undefined });
+          <form
+            className="relative md:w-80"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const q = new FormData(e.currentTarget).get("q");
+              update({ q: (typeof q === "string" && q.trim()) || undefined });
             }}
-            placeholder="Hledat např. „octavia dsg“ a Enter"
-            className="field md:w-80"
-            aria-label="Fulltextové hledání"
-          />
+          >
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              key={search.q ?? ""}
+              name="q"
+              defaultValue={search.q}
+              placeholder="Hledat např. „octavia dsg“"
+              className="field pl-9"
+              aria-label="Fulltextové hledání"
+            />
+          </form>
         </div>
 
-        <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 rounded-2xl border border-border bg-card px-4 py-3 text-xs font-medium text-foreground/80">
+        <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-xs font-medium text-foreground/70">
           <span className="flex items-center gap-1.5">
             <BadgeCheck className="h-4 w-4 text-success" /> Autobazary ověřené podle IČO
           </span>
@@ -211,25 +138,35 @@ function Listings() {
           </span>
         </div>
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-[290px_1fr]">
+        <div className="mt-6 grid gap-6 lg:grid-cols-[280px_1fr]">
           <aside className="hidden lg:block">
-            <div className="surface-card px-5 py-4">{filters}</div>
+            <div className="surface-card px-4 py-3">
+              <ListingFilters
+                value={search}
+                onChange={(p) => update(p)}
+                onReset={reset}
+                footer={
+                  <FilterDialog
+                    value={search}
+                    onApply={applyAll}
+                    trigger={
+                      <button
+                        type="button"
+                        className="flex w-full items-center justify-center gap-2 rounded-lg border border-primary/40 bg-primary/5 px-4 py-2.5 text-sm font-semibold text-primary hover:bg-primary/10"
+                      >
+                        <SlidersHorizontal className="h-4 w-4" /> Všechny filtry a výbava
+                      </button>
+                    }
+                  />
+                }
+              />
+            </div>
             <AdSlot format="rectangle" className="mt-5" />
           </aside>
 
-          <div>
+          <div className="min-w-0">
             <div className="mb-4 flex flex-wrap items-center gap-2">
-              <FilterDialog
-                value={search}
-                activeCount={chips.length}
-                onApply={(next) =>
-                  void navigate({
-                    search: { ...next, view: search.view, sort: search.sort },
-                    replace: true,
-                    resetScroll: false,
-                  })
-                }
-              />
+              <FilterDialog value={search} onApply={applyAll} />
               <select
                 aria-label="Řazení"
                 className="field w-auto py-2"
@@ -244,16 +181,17 @@ function Listings() {
               </select>
               <div className="ml-auto flex items-center gap-2">
                 <WatchdogDialog search={search} />
-                <div className="flex rounded-full border border-border bg-card p-1">
+                <div className="flex rounded-lg border border-border bg-card p-1">
                   {(["grid", "list"] as const).map((v) => (
                     <button
                       key={v}
                       onClick={() => update({ view: v === "grid" ? undefined : v }, true)}
                       className={cn(
-                        "rounded-full p-1.5",
+                        "rounded-md p-1.5",
                         view === v ? "bg-foreground text-background" : "text-muted-foreground",
                       )}
                       aria-label={v === "grid" ? "Mřížka" : "Seznam"}
+                      aria-pressed={view === v}
                     >
                       {v === "grid" ? (
                         <LayoutGrid className="h-4 w-4" />
@@ -267,16 +205,25 @@ function Listings() {
             </div>
 
             {chips.length ? (
-              <div className="mb-5 flex flex-wrap gap-2">
+              <div className="mb-5 flex flex-wrap items-center gap-2" aria-label="Aktivní filtry">
                 {chips.map((c) => (
                   <button
                     key={c.key}
                     onClick={() => update(c.patch)}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground hover:bg-accent/70"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-primary/30 bg-primary/5 px-2.5 py-1 text-xs font-semibold text-foreground hover:border-primary"
+                    aria-label={`Zrušit filtr ${c.label}`}
                   >
-                    {c.label} <X className="h-3 w-3" />
+                    {c.label} <X className="h-3 w-3 text-primary" />
                   </button>
                 ))}
+                {active > 1 ? (
+                  <button
+                    onClick={reset}
+                    className="px-1 text-xs font-semibold text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                  >
+                    Zrušit vše
+                  </button>
+                ) : null}
               </div>
             ) : null}
 
@@ -284,19 +231,23 @@ function Listings() {
               <div className="surface-card p-12 text-center">
                 <p className="text-lg font-semibold">Tomuto hledání neodpovídá žádný vůz</p>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Zkuste uvolnit některé filtry nebo si nastavte hlídacího psa.
+                  Zkuste uvolnit některé filtry nebo si nastavte hlídacího psa – dáme vědět, až se
+                  takový vůz objeví.
                 </p>
-                <button
-                  onClick={reset}
-                  className="mt-5 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground"
-                >
-                  Zrušit filtry
-                </button>
+                <div className="mt-5 flex flex-wrap justify-center gap-2">
+                  <button
+                    onClick={reset}
+                    className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+                  >
+                    Zrušit filtry
+                  </button>
+                  <WatchdogDialog search={search} />
+                </div>
               </div>
             ) : (
               <div
                 className={cn(
-                  "grid gap-5",
+                  "grid gap-4",
                   view === "grid" ? "sm:grid-cols-2 xl:grid-cols-3" : "grid-cols-1",
                 )}
               >
@@ -317,7 +268,7 @@ function Listings() {
                     to="/inzeraty"
                     search={{ ...search, page: p === 1 ? undefined : p }}
                     className={cn(
-                      "flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold",
+                      "flex h-10 w-10 items-center justify-center rounded-lg text-sm font-semibold",
                       p === page ? "bg-foreground text-background" : "hover:bg-foreground/5",
                     )}
                   >

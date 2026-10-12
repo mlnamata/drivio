@@ -17,7 +17,7 @@ export const Route = createFileRoute("/pravni/cookies")({
       <p>Souhlas můžete kdykoli změnit smazáním dat webu v prohlížeči nebo tlačítkem níže.</p>
       <p>
         <button
-          className="rounded-full border border-border px-4 py-2 text-sm font-semibold"
+          className="rounded-lg border border-border px-4 py-2 text-sm font-semibold"
           onClick={() => {
             try {
               window.localStorage.removeItem("drivio:cookie-consent");

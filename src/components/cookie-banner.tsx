@@ -43,13 +43,13 @@ export function CookieBanner() {
         <div className="flex gap-2">
           <button
             onClick={() => decide("necessary")}
-            className="rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold hover:border-primary/40"
+            className="rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold hover:border-primary/40"
           >
             Jen nezbytné
           </button>
           <button
             onClick={() => decide("all")}
-            className="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
           >
             Přijmout vše
           </button>

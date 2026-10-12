@@ -73,7 +73,7 @@ function Login() {
           <Logo />
         </Link>
         <div className="glass rounded-3xl p-6 md:p-8">
-          <div className="grid grid-cols-2 gap-1 rounded-full bg-muted p-1">
+          <div className="grid grid-cols-2 gap-1 rounded-xl bg-muted p-1">
             {(
               [
                 ["customer", User, "Zákazník"],
@@ -84,7 +84,7 @@ function Login() {
                 key={m}
                 onClick={() => setMode(m)}
                 className={cn(
-                  "flex items-center justify-center gap-2 rounded-full py-2 text-sm font-semibold transition",
+                  "flex items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold transition",
                   mode === m ? "bg-card shadow-sm" : "text-muted-foreground",
                 )}
               >
@@ -147,7 +147,7 @@ function Login() {
             ) : null}
             <button
               disabled={busy}
-              className="w-full rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+              className="w-full rounded-lg bg-primary py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
             >
               {tab === "login" ? "Přihlásit se" : "Zaregistrovat"}
             </button>

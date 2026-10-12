@@ -85,7 +85,7 @@ function Leasing() {
     <Page>
       {/* HERO */}
       <Container className="pt-6">
-        <section className="overflow-hidden rounded-[2rem] bg-sidebar px-6 py-10 text-white md:px-12 md:py-14">
+        <section className="overflow-hidden rounded-2xl bg-sidebar px-6 py-10 text-white md:px-12 md:py-14">
           <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-center">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
@@ -100,11 +100,11 @@ function Leasing() {
               </p>
               <Link
                 to="/leasing/firmy"
-                className="mt-6 mr-3 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+                className="mt-6 mr-3 inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
               >
                 <Building2 className="h-4 w-4" /> Seznam pro firmy (bez DPH)
               </Link>
-              <div className="mt-6 inline-flex rounded-full bg-white/10 p-1">
+              <div className="mt-6 inline-flex rounded-xl bg-white/10 p-1">
                 {(
                   [
                     [false, User, "Soukromá osoba"],
@@ -115,8 +115,8 @@ function Leasing() {
                     key={l}
                     onClick={() => set({ business: b || undefined })}
                     className={cn(
-                      "inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition",
-                      !!s.business === b ? "bg-white text-foreground" : "text-white/80",
+                      "inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition",
+                      !!s.business === b ? "bg-white text-sidebar" : "text-white/80",
                     )}
                   >
                     <Icon className="h-4 w-4" /> {l}
@@ -222,7 +222,7 @@ function Leasing() {
             <p className="font-semibold">Žádná nabídka neodpovídá filtru.</p>
             <button
               onClick={() => void navigate({ search: {}, replace: true })}
-              className="mt-4 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground"
+              className="mt-4 rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground"
             >
               Zrušit filtry
             </button>
@@ -292,7 +292,7 @@ function Leasing() {
 
       {/* JAK TO FUNGUJE */}
       <Container className="py-12">
-        <SectionTitle eyebrow="Jak to funguje" title="Auto na operativní leasing ve 4 krocích" />
+        <SectionTitle title="Auto na operativní leasing ve 4 krocích" />
         <div className="grid gap-5 md:grid-cols-4">
           {[
             [Clock, "Vyberte auto", "Nastavte délku pronájmu a roční nájezd, cenu vidíte hned."],
@@ -365,7 +365,7 @@ function Leasing() {
           </div>
           <Link
             to="/pro-leasingove-spolecnosti"
-            className="inline-flex w-fit items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background"
+            className="inline-flex w-fit items-center gap-2 rounded-lg bg-foreground px-5 py-2.5 text-sm font-semibold text-background"
           >
             Partnerský program <ArrowRight className="h-4 w-4" />
           </Link>

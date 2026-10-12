@@ -10,6 +10,7 @@ export function BrandLogo({
   name: string;
   className?: string;
 }) {
+  // Loga jsou kreslená pro světlé pozadí – v tmavém vzhledu dostanou světlou podložku.
   return (
     <img
       src={brandLogo(slug)}
@@ -17,7 +18,7 @@ export function BrandLogo({
       loading="lazy"
       width={64}
       height={64}
-      className={cn("h-10 w-10 object-contain", className)}
+      className={cn("h-10 w-10 rounded-md object-contain dark:bg-logo-plate dark:p-1", className)}
     />
   );
 }

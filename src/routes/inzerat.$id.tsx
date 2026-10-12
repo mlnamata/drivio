@@ -28,16 +28,25 @@ import { FavoriteButton, PriceRatingBadge, VehicleCard } from "@/components/vehi
 import {
   bodyTypes,
   brandBySlug,
+  climateLevels,
   colors,
+  conditions,
   drives,
-  equipment,
+  emissionClasses,
+  equipmentGroups,
   fuels,
   gearboxes,
+  interiorColors,
+  interiorMaterials,
   labelOf,
+  TAG,
+  tagValue,
 } from "@/lib/catalog";
 import { submitLead } from "@/lib/leads";
 import {
+  conditionOf,
   czk,
+  ownersOf,
   sellerOf,
   monthlyPayment,
   num,
@@ -104,7 +113,7 @@ function NotFoundView() {
         <p className="mt-2 text-muted-foreground">Vůz byl pravděpodobně prodán.</p>
         <Link
           to="/inzeraty"
-          className="mt-6 inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+          className="mt-6 inline-flex rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
         >
           Zobrazit podobné vozy
         </Link>
@@ -146,17 +155,34 @@ function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
     [Palette, "Barva", labelOf(colors, v.color)],
   ];
 
-  const specs: [string, string][] = [
+  const pick = (list: readonly { value: string; label: string }[]) =>
+    list.find((o) => v.equipment.includes(o.value))?.label;
+  const owners = ownersOf(v);
+  const stk = tagValue(v.equipment, TAG.stk);
+  const range = tagValue(v.equipment, TAG.range);
+  const specs: [string, string | undefined][] = [
+    ["Stav", labelOf(conditions, conditionOf(v))],
     ["Karoserie", labelOf(bodyTypes, v.body)],
     ["Pohon", labelOf(drives, v.drive)],
-    ["Objem motoru", v.engineCcm ? `${num(v.engineCcm)} cm³` : "—"],
-    ["Stav", "Ojeté"],
+    ["Objem motoru", v.engineCcm ? `${num(v.engineCcm)} cm³` : undefined],
+    ["Emisní norma", pick(emissionClasses)],
+    ["Dojezd (WLTP)", range ? `${range} km` : undefined],
+    ["Počet dveří / míst", `${v.doors} / ${v.seats}`],
+    ["Klimatizace", pick(climateLevels)],
+    ["Čalounění", pick(interiorMaterials)],
+    ["Barva interiéru", pick(interiorColors)],
+    ["Počet majitelů", owners ? String(owners) : undefined],
+    ["STK do", stk ? stk.split("-").reverse().join("/") : undefined],
     ["Servisní knížka", v.serviceBook ? "Ano" : "Ne"],
-    ["První majitel", v.firstOwner ? "Ano" : "Ne"],
     ["Nehavarované", v.accidentFree ? "Ano" : "Neuvedeno"],
+    ["Původ", v.origin === "cz" ? "ČR" : "Dovoz"],
     ["Odpočet DPH", v.vatDeductible ? "Ano" : "Ne"],
     ["VIN", v.vin],
   ];
+  const eqGroups = equipmentGroups
+    .map((g) => ({ ...g, items: g.items.filter((i) => v.equipment.includes(i.value)) }))
+    .filter((g) => g.items.length);
+  const eqCount = eqGroups.reduce((n, g) => n + g.items.length, 0);
 
   return (
     <Page>
@@ -180,7 +206,7 @@ function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
               <Link
                 to="/aukce/$id"
                 params={{ id: auction.id }}
-                className="rounded-full bg-primary px-4 py-2 text-center font-semibold text-primary-foreground"
+                className="rounded-lg bg-primary px-4 py-2 text-center font-semibold text-primary-foreground"
               >
                 Přejít do aukce
               </Link>
@@ -211,7 +237,7 @@ function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
                   {photo + 1} / {v.photos.length}
                 </span>
               </div>
-              <div className="mt-2 grid grid-cols-4 gap-2">
+              <div className={cn("mt-2 grid grid-cols-4 gap-2", v.photos.length < 2 && "hidden")}>
                 {v.photos.map((p, i) => (
                   <button
                     key={p + i}
@@ -259,28 +285,42 @@ function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
             <section className="mt-8 surface-card p-6">
               <h2 className="mb-4 text-xl font-bold">Technické údaje</h2>
               <dl className="grid gap-x-8 sm:grid-cols-2">
-                {specs.map(([k, val]) => (
-                  <div
-                    key={k}
-                    className="flex justify-between border-b border-border py-2.5 text-sm"
-                  >
-                    <dt className="text-muted-foreground">{k}</dt>
-                    <dd className={cn("font-medium", k === "VIN" && "font-mono text-xs")}>{val}</dd>
-                  </div>
-                ))}
+                {specs
+                  .filter((row): row is [string, string] => !!row[1])
+                  .map(([k, val]) => (
+                    <div
+                      key={k}
+                      className="flex justify-between border-b border-border py-2.5 text-sm"
+                    >
+                      <dt className="text-muted-foreground">{k}</dt>
+                      <dd className={cn("font-medium", k === "VIN" && "font-mono text-xs")}>
+                        {val}
+                      </dd>
+                    </div>
+                  ))}
               </dl>
             </section>
 
-            {v.equipment.length ? (
+            {eqCount ? (
               <section className="mt-8 surface-card p-6">
-                <h2 className="mb-4 text-xl font-bold">Výbava</h2>
-                <ul className="grid gap-2 sm:grid-cols-2">
-                  {v.equipment.map((e) => (
-                    <li key={e} className="flex items-center gap-2 text-sm">
-                      <Check className="h-4 w-4 text-success" /> {labelOf(equipment, e)}
-                    </li>
+                <h2 className="text-xl font-bold">Výbava</h2>
+                <p className="mb-5 text-sm text-muted-foreground">{eqCount} položek</p>
+                <div className="space-y-5">
+                  {eqGroups.map((g) => (
+                    <div key={g.id}>
+                      <h3 className="mb-2 text-sm font-semibold text-muted-foreground">
+                        {g.label}
+                      </h3>
+                      <ul className="grid gap-x-6 gap-y-1.5 sm:grid-cols-2">
+                        {g.items.map((e) => (
+                          <li key={e.value} className="flex items-center gap-2 text-sm">
+                            <Check className="h-4 w-4 shrink-0 text-success" /> {e.label}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </section>
             ) : null}
 
@@ -331,7 +371,7 @@ function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
                   href={`https://www.cebia.cz/?vin=${v.vin}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-4 inline-flex rounded-full border border-border px-4 py-2 text-sm font-semibold hover:border-primary/40"
+                  className="mt-4 inline-flex rounded-lg border border-border px-4 py-2 text-sm font-semibold hover:border-primary/40"
                 >
                   Prověřit VIN {v.vin} u Cebia
                 </a>
@@ -374,7 +414,7 @@ function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
               </p>
               <button
                 onClick={() => setShowPhone(true)}
-                className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-foreground py-3 text-sm font-semibold text-background hover:bg-foreground/90"
+                className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-foreground py-3 text-sm font-semibold text-background hover:bg-foreground/90"
               >
                 <Phone className="h-4 w-4" /> {showPhone ? dealer.phone : "Zobrazit telefon"}
               </button>
@@ -393,7 +433,9 @@ function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
                 <span className="block font-semibold">Raději nové auto na operativní leasing?</span>
                 <span className="text-sm text-muted-foreground">Vše v ceně, bez akontace.</span>
               </span>
-              <span className="text-sm font-semibold text-primary">Nabídky →</span>
+              <span className="shrink-0 whitespace-nowrap text-sm font-semibold text-primary">
+                Nabídky →
+              </span>
             </Link>
             <AdSlot format="rectangle" />
           </aside>
@@ -428,19 +470,17 @@ function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
         {v.vatDeductible ? (
           <p className="text-sm text-muted-foreground">{czk(Math.round(v.price / 1.21))} bez DPH</p>
         ) : null}
-        <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl bg-accent p-3">
-          <div>
-            <p className="text-xs text-accent-foreground/80">nebo na splátky bez akontace</p>
-            <p className="font-display text-xl font-extrabold text-accent-foreground">
-              od {czk(monthlyPayment(v.price))} / měs.
-            </p>
-          </div>
+        <div className="mt-4 rounded-xl bg-accent p-4">
+          <p className="text-xs text-accent-foreground/80">nebo na splátky bez akontace</p>
+          <p className="font-display text-2xl font-extrabold text-accent-foreground">
+            od {czk(monthlyPayment(v.price))} <span className="text-sm font-semibold">/ měs.</span>
+          </p>
           <button
             type="button"
             onClick={openFinance}
-            className="shrink-0 rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground hover:bg-primary/90"
+            className="mt-3 w-full rounded-lg bg-primary py-2.5 text-sm font-bold text-primary-foreground hover:bg-primary/90"
           >
-            Předschválení za 2 min
+            Předschválení za 2 minuty
           </button>
         </div>
       </div>
@@ -520,7 +560,7 @@ function DealerContactForm({ vehicleId, title }: { vehicleId: string; title: str
       </p>
       <button
         disabled={busy}
-        className="w-full rounded-full border border-border py-2.5 text-sm font-semibold hover:border-primary/40 disabled:opacity-60"
+        className="w-full rounded-lg border border-border py-2.5 text-sm font-semibold hover:border-primary/40 disabled:opacity-60"
       >
         {busy ? "Odesílám…" : "Napsat prodejci"}
       </button>

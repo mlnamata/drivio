@@ -50,6 +50,7 @@ import { Route as LeasingFirmyRouteImport } from './routes/leasing/firmy'
 import { Route as PravniCookiesRouteImport } from './routes/pravni/cookies'
 import { Route as PravniObchodniPodminkyRouteImport } from './routes/pravni/obchodni-podminky'
 import { Route as PravniOchranaOsobnichUdajuRouteImport } from './routes/pravni/ochrana-osobnich-udaju'
+import { Route as PravniZdrojeFotografiiRouteImport } from './routes/pravni/zdroje-fotografii'
 import { Route as ApiWebhooksFakturoidRouteImport } from './routes/api/webhooks/fakturoid'
 
 const IndexRoute = IndexRouteImport.update({
@@ -259,6 +260,11 @@ const PravniOchranaOsobnichUdajuRoute =
     path: '/pravni/ochrana-osobnich-udaju',
     getParentRoute: () => rootRouteImport,
   } as any)
+const PravniZdrojeFotografiiRoute = PravniZdrojeFotografiiRouteImport.update({
+  id: '/pravni/zdroje-fotografii',
+  path: '/pravni/zdroje-fotografii',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiWebhooksFakturoidRoute = ApiWebhooksFakturoidRouteImport.update({
   id: '/api/webhooks/fakturoid',
   path: '/api/webhooks/fakturoid',
@@ -303,6 +309,7 @@ export interface FileRoutesByFullPath {
   '/pravni/cookies': typeof PravniCookiesRoute
   '/pravni/obchodni-podminky': typeof PravniObchodniPodminkyRoute
   '/pravni/ochrana-osobnich-udaju': typeof PravniOchranaOsobnichUdajuRoute
+  '/pravni/zdroje-fotografii': typeof PravniZdrojeFotografiiRoute
   '/admin/': typeof AdminIndexRoute
   '/aukce/': typeof AukceIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -345,6 +352,7 @@ export interface FileRoutesByTo {
   '/pravni/cookies': typeof PravniCookiesRoute
   '/pravni/obchodni-podminky': typeof PravniObchodniPodminkyRoute
   '/pravni/ochrana-osobnich-udaju': typeof PravniOchranaOsobnichUdajuRoute
+  '/pravni/zdroje-fotografii': typeof PravniZdrojeFotografiiRoute
   '/admin': typeof AdminIndexRoute
   '/aukce': typeof AukceIndexRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -390,6 +398,7 @@ export interface FileRoutesById {
   '/pravni/cookies': typeof PravniCookiesRoute
   '/pravni/obchodni-podminky': typeof PravniObchodniPodminkyRoute
   '/pravni/ochrana-osobnich-udaju': typeof PravniOchranaOsobnichUdajuRoute
+  '/pravni/zdroje-fotografii': typeof PravniZdrojeFotografiiRoute
   '/admin/': typeof AdminIndexRoute
   '/aukce/': typeof AukceIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -436,6 +445,7 @@ export interface FileRouteTypes {
     | '/pravni/cookies'
     | '/pravni/obchodni-podminky'
     | '/pravni/ochrana-osobnich-udaju'
+    | '/pravni/zdroje-fotografii'
     | '/admin/'
     | '/aukce/'
     | '/dashboard/'
@@ -478,6 +488,7 @@ export interface FileRouteTypes {
     | '/pravni/cookies'
     | '/pravni/obchodni-podminky'
     | '/pravni/ochrana-osobnich-udaju'
+    | '/pravni/zdroje-fotografii'
     | '/admin'
     | '/aukce'
     | '/dashboard'
@@ -522,6 +533,7 @@ export interface FileRouteTypes {
     | '/pravni/cookies'
     | '/pravni/obchodni-podminky'
     | '/pravni/ochrana-osobnich-udaju'
+    | '/pravni/zdroje-fotografii'
     | '/admin/'
     | '/aukce/'
     | '/dashboard/'
@@ -553,6 +565,7 @@ export interface RootRouteChildren {
   PravniCookiesRoute: typeof PravniCookiesRoute
   PravniObchodniPodminkyRoute: typeof PravniObchodniPodminkyRoute
   PravniOchranaOsobnichUdajuRoute: typeof PravniOchranaOsobnichUdajuRoute
+  PravniZdrojeFotografiiRoute: typeof PravniZdrojeFotografiiRoute
   AukceIndexRoute: typeof AukceIndexRoute
   LeasingIndexRoute: typeof LeasingIndexRoute
   ApiWebhooksFakturoidRoute: typeof ApiWebhooksFakturoidRoute
@@ -847,6 +860,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PravniOchranaOsobnichUdajuRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pravni/zdroje-fotografii': {
+      id: '/pravni/zdroje-fotografii'
+      path: '/pravni/zdroje-fotografii'
+      fullPath: '/pravni/zdroje-fotografii'
+      preLoaderRoute: typeof PravniZdrojeFotografiiRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/webhooks/fakturoid': {
       id: '/api/webhooks/fakturoid'
       path: '/api/webhooks/fakturoid'
@@ -931,6 +951,7 @@ const rootRouteChildren: RootRouteChildren = {
   PravniCookiesRoute: PravniCookiesRoute,
   PravniObchodniPodminkyRoute: PravniObchodniPodminkyRoute,
   PravniOchranaOsobnichUdajuRoute: PravniOchranaOsobnichUdajuRoute,
+  PravniZdrojeFotografiiRoute: PravniZdrojeFotografiiRoute,
   AukceIndexRoute: AukceIndexRoute,
   LeasingIndexRoute: LeasingIndexRoute,
   ApiWebhooksFakturoidRoute: ApiWebhooksFakturoidRoute,

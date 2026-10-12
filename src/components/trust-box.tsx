@@ -108,7 +108,7 @@ export function SafeBuyBox({ vehicle: v, seller }: { vehicle: Vehicle; seller: S
             </div>
             <button
               disabled={busy}
-              className="w-full rounded-full bg-foreground py-2.5 text-sm font-semibold text-background disabled:opacity-60"
+              className="w-full rounded-lg bg-foreground py-2.5 text-sm font-semibold text-background disabled:opacity-60"
             >
               {busy ? "Odesílám…" : "Odeslat nahlášení"}
             </button>

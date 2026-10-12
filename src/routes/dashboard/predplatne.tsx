@@ -58,7 +58,7 @@ function Subscription() {
           disabled={b.payg}
           onClick={() => choose("payg", PAYG_PLAN.name)}
           className={cn(
-            "shrink-0 rounded-full px-6 py-3 text-sm font-semibold",
+            "shrink-0 rounded-lg px-6 py-3 text-sm font-semibold",
             b.payg
               ? "bg-muted text-muted-foreground"
               : "bg-foreground text-background hover:bg-foreground/85",
@@ -87,7 +87,7 @@ function Subscription() {
                 disabled={current}
                 onClick={() => choose(p.id, p.name)}
                 className={cn(
-                  "mt-4 w-full rounded-full py-2 text-sm font-semibold",
+                  "mt-4 w-full rounded-lg py-2 text-sm font-semibold",
                   current
                     ? "bg-muted text-muted-foreground"
                     : "bg-primary text-primary-foreground hover:bg-primary/90",

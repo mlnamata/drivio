@@ -82,14 +82,11 @@ function ForDealers() {
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               to="/prihlaseni"
-              className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-foreground"
+              className="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-sidebar"
             >
               Registrovat autobazar <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link
-              to="/dashboard"
-              className="glass-dark rounded-full px-6 py-3 text-sm font-semibold"
-            >
+            <Link to="/dashboard" className="glass-dark rounded-lg px-6 py-3 text-sm font-semibold">
               Prohlédnout administraci
             </Link>
           </div>
@@ -109,7 +106,7 @@ function ForDealers() {
         </div>
       </Container>
       <Container className="pb-8">
-        <SectionTitle eyebrow="Ceník" title="Balíčky slotů" />
+        <SectionTitle title="Balíčky slotů" />
         <p className="mb-3 text-sm font-semibold">
           Varianta 1 – předplatné balíčku slotů (výhodnější při více vozech)
         </p>

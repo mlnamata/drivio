@@ -51,7 +51,6 @@ function Advertising() {
       <Container className="py-8">
         <Breadcrumbs items={[{ to: "/", label: "Drivio" }, { label: "Reklama" }]} />
         <SectionTitle
-          eyebrow="Pro inzerenty"
           title="Oslovte lidi, kteří právě kupují auto"
           desc="Drivio navštěvují zákazníci v nákupní fázi – hledají konkrétní vůz, financování, pojištění i servis."
         />
@@ -161,7 +160,7 @@ function Advertising() {
               className="field"
               placeholder="Co chcete propagovat?"
             />
-            <button className="w-full rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground">
+            <button className="w-full rounded-lg bg-primary py-3 text-sm font-semibold text-primary-foreground">
               Poslat poptávku
             </button>
           </form>

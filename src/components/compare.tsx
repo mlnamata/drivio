@@ -21,8 +21,8 @@ export function CompareButton({ id, className }: { id: string; className?: strin
       aria-label={active ? "Odebrat z porovnání" : "Přidat do porovnání"}
       title={active ? "Odebrat z porovnání" : "Porovnat"}
       className={cn(
-        "inline-flex h-9 w-9 items-center justify-center rounded-full transition-transform hover:scale-105",
-        active ? "bg-primary text-primary-foreground" : "glass text-foreground/70",
+        "inline-flex h-8 w-8 items-center justify-center rounded-full shadow-sm transition-transform hover:scale-105",
+        active ? "bg-primary text-primary-foreground" : "bg-card/90 text-foreground/70",
         className,
       )}
     >
@@ -60,7 +60,7 @@ export function CompareBar() {
         <Link
           to="/porovnani"
           className={cn(
-            "shrink-0 rounded-full px-4 py-2 text-sm font-bold",
+            "shrink-0 rounded-lg px-4 py-2 text-sm font-bold",
             list.length > 1
               ? "bg-primary text-primary-foreground"
               : "pointer-events-none bg-muted text-muted-foreground",

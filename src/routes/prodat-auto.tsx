@@ -76,7 +76,7 @@ function SellCar() {
           </div>
         </div>
 
-        <div className="mt-8 grid max-w-xl grid-cols-2 gap-1 rounded-full bg-muted p-1">
+        <div className="mt-8 grid max-w-xl grid-cols-2 gap-1 rounded-xl bg-muted p-1">
           {(
             [
               ["private", User, "Fyzická osoba"],
@@ -87,7 +87,7 @@ function SellCar() {
               key={t}
               onClick={() => setSellerType(t)}
               className={cn(
-                "flex items-center justify-center gap-2 rounded-full py-2.5 text-sm font-semibold transition",
+                "flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition",
                 sellerType === t ? "bg-card shadow-sm" : "text-muted-foreground",
               )}
             >
@@ -107,13 +107,13 @@ function SellCar() {
             <div className="flex flex-wrap gap-3">
               <Link
                 to="/prihlaseni"
-                className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"
+                className="rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"
               >
                 Registrovat firmu a vložit vůz
               </Link>
               <Link
                 to="/cenik"
-                className="rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold"
+                className="rounded-lg border border-border bg-card px-6 py-3 text-sm font-semibold"
               >
                 Podrobný ceník a kalkulačka
               </Link>
@@ -155,7 +155,7 @@ function SellCar() {
                           description: "Inzerát je stažený a můžete vložit další vůz.",
                         });
                       }}
-                      className="rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background"
+                      className="rounded-lg bg-foreground px-4 py-2 text-sm font-semibold text-background"
                     >
                       Prodáno
                     </button>
@@ -185,7 +185,7 @@ function SellCar() {
               </div>
               <Link
                 to="/pro-autobazary"
-                className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+                className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
               >
                 Balíčky pro prodejce
               </Link>

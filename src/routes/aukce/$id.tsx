@@ -76,7 +76,7 @@ function AuctionPage() {
           <h1 className="text-3xl font-bold">Aukce nenalezena</h1>
           <Link
             to="/aukce"
-            className="mt-6 inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+            className="mt-6 inline-flex rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
           >
             Všechny aukce
           </Link>
@@ -285,7 +285,7 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
                       toast(a.reminded ? "Upozornění zrušeno" : "Upozorníme vás na start aukce");
                     }}
                     className={cn(
-                      "mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-bold",
+                      "mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg py-3 text-sm font-bold",
                       a.reminded
                         ? "bg-accent text-accent-foreground"
                         : "bg-primary text-primary-foreground",
@@ -297,7 +297,7 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
                   {!bidder ? (
                     <button
                       onClick={() => setRegister(true)}
-                      className="mt-2 w-full rounded-full border border-border py-2.5 text-sm font-semibold"
+                      className="mt-2 w-full rounded-lg border border-border py-2.5 text-sm font-semibold"
                     >
                       Registrovat se jako dražitel předem
                     </button>
@@ -311,7 +311,7 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
                   <p className="mt-1 text-xs text-muted-foreground">{count} příhozů</p>
                   <Link
                     to="/aukce"
-                    className="mt-5 inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+                    className="mt-5 inline-flex rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
                   >
                     Probíhající aukce
                   </Link>
@@ -372,7 +372,7 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
                           key={k}
                           type="button"
                           onClick={() => setAmount(Math.max(price, 0) + a.minIncrement * k)}
-                          className="flex-1 rounded-full border border-border py-1.5 text-xs font-semibold hover:border-primary/40"
+                          className="flex-1 rounded-lg border border-border py-1.5 text-xs font-semibold hover:border-primary/40"
                         >
                           +{num(a.minIncrement * k)}
                         </button>
@@ -389,7 +389,7 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
                     />
                     <button
                       disabled={busy}
-                      className="flex w-full items-center justify-center gap-2 rounded-full bg-primary py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+                      className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
                     >
                       <Gavel className="h-4 w-4" />{" "}
                       {busy ? "Odesílám příhoz…" : `Přihodit ${czk(amount)}`}
@@ -540,7 +540,7 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
                 a beru na vědomí, že vítězný příhoz je závazný a platí se k němu aukční poplatek.
               </span>
             </label>
-            <button className="w-full rounded-full bg-primary py-3 text-sm font-bold text-primary-foreground">
+            <button className="w-full rounded-lg bg-primary py-3 text-sm font-bold text-primary-foreground">
               Registrovat a přihazovat
             </button>
           </form>

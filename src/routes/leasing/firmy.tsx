@@ -221,7 +221,7 @@ function FleetLeasing() {
                       <div className="flex items-center justify-center gap-2">
                         <button
                           onClick={() => setQ(o.id, -1)}
-                          className="rounded-full border border-border p-1"
+                          className="rounded-xl border border-border p-1"
                           aria-label="Méně"
                         >
                           <Minus className="h-3.5 w-3.5" />
@@ -229,7 +229,7 @@ function FleetLeasing() {
                         <span className="w-6 text-center font-semibold tabular-nums">{n}</span>
                         <button
                           onClick={() => setQ(o.id, 1)}
-                          className="rounded-full border border-border p-1"
+                          className="rounded-xl border border-border p-1"
                           aria-label="Více"
                         >
                           <Plus className="h-3.5 w-3.5" />
@@ -335,7 +335,7 @@ function FleetLeasing() {
                 </label>
                 <button
                   disabled={busy || selected.length === 0}
-                  className="w-full rounded-full bg-primary py-3 text-sm font-bold text-primary-foreground disabled:opacity-50"
+                  className="w-full rounded-lg bg-primary py-3 text-sm font-bold text-primary-foreground disabled:opacity-50"
                 >
                   {selected.length
                     ? `Poptat ${cars(selected.reduce((s, [, n]) => s + n, 0))}`
