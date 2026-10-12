@@ -19,7 +19,7 @@ import { QuickSearch } from "@/components/quick-search";
 import { Container, Page, SectionTitle } from "@/components/site-shell";
 import { VehicleCard } from "@/components/vehicle-card";
 import { bodyTypes, brands } from "@/lib/catalog";
-import { czk, monthlyPayment, num, vehicleTitle } from "@/lib/mock-data";
+import { czk, monthlyPayment, vehicleTitle } from "@/lib/mock-data";
 import { useAllVehicles, useAuctions, useVehicles } from "@/lib/store";
 
 import { cars } from "@/lib/utils";
@@ -86,11 +86,9 @@ function Index() {
 
   return (
     <Page>
-      {/* HERO – světlý, bez fotky na pozadí (styl driveto.cz) */}
-      <section className="relative overflow-hidden border-b border-border bg-gradient-to-b from-accent/70 via-background to-background">
-        <div className="pointer-events-none absolute -right-40 -top-40 h-[32rem] w-[32rem] rounded-full bg-primary/10 blur-3xl" />
-        <div className="pointer-events-none absolute -left-32 top-24 h-72 w-72 rounded-full bg-primary/5 blur-3xl" />
-        <Container className="relative pb-12 pt-10 md:pb-16 md:pt-14">
+      {/* HERO – plochý, bez gradientů a glow efektů (styl driveto.cz) */}
+      <section className="border-b border-border bg-background">
+        <Container className="pb-12 pt-10 md:pb-16 md:pt-14">
           <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-center">
             <div>
               <p className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold shadow-sm">
@@ -124,43 +122,41 @@ function Index() {
               </div>
             </div>
 
-            {/* Oblíbené nabídky se splátkou */}
-            <div className="hidden rounded-3xl border border-border bg-card p-5 shadow-[var(--shadow-lift)] lg:block">
+            {/* Oblíbené nabídky – fotky napřed, styl driveto.cz */}
+            <div className="hidden lg:block">
               <div className="mb-3 flex items-center justify-between">
                 <p className="font-bold">Oblíbené nabídky</p>
                 <Link to="/inzeraty" className="text-sm font-semibold text-primary">
                   Všechny →
                 </Link>
               </div>
-              <ul className="divide-y divide-border">
+              <div className="grid grid-cols-2 gap-3">
                 {heroCards.map((v) => (
-                  <li key={v.id}>
-                    <Link
-                      to="/inzerat/$id"
-                      params={{ id: v.id }}
-                      className="group flex items-center gap-4 py-3"
-                    >
-                      <span className="h-16 w-24 shrink-0 overflow-hidden rounded-xl bg-muted">
-                        <CarImage src={v.photos[0]!} alt={vehicleTitle(v)} />
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate font-semibold group-hover:text-primary">
-                          {vehicleTitle(v)}
-                        </span>
-                        <span className="block text-xs text-muted-foreground">
-                          {v.year} · {num(v.km)} km · {czk(v.price)}
-                        </span>
-                      </span>
-                      <span className="text-right">
-                        <span className="block font-display text-lg font-extrabold text-primary">
-                          {czk(monthlyPayment(v.price))}
-                        </span>
-                        <span className="block text-[11px] text-muted-foreground">měsíčně</span>
-                      </span>
-                    </Link>
-                  </li>
+                  <Link
+                    key={v.id}
+                    to="/inzerat/$id"
+                    params={{ id: v.id }}
+                    className="group relative overflow-hidden rounded-2xl border border-border"
+                  >
+                    <div className="aspect-[4/3]">
+                      <CarImage
+                        src={v.photos[0]!}
+                        alt={vehicleTitle(v)}
+                        className="transition-transform duration-500 group-hover:scale-[1.06]"
+                      />
+                    </div>
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent p-3 pt-8">
+                      <p className="truncate text-xs font-semibold text-white">
+                        {vehicleTitle(v)}
+                      </p>
+                      <p className="font-display text-sm font-extrabold text-white">
+                        {czk(monthlyPayment(v.price))}
+                        <span className="text-[10px] font-medium text-white/70"> /měs.</span>
+                      </p>
+                    </div>
+                  </Link>
                 ))}
-              </ul>
+              </div>
             </div>
           </div>
 
@@ -330,9 +326,8 @@ function Index() {
 
       {/* AUKCE */}
       <Container className="py-12">
-        <div className="relative overflow-hidden rounded-[2rem] bg-sidebar p-6 text-white md:p-10">
-          <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-primary/35 blur-3xl" />
-          <div className="relative grid gap-8 lg:grid-cols-[1fr_1.4fr] lg:items-center">
+        <div className="overflow-hidden rounded-[2rem] bg-sidebar p-6 text-white md:p-10">
+          <div className="grid gap-8 lg:grid-cols-[1fr_1.4fr] lg:items-center">
             <div>
               <p className="inline-flex items-center gap-2 rounded-full bg-primary/20 px-3 py-1 text-xs font-semibold text-primary">
                 <Gavel className="h-3.5 w-3.5" /> Živé aukce

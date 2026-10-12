@@ -1,5 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, FileText, Gauge, Gavel, LayoutDashboard, ScanLine, Users } from "lucide-react";
+import {
+  ArrowRight,
+  FileText,
+  Gauge,
+  Gavel,
+  LayoutDashboard,
+  ScanLine,
+  TrendingUp,
+  Users,
+} from "lucide-react";
 import { Container, Page, SectionTitle } from "@/components/site-shell";
 import { PayPerVehicleCard, PlanCards } from "@/components/pricing";
 
@@ -32,6 +41,11 @@ const features = [
     Gauge,
     "Tlak na obrátku",
     "Rostoucí sazba za ležáky vás drží u realistické ceny. Průměrná doba prodeje 27 dní.",
+  ],
+  [
+    TrendingUp,
+    "Topování inzerátů",
+    "Vaše vozy posouváme nahoru ve výpisu i do TOP nabídek na úvodní stránce – víc zobrazení, rychlejší prodej.",
   ],
   [
     Gavel,

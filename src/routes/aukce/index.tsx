@@ -69,9 +69,8 @@ function AuctionHub() {
     <Page>
       <Container className="py-8">
         <Breadcrumbs items={[{ to: "/", label: "Drivio" }, { label: "Aukce" }]} />
-        <div className="relative overflow-hidden rounded-[2rem] bg-sidebar p-8 text-white md:p-12">
-          <div className="pointer-events-none absolute -right-20 -top-28 h-96 w-96 rounded-full bg-primary/40 blur-3xl" />
-          <div className="relative grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-end">
+        <div className="overflow-hidden rounded-[2rem] bg-sidebar p-8 text-white md:p-12">
+          <div className="grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-end">
             <div>
               <p className="inline-flex items-center gap-2 rounded-full bg-primary/20 px-3 py-1 text-xs font-semibold text-primary">
                 <span className="h-2 w-2 animate-pulse rounded-full bg-primary" /> {live.length}{" "}

@@ -85,9 +85,8 @@ function Leasing() {
     <Page>
       {/* HERO */}
       <Container className="pt-6">
-        <section className="relative overflow-hidden rounded-[2rem] bg-sidebar px-6 py-10 text-white md:px-12 md:py-14">
-          <div className="pointer-events-none absolute -right-20 -top-24 h-96 w-96 rounded-full bg-primary/35 blur-3xl" />
-          <div className="relative grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-center">
+        <section className="overflow-hidden rounded-[2rem] bg-sidebar px-6 py-10 text-white md:px-12 md:py-14">
+          <div className="grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-center">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
                 Operativní leasing
