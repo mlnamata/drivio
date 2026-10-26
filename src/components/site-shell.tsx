@@ -17,6 +17,7 @@ import { Logo, LogoFlat } from "@/components/logo";
 import { CookieBanner } from "@/components/cookie-banner";
 import { CompareBar } from "@/components/compare";
 import { UspBar } from "@/components/trust";
+import { ThemeSwitch, ThemeToggle } from "@/components/theme-toggle";
 import { useFavorites } from "@/hooks/use-favorites";
 import { useStore } from "@/lib/store";
 import { signOut, useAuth } from "@/lib/auth";
@@ -78,13 +79,13 @@ export function SiteHeader() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 border-b transition-all",
-        scrolled ? "border-border bg-card shadow-[var(--shadow-lift)]" : "border-border bg-card",
+        "sticky top-0 z-50 border-b border-border bg-card transition-shadow",
+        scrolled && "shadow-[0_6px_20px_-14px_oklch(0.2_0.01_260/0.35)]",
       )}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-4">
         <Link to="/" aria-label="Drivio – úvod" className="shrink-0">
-          <Logo className="h-7 md:h-8" />
+          <Logo className="h-8 md:h-9" />
         </Link>
         <nav className="hidden items-center gap-0.5 xl:flex">
           {nav.map((i) => (
@@ -92,7 +93,12 @@ export function SiteHeader() {
               key={i.label}
               to={i.to}
               {...("search" in i ? { search: i.search } : {})}
-              className="rounded-lg px-3 py-2 text-sm font-semibold text-foreground/75 transition-colors hover:bg-foreground/5 hover:text-foreground"
+              className="relative rounded-lg px-3 py-2 text-sm font-semibold text-foreground/75 transition-colors hover:bg-foreground/5 hover:text-foreground"
+              activeOptions={{ includeSearch: "search" in i }}
+              activeProps={{
+                className:
+                  "text-foreground after:absolute after:inset-x-3 after:-bottom-[13px] after:h-0.5 after:rounded-full after:bg-primary",
+              }}
             >
               {i.label}
             </Link>
@@ -105,6 +111,7 @@ export function SiteHeader() {
           <IconLink to="/oblibene" label="Oblíbené" count={ids.length}>
             <Heart className="h-5 w-5" />
           </IconLink>
+          <ThemeToggle />
           <Link
             to="/prodat-auto"
             className="ml-1 hidden items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 md:inline-flex"
@@ -123,7 +130,7 @@ export function SiteHeader() {
               ) : null}
               <button
                 onClick={() => void signOut()}
-                className="rounded-full px-3 py-2 text-sm font-semibold text-foreground/70 hover:bg-foreground/5"
+                className="rounded-lg px-3 py-2 text-sm font-semibold text-foreground/70 hover:bg-foreground/5"
               >
                 Odhlásit
               </button>
@@ -131,7 +138,7 @@ export function SiteHeader() {
           ) : (
             <Link
               to="/prihlaseni"
-              className="ml-1 hidden items-center gap-2 rounded-lg bg-foreground px-4 py-2 text-sm font-semibold text-background transition-colors hover:bg-foreground/85 sm:inline-flex"
+              className="ml-1 hidden items-center gap-2 rounded-lg border border-border px-4 py-2 text-sm font-semibold transition-colors hover:border-foreground/30 hover:bg-foreground/5 sm:inline-flex"
             >
               <User className="h-4 w-4" /> Přihlásit
             </Link>
@@ -261,6 +268,8 @@ export function SiteFooter() {
               Ojetá auta od prověřených autobazarů. Splátka na první pohled, operativní leasing a
               {"\u00a0"}aukce od 1{"\u00a0"}Kč.
             </p>
+            <p className="mb-2 mt-6 text-sm font-semibold text-white">Vzhled webu</p>
+            <ThemeSwitch tone="dark" />
           </div>
           {buyers ? (
             <div>
@@ -309,6 +318,9 @@ export function SiteFooter() {
             <Link to="/pravni/cookies" className="hover:text-white">
               Cookies
             </Link>
+            <Link to="/pravni/zdroje-fotografii" className="hover:text-white">
+              Zdroje fotografií
+            </Link>
             <Link to="/admin" className="hover:text-white">
               Správa portálu
             </Link>
@@ -349,9 +361,9 @@ export function SectionTitle({
     <div className={cn("mb-6 flex flex-wrap items-end justify-between gap-x-6 gap-y-2", className)}>
       <div className="max-w-2xl">
         <h2 className="text-2xl font-bold md:text-[1.75rem]">{title}</h2>
-        {desc ? <p className="mt-2 text-muted-foreground">{desc}</p> : null}
+        {desc ? <p className="mt-1.5 text-muted-foreground">{desc}</p> : null}
       </div>
-      {action}
+      {action ? <div className="shrink-0 text-sm font-semibold">{action}</div> : null}
     </div>
   );
 }

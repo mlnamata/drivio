@@ -368,7 +368,7 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
                           key={k}
                           type="button"
                           onClick={() => setAmount(Math.max(price, 0) + a.minIncrement * k)}
-                          className="flex-1 rounded-full border border-border py-1.5 text-xs font-semibold hover:border-primary/40"
+                          className="flex-1 rounded-lg border border-border py-1.5 text-xs font-semibold hover:border-primary/40"
                         >
                           +{num(a.minIncrement * k)}
                         </button>

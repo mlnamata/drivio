@@ -1,19 +1,31 @@
 import { cn } from "@/lib/utils";
 
 /**
- * Oficiální logo Drivio (3D wordmark, černá + oranžová) – pro světlá pozadí.
- * Zdroj: public/brand/drivio-logo-original.png, průhledná verze drivio-logo.webp.
+ * Oficiální logo Drivio (3D wordmark, černá + oranžová).
+ * Zdroj: public/brand/drivio-logo-original.png, průhledná verze drivio-logo.webp;
+ * drivio-logo-dark.webp je stříbrná varianta pro tmavý vzhled. Přepíná CSS (třída dark).
  */
 export function Logo({ className }: { className?: string }) {
+  const cls = cn("h-8 w-auto select-none", className);
   return (
-    <img
-      src="/brand/drivio-logo.webp"
-      alt="Drivio"
-      width={633}
-      height={160}
-      className={cn("h-8 w-auto select-none", className)}
-      draggable={false}
-    />
+    <>
+      <img
+        src="/brand/drivio-logo.webp"
+        alt="Drivio"
+        width={633}
+        height={160}
+        className={cn(cls, "dark:hidden")}
+        draggable={false}
+      />
+      <img
+        src="/brand/drivio-logo-dark.webp"
+        alt="Drivio"
+        width={633}
+        height={160}
+        className={cn(cls, "hidden dark:block")}
+        draggable={false}
+      />
+    </>
   );
 }
 

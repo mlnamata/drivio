@@ -222,7 +222,7 @@ function FleetLeasing() {
                       <div className="flex items-center justify-center gap-2">
                         <button
                           onClick={() => setQ(o.id, -1)}
-                          className="rounded-full border border-border p-1"
+                          className="rounded-xl border border-border p-1"
                           aria-label="Méně"
                         >
                           <Minus className="h-3.5 w-3.5" />
@@ -230,7 +230,7 @@ function FleetLeasing() {
                         <span className="w-6 text-center font-semibold tabular-nums">{n}</span>
                         <button
                           onClick={() => setQ(o.id, 1)}
-                          className="rounded-full border border-border p-1"
+                          className="rounded-xl border border-border p-1"
                           aria-label="Více"
                         >
                           <Plus className="h-3.5 w-3.5" />

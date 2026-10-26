@@ -106,7 +106,7 @@ function Leasing() {
                     className={cn(
                       "inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-colors",
                       !!s.business === b
-                        ? "bg-white text-foreground"
+                        ? "bg-white text-sidebar"
                         : "text-white/80 hover:text-white",
                     )}
                   >

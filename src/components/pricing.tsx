@@ -101,7 +101,7 @@ export function SlotCalculator() {
                 type="button"
                 onClick={() => setMonth(m)}
                 className={cn(
-                  "flex-1 rounded-full border py-2 font-semibold",
+                  "flex-1 rounded-lg border py-2 font-semibold",
                   month === m
                     ? "border-primary bg-primary text-primary-foreground"
                     : "border-border",

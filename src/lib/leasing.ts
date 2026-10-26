@@ -3,6 +3,7 @@
  * „vše v ceně", volba délky pronájmu a ročního nájezdu. Po napojení se nabídky načítají
  * z tabulky `leasing_offers`, kterou plní partneři přes API (viz /pro-leasingove-spolecnosti).
  */
+import { demoPhotos } from "./demo-photos";
 import { DEMO_MODE, photoPool } from "./mock-data";
 
 export type LeasingOffer = {
@@ -267,7 +268,7 @@ export const leasingOffers: LeasingOffer[] = seeds.map((s, i) => ({
   partner: leasingPartners[s[10]]!,
   inStock: s[11],
   deliveryDays: s[12],
-  photo: photoPool[(i * 2 + 1) % photoPool.length]!,
+  photo: demoPhotos[s[0]]?.[0] ?? photoPool[(i * 2 + 1) % photoPool.length]!,
 }));
 
 export const leasingOfferById = (id: string) => leasingOffers.find((o) => o.id === id);

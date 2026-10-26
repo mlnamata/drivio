@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { FileText, Gauge, Gavel, LayoutDashboard, ScanLine, Users } from "lucide-react";
+import { FileText, Gauge, Gavel, LayoutDashboard, ScanLine, TrendingUp, Users } from "lucide-react";
 import { Container, Page, SectionTitle } from "@/components/site-shell";
 import { PayPerVehicleCard, PlanCards } from "@/components/pricing";
 
@@ -34,6 +34,11 @@ const features = [
     "Rostoucí sazba za ležáky vás drží u realistické ceny. Průměrná doba prodeje 27 dní.",
   ],
   [
+    TrendingUp,
+    "Topování inzerátů",
+    "Vaše vozy posouváme nahoru ve výpisu i do TOP nabídek na úvodní stránce – víc zobrazení, rychlejší prodej.",
+  ],
+  [
     Gavel,
     "Záchranná brzda",
     "Po 3 měsících přesunete vůz do aukce od 1 Kč, poplatek za progresi odpustíme.",
@@ -65,7 +70,7 @@ function ForDealers() {
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               to="/prihlaseni"
-              className="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-white/90"
+              className="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-semibold text-sidebar transition-colors hover:bg-white/90"
             >
               Registrovat autobazar
             </Link>

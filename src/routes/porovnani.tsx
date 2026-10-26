@@ -4,12 +4,26 @@ import { Tick } from "@/components/icons";
 import { useEffect, useState, type ReactNode } from "react";
 import { CarImage } from "@/components/car-image";
 import { Breadcrumbs, Container, Page } from "@/components/site-shell";
-import { bodyTypes, colors, drives, equipment, fuels, gearboxes, labelOf } from "@/lib/catalog";
+import {
+  bodyTypes,
+  climateLevels,
+  colors,
+  drives,
+  emissionClasses,
+  equipmentGroups,
+  fuels,
+  gearboxes,
+  interiorMaterials,
+  labelOf,
+  TAG,
+  tagValue,
+} from "@/lib/catalog";
 import { evaluateVehicles } from "@/lib/compare";
 import {
   czk,
   monthlyPayment,
   num,
+  ownersOf,
   priceRating,
   sellerOf,
   vehicleTitle,
@@ -78,6 +92,21 @@ const groups: { title: string; rows: Row[] }[] = [
       { label: "Pohon", value: (v) => labelOf(drives, v.drive), raw: (v) => v.drive },
       { label: "Barva", value: (v) => labelOf(colors, v.color), raw: (v) => v.color },
       {
+        label: "Emisní norma",
+        value: (v) => pickLabel(v, emissionClasses),
+        raw: (v) => pickLabel(v, emissionClasses),
+      },
+      {
+        label: "Klimatizace",
+        value: (v) => pickLabel(v, climateLevels),
+        raw: (v) => pickLabel(v, climateLevels),
+      },
+      {
+        label: "Čalounění",
+        value: (v) => pickLabel(v, interiorMaterials),
+        raw: (v) => pickLabel(v, interiorMaterials),
+      },
+      {
         label: "Dveře / místa",
         value: (v) => `${v.doors} / ${v.seats}`,
         raw: (v) => `${v.doors}/${v.seats}`,
@@ -102,20 +131,40 @@ const groups: { title: string; rows: Row[] }[] = [
         value: (v) => yes(v.accidentFree),
         raw: (v) => String(v.accidentFree),
       },
-      { label: "První majitel", value: (v) => yes(v.firstOwner), raw: (v) => String(v.firstOwner) },
+      {
+        label: "Počet majitelů",
+        value: (v) => ownersOf(v) ?? "—",
+        raw: (v) => String(ownersOf(v) ?? ""),
+      },
+      {
+        label: "STK do",
+        value: (v) => tagValue(v.equipment, TAG.stk)?.split("-").reverse().join("/") ?? "—",
+        raw: (v) => tagValue(v.equipment, TAG.stk) ?? "",
+      },
       { label: "Původ", value: (v) => (v.origin === "cz" ? "ČR" : "Dovoz"), raw: (v) => v.origin },
       { label: "Prodejce", value: (v) => sellerOf(v).name, raw: (v) => sellerOf(v).name },
     ],
   },
-  {
-    title: "Výbava",
-    rows: equipment.map((e) => ({
-      label: e.label,
-      value: (v: Vehicle) => yes(v.equipment.includes(e.value)),
-      raw: (v: Vehicle) => String(v.equipment.includes(e.value)),
-    })),
-  },
 ];
+
+const pickLabel = (v: Vehicle, list: readonly { value: string; label: string }[]) =>
+  list.find((o) => v.equipment.includes(o.value))?.label ?? "—";
+
+/** Výbava – jen položky, které má aspoň jeden z porovnávaných vozů, po skupinách. */
+function equipmentGroupsFor(list: Vehicle[]): { title: string; rows: Row[] }[] {
+  return equipmentGroups
+    .map((g) => ({
+      title: g.label,
+      rows: g.items
+        .filter((e) => list.some((v) => v.equipment.includes(e.value)))
+        .map((e) => ({
+          label: e.label,
+          value: (v: Vehicle) => yes(v.equipment.includes(e.value)),
+          raw: (v: Vehicle) => String(v.equipment.includes(e.value)),
+        })),
+    }))
+    .filter((g) => g.rows.length);
+}
 
 function Compare() {
   const { compare } = useStore();
@@ -228,7 +277,7 @@ function Compare() {
                   ))}
                 </tr>
               </thead>
-              {groups.map((g) => {
+              {[...groups, ...equipmentGroupsFor(list)].map((g) => {
                 const rows = g.rows.filter(
                   (r) => !onlyDiff || new Set(list.map((v) => r.raw(v))).size > 1,
                 );

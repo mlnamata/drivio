@@ -1,12 +1,9 @@
-import { Link } from "@tanstack/react-router";
-import { Megaphone } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 /**
  * Reklamní plocha. S nastaveným VITE_ADSENSE_CLIENT (a souhlasem s cookies) vykreslí
- * Google AdSense; jinak zobrazí vlastní nabídku „Inzerujte zde" (odkaz na /reklama).
- * Formáty odpovídají ceníku na stránce /reklama.
+ * Google AdSense, jinak nic. Formáty odpovídají ceníku na stránce /reklama.
  */
 export type AdFormat = "leaderboard" | "rectangle" | "infeed";
 
@@ -14,12 +11,6 @@ const sizes: Record<AdFormat, string> = {
   leaderboard: "min-h-[90px] md:min-h-[110px]",
   rectangle: "min-h-[250px]",
   infeed: "min-h-[260px]",
-};
-
-const labels: Record<AdFormat, string> = {
-  leaderboard: "Leaderboard 970 × 90 / mobil 320 × 100",
-  rectangle: "Medium rectangle 300 × 250",
-  infeed: "Nativní reklama ve výpisu",
 };
 
 const ADSENSE_CLIENT = import.meta.env["VITE_ADSENSE_CLIENT"] as string | undefined;
@@ -87,21 +78,6 @@ export function AdSlot({ format, className }: { format: AdFormat; className?: st
     );
   }
 
-  return (
-    <Link
-      to="/reklama"
-      className={cn(
-        "group flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-muted/60 p-4 text-center transition-colors hover:border-primary/50 hover:bg-accent",
-        sizes[format],
-        className,
-      )}
-      aria-label="Reklamní plocha – inzerujte na Drivio"
-    >
-      <span className="text-xs text-muted-foreground">Reklama</span>
-      <span className="flex items-center gap-2 text-sm font-semibold group-hover:text-accent-foreground">
-        <Megaphone className="h-4 w-4 text-primary" /> Zde může být vaše reklama
-      </span>
-      <span className="text-xs text-muted-foreground">{labels[format]}</span>
-    </Link>
-  );
+  // Prázdná plocha by ve výpisu vypadala jako chyba; nabídka reklamy je odkazem v patičce.
+  return null;
 }

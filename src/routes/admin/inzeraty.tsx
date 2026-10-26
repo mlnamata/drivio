@@ -46,7 +46,7 @@ function Moderation() {
             key={k}
             onClick={() => setFilter(k)}
             className={cn(
-              "rounded-full px-4 py-1.5 text-sm font-semibold",
+              "rounded-lg px-4 py-1.5 text-sm font-semibold",
               filter === k ? "bg-foreground text-background" : "bg-card text-muted-foreground",
             )}
           >

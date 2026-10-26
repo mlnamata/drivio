@@ -3,14 +3,14 @@ import { BellRing, ChevronDown, Wallet } from "lucide-react";
 import { useState } from "react";
 import { AuctionCountdown } from "@/components/auction-countdown";
 import { AdSlot } from "@/components/ad-slot";
-import { Faq, Partners } from "@/components/trust";
+import { Faq, Partners, Reviews } from "@/components/trust";
 import { BrandLogo } from "@/components/brand-logo";
 import { CarImage } from "@/components/car-image";
 import { QuickSearch } from "@/components/quick-search";
 import { Container, Page, SectionTitle } from "@/components/site-shell";
 import { VehicleCard } from "@/components/vehicle-card";
-import { bodyTypes, brands } from "@/lib/catalog";
-import { czk, monthlyPayment, vehicleTitle } from "@/lib/mock-data";
+import { brands } from "@/lib/catalog";
+import { czk, monthlyPayment, priceRating, vehicleTitle } from "@/lib/mock-data";
 import { useAllVehicles, useAuctions, useVehicles } from "@/lib/store";
 
 import { cars, plural } from "@/lib/utils";
@@ -40,29 +40,90 @@ const shortcuts = [
   { label: "Rodinná kombi", search: { body: ["kombi"] } },
   { label: "SUV 4×4", search: { body: ["suv"], drive: "4x4" } },
   { label: "Automaty", search: { gearbox: "automat" } },
-  { label: "Elektro a hybridy", search: { fuel: ["elektro", "hybrid", "phev"] } },
+  { label: "Elektro a hybridy", search: { fuel: ["elektro", "hybrid", "phev", "mhev"] } },
   { label: "Výhodná cena", search: { priceRating: true } },
-  { label: "Původ ČR", search: { origin: "cz" as const } },
+  { label: "První majitel", search: { owners: 1 } },
   { label: "S odpočtem DPH", search: { vat: true } },
   { label: "Ověřeno Cebia", search: { cebia: true } },
   { label: "7 míst", search: { seatsFrom: 7 } },
+  { label: "Tažné zařízení", search: { equipment: ["tazne"] } },
   { label: "Nehavarované se servisní knihou", search: { accidentFree: true, serviceBook: true } },
 ];
 
 const monthlySteps = [2500, 3500, 5000, 8000];
 
-const bodyIcons: Record<string, string> = {
-  hatchback: "M6 30h52l-4-10c-1-3-4-4-7-4H26l-8 6H10c-3 0-4 2-4 4z",
-  kombi: "M4 30h56l-2-10c-1-2-3-4-6-4H22l-8 6H8c-2 0-4 2-4 4z",
-  sedan: "M4 30h56l-4-6-10-2-8-6H24l-8 6H8c-2 0-4 2-4 4z",
-  liftback: "M4 30h56l-4-6-16-8H24l-8 6H8c-2 0-4 2-4 4z",
-  suv: "M6 30h52v-8c0-2-2-4-4-4l-6-6H20l-6 6h-4c-2 0-4 2-4 4z",
-  mpv: "M6 30h52l-2-10-10-8H22l-8 8H10c-2 0-4 2-4 4z",
-  kupe: "M4 30h56l-6-6-12-2-8-5H24l-10 7H8c-2 0-4 2-4 4z",
-  kabriolet: "M4 30h56l-4-6-12-2h-8l-4-4-4 4H8c-2 0-4 2-4 4z",
-  pickup: "M4 30h56v-8H36v-8H18l-6 8H8c-2 0-4 2-4 4z",
-  dodavka: "M6 30h52V14c0-2-2-4-4-4H18l-8 10H8c-1 0-2 1-2 2z",
-};
+/** Siluety karoserií (z boku, příď vlevo), kola se kreslí zvlášť. */
+const bodyIcons: { value: string; label: string; d: string }[] = [
+  {
+    value: "hatchback",
+    label: "Hatchback",
+    d: "M3 23v-4.5c0-1.5 1-2.5 2.5-2.7L15 14.5l7-5.9c1-.8 2.2-1.1 3.5-1.1H45c1.6 0 2.8.8 3.5 2.1l4 5.4 5.5.8c1.7.2 3 1.5 3 3.2V23z",
+  },
+  {
+    value: "kombi",
+    label: "Kombi",
+    d: "M3 23v-4.5c0-1.5 1-2.5 2.5-2.7L14 14.6l7-6c1-.8 2.2-1.1 3.5-1.1H56c1.6 0 2.6.9 3 2.3l2 5.7V23z",
+  },
+  {
+    value: "sedan",
+    label: "Sedan",
+    d: "M3 23v-4.5c0-1.5 1-2.5 2.5-2.7L15 14.6l7.5-5.8c1-.8 2.2-1.1 3.5-1.1h14c1.5 0 2.8.7 3.6 1.9l4.4 5 10.5.8c1.5.1 2.5 1.3 2.5 2.8V23z",
+  },
+  {
+    value: "liftback",
+    label: "Liftback",
+    d: "M3 23v-4.5c0-1.5 1-2.5 2.5-2.7L15 14.6l7.5-5.8c1-.8 2.2-1.1 3.5-1.1h14c2 0 3.5.8 5 2.1l8 5.2 5.5.6c1.5.2 2.5 1.2 2.5 2.7V23z",
+  },
+  {
+    value: "suv",
+    label: "SUV",
+    d: "M3 23v-6.5c0-1.5 1-2.5 2.5-2.7l7.5-1 6-6.6c1-.9 2.2-1.2 3.5-1.2H55c1.6 0 2.7 1 3 2.4l3 5.6V23z",
+  },
+  {
+    value: "mpv",
+    label: "MPV",
+    d: "M3 23v-6c0-1.4.8-2.4 2-2.7l6-1.7 8-7c1-.8 2.2-1.1 3.5-1.1H54c1.8 0 3 .9 3.6 2.5L61 14v9z",
+  },
+  {
+    value: "kupe",
+    label: "Kupé",
+    d: "M3 23v-4.2c0-1.4 1-2.4 2.5-2.6L18 14.8l8-5.2c1.2-.8 2.6-1.1 4-1.1h8c2 0 3.6.7 5 2L50 15l8.5.8c1.5.2 2.5 1.2 2.5 2.7V23z",
+  },
+  {
+    value: "kabriolet",
+    label: "Kabriolet",
+    d: "M3 23v-4.2c0-1.4 1-2.4 2.5-2.6L18 14.8l6.5-5 1.5.6-3.8 4.2H46c1-1.6 2.5-2.4 4.5-2.4H52l1 2.8 5.5.8c1.5.2 2.5 1.2 2.5 2.7V23z",
+  },
+  {
+    value: "pickup",
+    label: "Pick-up",
+    d: "M3 23v-6.5c0-1.5 1-2.5 2.5-2.7l7.5-1 6-6.6c1-.9 2.2-1.2 3.5-1.2H35c1.4 0 2.4 1 2.6 2.4l.6 5.8H61V23z",
+  },
+  {
+    value: "dodavka",
+    label: "Dodávka",
+    d: "M3 23v-7.5c0-1.5.8-2.5 2-2.9l4-1.2 5.5-6.6c.9-1 2.1-1.5 3.5-1.5h40c1.7 0 3 1.3 3 3V23z",
+  },
+];
+
+function BodyIcon({ d }: { d: string }) {
+  return (
+    <svg viewBox="0 0 64 30" className="h-8 w-[3.75rem]" aria-hidden>
+      <path d={d} fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      {[16, 49].map((cx) => (
+        <circle
+          key={cx}
+          cx={cx}
+          cy="23"
+          r="4.6"
+          fill="var(--card)"
+          stroke="currentColor"
+          strokeWidth="2"
+        />
+      ))}
+    </svg>
+  );
+}
 
 const textLink = "text-sm font-semibold text-foreground underline-offset-4 hover:underline";
 
@@ -71,11 +132,12 @@ function Index() {
   const all = useAllVehicles();
   const auctions = useAuctions();
   const [allBrands, setAllBrands] = useState(false);
-  const latest = list
-    .slice()
-    .sort((a, b) => a.listedDays - b.listedDays)
-    .slice(0, 8);
-  const top = list.filter((v) => v.top).slice(0, 4);
+  const newest = list.slice().sort((a, b) => a.listedDays - b.listedDays);
+  const latest = newest.slice(0, 8);
+  // Když je topovaných vozů málo, doplní se nejnovějšími, aby řada nebyla poloprázdná.
+  const topBase = list.filter((v) => v.top);
+  const top = topBase.length ? [...topBase, ...newest.filter((v) => !v.top)].slice(0, 4) : [];
+  const deals = newest.filter((v) => ["great", "good"].includes(priceRating(v).tone)).slice(0, 4);
   const shownBrands = allBrands ? brands : brands.filter((b) => b.popular);
   const cebiaCount = list.filter((v) => v.cebiaVerified).length;
   const live = auctions.filter((a) => !a.ended && !a.upcoming);
@@ -86,21 +148,62 @@ function Index() {
       {/* Úvod: hledání je hlavní úkol, proto stojí hned pod nadpisem */}
       <section className="border-b border-border bg-card">
         <Container className="pb-10 pt-10 md:pb-12 md:pt-14">
-          <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr] lg:items-end lg:gap-12">
-            <h1 className="text-[2.1rem] font-extrabold leading-[1.04] sm:text-5xl lg:text-[3.6rem]">
-              Ojetá auta s{" "}cenou i{" "}splátkou na první pohled
-            </h1>
-            <p className="max-w-md text-lg text-muted-foreground lg:pb-1.5">
-              {cars(list.length)} od ověřených autobazarů a{" "}soukromníků. U{" "}
-              každého vidíte, kolik byste měsíčně spláceli
-              {cebiaCount ? (
-                <>
-                  , a{" "}u{" "}
-                  {cebiaCount} je historie prověřená v{" "}Cebii
-                </>
-              ) : null}
-              .
-            </p>
+          <div className="grid gap-10 lg:grid-cols-[1.15fr_1fr] lg:items-center">
+            <div>
+              <h1 className="text-[2.1rem] font-extrabold leading-[1.04] sm:text-5xl lg:text-[3.6rem]">
+                Ojetá auta s{" "}cenou i{" "}splátkou na první pohled
+              </h1>
+              <p className="mt-5 max-w-lg text-lg text-muted-foreground">
+                {cars(list.length)} od ověřených autobazarů a{" "}soukromníků. U{" "}
+                každého vidíte, kolik byste měsíčně spláceli
+                {cebiaCount ? (
+                  <>
+                    , a{" "}u{" "}
+                    {cebiaCount} je historie prověřená v{" "}Cebii
+                  </>
+                ) : null}
+                .
+              </p>
+            </div>
+
+            {/* Výhodné nabídky – skutečné fotky vozů, nic vymyšleného */}
+            {deals.length ? (
+              <div className="hidden lg:block">
+                <div className="mb-3 flex items-baseline justify-between">
+                  <p className="font-semibold">Výhodné nabídky</p>
+                  <Link to="/inzeraty" search={{ priceRating: true }} className={textLink}>
+                    Všechny výhodné
+                  </Link>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {deals.map((v) => (
+                    <Link
+                      key={v.id}
+                      to="/inzerat/$id"
+                      params={{ id: v.id }}
+                      className="group relative overflow-hidden rounded-lg border border-border"
+                    >
+                      <div className="aspect-[16/10]">
+                        <CarImage src={v.photos[0]!} alt={vehicleTitle(v)} eager />
+                      </div>
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent p-3 pt-10 text-white">
+                        <p className="truncate text-sm font-semibold group-hover:underline">
+                          {vehicleTitle(v)}
+                        </p>
+                        <p className="flex items-baseline justify-between gap-2">
+                          <span className="font-display text-base font-extrabold">
+                            {czk(v.price)}
+                          </span>
+                          <span className="text-xs text-white/80">
+                            {czk(monthlyPayment(v.price))}/měs.
+                          </span>
+                        </p>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ) : null}
           </div>
 
           <div className="mt-8">
@@ -175,7 +278,7 @@ function Index() {
                 search={{ brand: b.slug }}
                 className="flex items-center gap-3 px-4 py-4 transition-colors hover:bg-muted"
               >
-                <BrandLogo slug={b.slug} name={b.name} className="h-9 w-9 shrink-0" />
+                <BrandLogo slug={b.slug} name={b.name} className="h-8 w-12 shrink-0" />
                 <span className="min-w-0">
                   <span className="block truncate text-sm font-semibold">{b.name}</span>
                   <span className="block text-xs text-muted-foreground">{cars(count)}</span>
@@ -211,43 +314,15 @@ function Index() {
       <Container className="pb-14">
         <SectionTitle title="Hledejte podle typu vozu" />
         <div className="ruled-grid grid grid-cols-2 overflow-hidden rounded-xl bg-card sm:grid-cols-5">
-          {bodyTypes.map((b) => (
+          {bodyIcons.map((b) => (
             <Link
               key={b.value}
               to="/inzeraty"
               search={{ body: [b.value] }}
-              className="group flex flex-col items-center gap-2 py-5 transition-colors hover:bg-muted"
+              className="group flex flex-col items-center gap-2 py-5 text-foreground/70 transition-colors hover:bg-muted hover:text-primary"
             >
-              <svg
-                viewBox="0 0 64 40"
-                className="h-9 w-16 text-foreground/70 transition-colors group-hover:text-primary"
-                aria-hidden
-              >
-                <path
-                  d={bodyIcons[b.value]}
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  strokeLinejoin="round"
-                />
-                <circle
-                  cx="18"
-                  cy="31"
-                  r="4.5"
-                  fill="var(--card)"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                />
-                <circle
-                  cx="46"
-                  cy="31"
-                  r="4.5"
-                  fill="var(--card)"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                />
-              </svg>
-              <span className="text-sm font-medium">{b.label}</span>
+              <BodyIcon d={b.d} />
+              <span className="text-sm font-medium text-foreground">{b.label}</span>
             </Link>
           ))}
         </div>
@@ -420,6 +495,10 @@ function Index() {
             </Link>
           </div>
         </div>
+      </Container>
+
+      <Container className="pt-16 empty:hidden">
+        <Reviews />
       </Container>
 
       <Container className="py-16">

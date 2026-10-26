@@ -11,7 +11,7 @@ import {
   priceSteps,
   yearsRange,
 } from "@/lib/catalog";
-import { sellerOf, num } from "@/lib/mock-data";
+import { num } from "@/lib/mock-data";
 import { cleanSearch, filterVehicles, type ListingSearch } from "@/lib/search";
 import { useVehicles } from "@/lib/store";
 import { FilterDialog } from "@/components/filter-dialog";
@@ -50,16 +50,13 @@ function NumberSelect({
   );
 }
 
-/** Vyhledávání na úvodní stránce – rozložení podle sauto.cz. */
+/** Vyhledávání na úvodní stránce – rozložení podle sauto.cz a mobile.de. */
 export function QuickSearch() {
   const navigate = useNavigate();
   const source = useVehicles();
   const [s, setS] = useState<ListingSearch>({ category: "osobni" });
   const set = (patch: Partial<ListingSearch>) => setS((p) => ({ ...p, ...patch }));
-  const count = useMemo(
-    () => filterVehicles(source, s, (v) => sellerOf(v).region).length,
-    [source, s],
-  );
+  const count = useMemo(() => filterVehicles(source, s).length, [source, s]);
   const models = s.brand ? (brandBySlug(s.brand)?.models ?? []) : [];
 
   return (
@@ -81,7 +78,7 @@ export function QuickSearch() {
               disabled={disabled}
               onClick={() => set({ category: c.value as ListingSearch["category"] })}
               className={cn(
-                "inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition-colors",
+                "inline-flex shrink-0 items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-colors",
                 s.category === c.value
                   ? "bg-foreground text-background"
                   : "text-foreground/70 hover:bg-foreground/5",
@@ -207,7 +204,7 @@ export function QuickSearch() {
                 type="button"
                 className="inline-flex items-center gap-1.5 font-semibold text-primary-ink hover:underline"
               >
-                <SlidersHorizontal className="h-4 w-4" /> Další parametry
+                <SlidersHorizontal className="h-4 w-4" /> Podrobné hledání
               </button>
             }
           />

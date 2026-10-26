@@ -80,7 +80,7 @@ function AuctionHub() {
         </div>
 
         {/* Navigace po sekcích jedné stránky */}
-        <nav className="sticky top-16 z-30 mt-6 flex gap-1 overflow-x-auto rounded-full border border-border bg-card p-1 shadow-[var(--shadow-card)]">
+        <nav className="sticky top-16 z-30 mt-6 flex gap-1 overflow-x-auto rounded-lg border border-border bg-card p-1 shadow-[var(--shadow-card)]">
           {sections.map((s) => (
             <a
               key={s.id}

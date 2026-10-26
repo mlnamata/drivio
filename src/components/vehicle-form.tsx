@@ -5,12 +5,18 @@ import {
   bodyTypes,
   brandBySlug,
   brands,
+  climateLevels,
   colors,
+  conditions,
   drives,
-  equipment,
+  emissionClasses,
+  equipmentGroups,
   fuels,
   gearboxes,
+  interiorColors,
+  interiorMaterials,
   regions,
+  TAG,
 } from "@/lib/catalog";
 import { PHOTO_FALLBACK } from "@/lib/mock-data";
 import type { NewVehicle } from "@/lib/store";
@@ -104,6 +110,17 @@ export function VehicleForm({
         const str = (k: string) => String(f.get(k) ?? "").trim();
         const n = (k: string) => Number(f.get(k) ?? 0) || 0;
         const body = str("body");
+        const owners = n("owners");
+        const tags = [
+          str("condition") === "ojete" ? "" : str("condition"),
+          str("emission"),
+          str("climate"),
+          str("interior"),
+          str("interiorColor"),
+          owners ? `${TAG.owners}:${owners}` : "",
+          str("stk") ? `${TAG.stk}:${str("stk")}` : "",
+          n("range") ? `${TAG.range}:${n("range")}` : "",
+        ].filter(Boolean);
         onSubmit({
           vin,
           brand,
@@ -122,10 +139,10 @@ export function VehicleForm({
           condition: "ojete",
           price,
           vatDeductible: f.get("vat") === "on",
-          equipment: eq,
+          equipment: [...eq, ...tags],
           photos: photos.length ? photos : [PHOTO_FALLBACK],
           serviceBook: f.get("serviceBook") === "on",
-          firstOwner: f.get("firstOwner") === "on",
+          firstOwner: owners === 1,
           accidentFree: f.get("accidentFree") === "on",
           description: str("description"),
           doors: n("doors") || 5,
@@ -283,7 +300,6 @@ export function VehicleForm({
             {(
               [
                 ["serviceBook", "Servisní knížka"],
-                ["firstOwner", "První majitel"],
                 ["accidentFree", "Nehavarované"],
               ] as const
             ).map(([n, l]) => (
@@ -294,24 +310,99 @@ export function VehicleForm({
           </div>
         </section>
 
-        <section className="surface-card p-5">
-          <p className="mb-3 font-semibold">3. Výbava</p>
-          <div className="grid gap-1 sm:grid-cols-2 lg:grid-cols-3">
-            {equipment.map((e) => (
-              <label key={e.value} className="flex items-center gap-2 py-1 text-sm">
-                <input
-                  type="checkbox"
-                  checked={eq.includes(e.value)}
-                  onChange={() =>
-                    setEq((cur) =>
-                      cur.includes(e.value) ? cur.filter((x) => x !== e.value) : [...cur, e.value],
-                    )
-                  }
-                  className="h-4 w-4 accent-[var(--primary)]"
-                />{" "}
-                {e.label}
+        <section className="surface-card space-y-5 p-5">
+          <p className="font-semibold">3. Stav a výbava</p>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {(
+              [
+                ["condition", "Stav vozu", conditions],
+                ["emission", "Emisní norma", emissionClasses],
+                ["climate", "Klimatizace", climateLevels],
+                ["interior", "Čalounění", interiorMaterials],
+                ["interiorColor", "Barva interiéru", interiorColors],
+              ] as const
+            ).map(([name, label, list]) => (
+              <label key={name} className="text-sm">
+                <span className="mb-1 block text-muted-foreground">{label}</span>
+                <select
+                  name={name}
+                  className="field"
+                  defaultValue={name === "condition" ? "ojete" : ""}
+                >
+                  {name === "condition" ? null : <option value="">Neuvedeno</option>}
+                  {list.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </select>
               </label>
             ))}
+            <label className="text-sm">
+              <span className="mb-1 block text-muted-foreground">Počet majitelů</span>
+              <input
+                name="owners"
+                type="number"
+                min={1}
+                max={9}
+                className="field"
+                placeholder="např. 1"
+              />
+            </label>
+            <label className="text-sm">
+              <span className="mb-1 block text-muted-foreground">STK platná do</span>
+              <input name="stk" type="month" className="field" />
+            </label>
+            <label className="text-sm">
+              <span className="mb-1 block text-muted-foreground">Dojezd elektromobilu (km)</span>
+              <input
+                name="range"
+                type="number"
+                min={0}
+                className="field"
+                placeholder="jen u elektro"
+              />
+            </label>
+          </div>
+          <div className="space-y-2">
+            {equipmentGroups.map((g, gi) => {
+              const selected = g.items.filter((i) => eq.includes(i.value)).length;
+              return (
+                <details
+                  key={g.id}
+                  open={gi === 0}
+                  className="group rounded-xl border border-border"
+                >
+                  <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-3 text-sm font-semibold">
+                    {g.label}
+                    <span className="text-xs font-medium text-muted-foreground">
+                      {selected
+                        ? `vybráno ${selected} z ${g.items.length}`
+                        : `${g.items.length} položek`}
+                    </span>
+                  </summary>
+                  <div className="grid gap-x-4 gap-y-1 border-t border-border px-4 py-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {g.items.map((e) => (
+                      <label key={e.value} className="flex items-center gap-2 py-1 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={eq.includes(e.value)}
+                          onChange={() =>
+                            setEq((cur) =>
+                              cur.includes(e.value)
+                                ? cur.filter((x) => x !== e.value)
+                                : [...cur, e.value],
+                            )
+                          }
+                          className="h-4 w-4 accent-[var(--primary)]"
+                        />{" "}
+                        {e.label}
+                      </label>
+                    ))}
+                  </div>
+                </details>
+              );
+            })}
           </div>
         </section>
 

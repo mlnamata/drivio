@@ -16,17 +16,22 @@ Autobazary, leasingové společnosti a inzerenti mají vlastní oddíl v patičc
 
 ## Barvy
 
-| Token                  | Hodnota                             | Použití                                               |
-| ---------------------- | ----------------------------------- | ----------------------------------------------------- |
-| `--foreground`         | `oklch(0.21 0.004 60)` ≈ `#1f1e1d`  | text, tmavá tlačítka (grafit z loga)                  |
-| `--background`         | `oklch(0.985 0.002 75)`             | podklad stránky                                       |
-| `--card`               | bílá                                | karty, hlavička, formuláře                            |
-| `--primary`            | `oklch(0.665 0.185 45)` ≈ `#ea7930` | oranžová z loga: plochy tlačítek, ikony, aktivní stav |
-| `--primary-foreground` | grafit                              | text na oranžové (5,8 : 1; bílá by měla jen 3 : 1)    |
-| `--primary-ink`        | `oklch(0.52 0.16 43)`               | drobný oranžový text a odkazy na bílé (5,5 : 1)       |
-| `--sidebar`            | `oklch(0.19 0.004 60)`              | tmavé pásy a patička                                  |
-| `--auction`            | `oklch(0.6 0.21 25)`                | jen „živě“ u aukcí                                    |
-| `--success`            | `oklch(0.6 0.14 155)`               | Cebia, výhodná cena, ověřený prodejce                 |
+| Token                  | Světlý vzhled            | Použití                                                                          |
+| ---------------------- | ------------------------ | -------------------------------------------------------------------------------- |
+| `--foreground`         | `oklch(0.2 0.012 260)`   | text, tmavá tlačítka (grafit z loga)                                             |
+| `--background`         | `oklch(0.972 0.003 250)` | podklad stránky                                                                  |
+| `--card`               | bílá                     | karty, hlavička, formuláře                                                       |
+| `--primary`            | `oklch(0.645 0.19 44)`   | oranžová z loga: plochy tlačítek, ikony, aktivní stav                            |
+| `--primary-foreground` | grafit                   | text na oranžové (5,5 : 1; bílá by měla jen 3,3 : 1)                             |
+| `--primary-ink`        | `oklch(0.52 0.16 43)`    | drobný oranžový text a odkazy (v tmavém vzhledu světlejší `oklch(0.78 0.13 55)`) |
+| `--sidebar`            | `oklch(0.205 0.012 260)` | tmavé pásy a patička                                                             |
+| `--auction`            | `oklch(0.6 0.21 25)`     | jen „živě“ u aukcí                                                               |
+| `--success`            | `oklch(0.57 0.14 155)`   | Cebia, výhodná cena, ověřený prodejce                                            |
+
+Tmavý vzhled je třída `.dark` na `<html>` (přepínač v hlavičce, v patičce volba Světlý / Tmavý /
+Podle systému, `src/lib/theme.ts`). Má vlastní hodnoty všech tokenů ve `src/styles.css`, oranžová
+zůstává stejná. Na trvale tmavých pásech (`bg-sidebar`) se píše `text-white` a na bílé ploše
+tlačítka `text-sidebar`, ne `text-foreground`, který se v tmavém vzhledu obrací.
 
 ## Písmo
 

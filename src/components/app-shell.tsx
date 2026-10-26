@@ -3,11 +3,12 @@ import type { LucideIcon } from "lucide-react";
 import { ExternalLink, Menu, X } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { LogoFlat } from "@/components/logo";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { cn } from "@/lib/utils";
 
 export type NavItem = { to: string; label: string; icon: LucideIcon; badge?: string | number };
 
-/** Layout administrace (autobazar i správa portálu) – tmavé boční menu, světlý obsah. */
+/** Layout administrace (autobazar i správa portálu) – tmavé boční menu, obsah ve zvoleném vzhledu. */
 export function AppShell({
   title,
   subtitle,
@@ -100,6 +101,7 @@ export function AppShell({
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
           <p className="font-semibold">{title}</p>
+          <ThemeToggle className="ml-auto -mr-2" />
         </header>
         <main className="px-4 py-6 md:px-8 md:py-8">
           <Outlet />
@@ -171,7 +173,7 @@ export function StatusBadge({
 }) {
   const cls = {
     ok: "bg-success/12 text-success",
-    warn: "bg-warning/15 text-[oklch(0.5_0.13_60)]",
+    warn: "bg-warning/15 text-[oklch(0.5_0.13_60)] dark:text-warning",
     bad: "bg-destructive/12 text-destructive",
     info: "bg-accent text-accent-foreground",
     muted: "bg-muted text-muted-foreground",

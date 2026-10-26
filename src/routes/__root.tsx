@@ -6,6 +6,7 @@ import {
   useRouter,
   HeadContent,
   Scripts,
+  ScriptOnce,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
@@ -14,6 +15,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import { initRemote } from "@/lib/remote";
+import { initTheme, themeScript } from "@/lib/theme";
 
 function NotFoundComponent() {
   return (
@@ -81,7 +83,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Ojetá auta od prověřených autobazarů | Drivio" },
-      { name: "theme-color", content: "#1f1e1d" },
+      { name: "theme-color", content: "#ffffff" },
       {
         name: "description",
         content:
@@ -130,9 +132,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="cs">
+    // Třídu `dark` přidává themeScript ještě před hydratací.
+    <html lang="cs" suppressHydrationWarning>
       <head>
         <HeadContent />
+        <ScriptOnce>{themeScript}</ScriptOnce>
       </head>
       <body>
         {children}
@@ -145,6 +149,7 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   useEffect(() => initRemote(), []);
+  useEffect(() => initTheme(), []);
   useEffect(() => {
     const onErr = (e: Event) =>
       toast.error("Změnu se nepodařilo uložit", { description: (e as CustomEvent<string>).detail });

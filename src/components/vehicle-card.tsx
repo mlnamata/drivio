@@ -60,7 +60,7 @@ export function VehicleCard({
       params={{ id: vehicle.id }}
       className={cn(
         "surface-card lift group flex flex-col overflow-hidden",
-        layout === "list" && "sm:flex",
+        layout === "list" && "sm:flex-row",
       )}
     >
       <div
@@ -72,27 +72,27 @@ export function VehicleCard({
         <CarImage src={vehicle.photos[0]!} alt={title} />
         <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
           {vehicle.top ? (
-            <span className="rounded-full bg-foreground px-2.5 py-1 text-[11px] font-bold text-background">
+            <span className="rounded-md bg-foreground px-2 py-0.5 text-[11px] font-bold text-background">
               TOP
             </span>
           ) : null}
           {isNew ? (
-            <span className="rounded-full bg-primary px-2.5 py-1 text-[11px] font-semibold text-primary-foreground">
+            <span className="rounded-md bg-primary px-2 py-0.5 text-[11px] font-bold text-primary-foreground">
               Nové
             </span>
           ) : null}
           {vehicle.vatDeductible ? (
-            <span className="photo-chip rounded-full px-2.5 py-1 text-[11px] font-semibold">
+            <span className="photo-chip rounded-md px-2 py-0.5 text-[11px] font-semibold">
               Odpočet DPH
             </span>
           ) : null}
         </div>
-        <div className="absolute right-3 top-3 flex gap-1.5">
+        <div className="absolute right-2.5 top-2.5 flex gap-1.5">
           <CompareButton id={vehicle.id} />
           <FavoriteButton id={vehicle.id} />
         </div>
       </div>
-      <div className="flex flex-1 flex-col p-4">
+      <div className="flex flex-1 flex-col gap-0 p-4">
         <div className="flex items-start justify-between gap-2">
           <h3 className="truncate text-base font-semibold group-hover:underline group-hover:underline-offset-4">
             {title}
@@ -100,7 +100,7 @@ export function VehicleCard({
           {vehicle.cebiaVerified ? (
             <span
               title="Historie ověřena Cebia"
-              className="inline-flex shrink-0 items-center gap-1 rounded-full bg-success/12 px-2 py-0.5 text-[10px] font-bold text-success"
+              className="inline-flex shrink-0 items-center gap-1 rounded-md bg-success/12 px-1.5 py-0.5 text-[10px] font-bold text-success"
             >
               <ShieldCheck className="h-3 w-3" /> Cebia
             </span>
@@ -155,7 +155,7 @@ const ratingTone = {
   great: "text-success",
   good: "text-success",
   fair: "text-muted-foreground",
-  high: "text-[oklch(0.55_0.14_60)]",
+  high: "text-[oklch(0.55_0.14_60)] dark:text-warning",
 } as const;
 
 export function PriceRatingBadge({ vehicle, className }: { vehicle: Vehicle; className?: string }) {

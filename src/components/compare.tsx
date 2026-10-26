@@ -60,7 +60,7 @@ export function CompareBar() {
         <Link
           to="/porovnani"
           className={cn(
-            "shrink-0 rounded-full px-4 py-2 text-sm font-bold",
+            "shrink-0 rounded-lg px-4 py-2 text-sm font-bold",
             list.length > 1
               ? "bg-primary text-primary-foreground"
               : "pointer-events-none bg-muted text-muted-foreground",

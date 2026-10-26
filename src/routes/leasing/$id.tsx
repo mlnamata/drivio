@@ -167,7 +167,7 @@ function LeaseDetailView({ o }: { o: LeasingOffer }) {
 
           <aside>
             <div className="surface-card sticky top-20 p-6">
-              <div className="grid grid-cols-2 gap-1 rounded-full bg-muted p-1">
+              <div className="grid grid-cols-2 gap-1 rounded-xl bg-muted p-1">
                 {(
                   [
                     [false, User, "Soukromě"],
@@ -178,7 +178,7 @@ function LeaseDetailView({ o }: { o: LeasingOffer }) {
                     key={l}
                     onClick={() => setBusiness(b)}
                     className={cn(
-                      "flex items-center justify-center gap-2 rounded-full py-2 text-sm font-semibold",
+                      "flex items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold",
                       business === b ? "bg-card shadow-sm" : "text-muted-foreground",
                     )}
                   >

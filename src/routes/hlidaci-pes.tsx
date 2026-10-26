@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { BellRing, Search, Trash2 } from "lucide-react";
 import { Breadcrumbs, Container, Page } from "@/components/site-shell";
 import { describeSearch } from "@/components/watchdog-dialog";
-import { sellerOf } from "@/lib/mock-data";
 import { filterVehicles } from "@/lib/search";
 import { store, useStore, useVehicles } from "@/lib/store";
 
@@ -45,7 +44,7 @@ function Watchdog() {
         ) : (
           <div className="mt-8 grid gap-4 md:grid-cols-2">
             {searches.map((w) => {
-              const count = filterVehicles(vehicles, w.search, (v) => sellerOf(v).region).length;
+              const count = filterVehicles(vehicles, w.search).length;
               return (
                 <div key={w.id} className="surface-card flex flex-col gap-4 p-5">
                   <div className="flex items-start justify-between gap-3">

@@ -8,6 +8,7 @@
  * Drivio design system – viz DESIGN.md.
  * Předobraz: prodejní štítek za oknem ojetého auta. Bílý papír, grafitový text,
  * oranžová z loga jen jako signál (cena, hlavní akce, aktivní stav), tenké linky místo stínů.
+ * Světlý vzhled je v :root, tmavý ve třídě .dark na <html> (přepíná src/lib/theme.ts).
  * Všechny barvy jsou oklch tokeny, v komponentách barvy nepište natvrdo.
  */
 
@@ -107,6 +108,7 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-auction: var(--auction);
+  --color-logo-plate: var(--logo-plate);
   --font-display: "Archivo", "Helvetica Neue", Arial, sans-serif;
   --font-sans: "Archivo", "Helvetica Neue", Arial, sans-serif;
   --font-logo: "Exo 2", ui-sans-serif, system-ui, sans-serif;
@@ -115,52 +117,107 @@
 :root {
   /* Ostřejší rohy jako u tištěného štítku: tlačítko a pole 6 px, karta 10 px, plně kulaté jen čipy */
   --radius: 0.375rem;
-  /* Bílý papír s lehce teplým nádechem, grafit a oranžová z loga */
-  --background: oklch(0.985 0.002 75);
-  --foreground: oklch(0.21 0.004 60);
+  /* Čistý neutrální základ (styl inzertních portálů), značkové barvy z loga: grafit + oranžová */
+  --background: oklch(0.972 0.003 250);
+  --foreground: oklch(0.2 0.012 260);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.21 0.004 60);
+  --card-foreground: oklch(0.2 0.012 260);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.21 0.004 60);
-  --primary: oklch(0.665 0.185 45);
-  /* Grafitový text na oranžové: kontrast 5,8 : 1 (bílá by měla jen 3 : 1) */
-  --primary-foreground: oklch(0.21 0.004 60);
+  --popover-foreground: oklch(0.2 0.012 260);
+  --primary: oklch(0.645 0.19 44);
+  /* Grafitový text na oranžové: kontrast 5,5 : 1 (bílá by měla jen 3,3 : 1) */
+  --primary-foreground: oklch(0.2 0.012 260);
   /* Oranžová pro drobný text a odkazy na bílé – tmavší kvůli čitelnosti (5,5 : 1) */
   --primary-ink: oklch(0.52 0.16 43);
-  --secondary: oklch(0.955 0.004 70);
-  --secondary-foreground: oklch(0.25 0.005 60);
-  --muted: oklch(0.96 0.003 70);
-  --muted-foreground: oklch(0.47 0.008 60);
-  --accent: oklch(0.96 0.03 60);
+  --secondary: oklch(0.955 0.004 250);
+  --secondary-foreground: oklch(0.25 0.012 260);
+  --muted: oklch(0.958 0.004 250);
+  --muted-foreground: oklch(0.49 0.014 260);
+  --accent: oklch(0.962 0.032 58);
   --accent-foreground: oklch(0.47 0.15 42);
   --destructive: oklch(0.58 0.21 25);
   --destructive-foreground: oklch(0.99 0 0);
-  --success: oklch(0.6 0.14 155);
+  --success: oklch(0.57 0.14 155);
   --success-foreground: oklch(0.99 0 0);
   --warning: oklch(0.72 0.16 60);
   --warning-foreground: oklch(0.2 0.04 60);
   --auction: oklch(0.6 0.21 25);
-  --border: oklch(0.905 0.004 70);
-  --input: oklch(0.86 0.006 70);
-  --ring: oklch(0.665 0.185 45);
-  --chart-1: oklch(0.665 0.185 45);
-  --chart-2: oklch(0.6 0.14 155);
-  --chart-3: oklch(0.32 0.005 60);
+  --border: oklch(0.912 0.005 255);
+  --input: oklch(0.87 0.007 255);
+  --ring: oklch(0.645 0.19 44);
+  --chart-1: oklch(0.645 0.19 44);
+  --chart-2: oklch(0.57 0.14 155);
+  --chart-3: oklch(0.32 0.012 260);
   --chart-4: oklch(0.8 0.12 65);
   --chart-5: oklch(0.72 0.16 60);
-  --sidebar: oklch(0.19 0.004 60);
-  --sidebar-foreground: oklch(0.92 0.005 70);
+  --sidebar: oklch(0.205 0.012 260);
+  --sidebar-foreground: oklch(0.92 0.005 255);
   --sidebar-primary: oklch(0.72 0.17 50);
   --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.27 0.005 60);
+  --sidebar-accent: oklch(0.28 0.012 260);
   --sidebar-accent-foreground: oklch(0.99 0 0);
-  --sidebar-border: oklch(0.3 0.005 60);
+  --sidebar-border: oklch(0.31 0.012 260);
   --sidebar-ring: oklch(0.72 0.17 50);
 
+  /* Podklad pod loga značek – loga jsou kreslená pro světlé pozadí */
+  --logo-plate: oklch(1 0 0);
+
+  --shadow-card: 0 1px 2px oklch(0.2 0.01 260 / 0.05);
   /* Stíny jen pro věci, které opravdu plavou nad stránkou (menu, lišty, dialogy) */
-  --shadow-card: 0 1px 2px oklch(0.2 0.005 60 / 0.04);
-  --shadow-lift: 0 2px 6px oklch(0.2 0.005 60 / 0.06), 0 14px 32px -16px oklch(0.2 0.005 60 / 0.22);
+  --shadow-lift: 0 1px 2px oklch(0.2 0.01 260 / 0.06), 0 14px 30px -16px oklch(0.2 0.01 260 / 0.28);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  color-scheme: light;
+}
+
+/* Tmavý vzhled – stejný grafit a oranžová, jen obrácené plochy. Oranžová zůstává beze změny. */
+.dark {
+  --background: oklch(0.165 0.007 260);
+  --foreground: oklch(0.945 0.004 255);
+  --card: oklch(0.205 0.008 260);
+  --card-foreground: oklch(0.945 0.004 255);
+  --popover: oklch(0.225 0.009 260);
+  --popover-foreground: oklch(0.945 0.004 255);
+  --primary: oklch(0.645 0.19 44);
+  --primary-foreground: oklch(0.2 0.012 260);
+  /* Na tmavé ploše naopak světlejší oranžová */
+  --primary-ink: oklch(0.78 0.13 55);
+  --secondary: oklch(0.255 0.008 260);
+  --secondary-foreground: oklch(0.93 0.004 255);
+  --muted: oklch(0.245 0.008 260);
+  --muted-foreground: oklch(0.71 0.012 260);
+  --accent: oklch(0.29 0.045 50);
+  --accent-foreground: oklch(0.82 0.11 60);
+  --destructive: oklch(0.63 0.2 25);
+  --destructive-foreground: oklch(0.99 0 0);
+  --success: oklch(0.64 0.15 155);
+  --success-foreground: oklch(0.99 0 0);
+  --warning: oklch(0.77 0.15 70);
+  --warning-foreground: oklch(0.2 0.04 60);
+  --auction: oklch(0.64 0.2 25);
+  --border: oklch(0.295 0.009 260);
+  --input: oklch(0.365 0.01 260);
+  --ring: oklch(0.645 0.19 44);
+  --chart-1: oklch(0.68 0.18 46);
+  --chart-2: oklch(0.66 0.15 155);
+  --chart-3: oklch(0.76 0.01 260);
+  --chart-4: oklch(0.8 0.12 65);
+  --chart-5: oklch(0.77 0.15 70);
+  --sidebar: oklch(0.215 0.009 260);
+  --sidebar-foreground: oklch(0.92 0.005 255);
+  --sidebar-primary: oklch(0.72 0.17 50);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.285 0.01 260);
+  --sidebar-accent-foreground: oklch(0.99 0 0);
+  --sidebar-border: oklch(0.31 0.01 260);
+  --sidebar-ring: oklch(0.72 0.17 50);
+
+  --logo-plate: oklch(0.95 0.003 255);
+
+  --shadow-card: 0 1px 2px oklch(0 0 0 / 0.3);
+  --shadow-lift: 0 1px 2px oklch(0 0 0 / 0.4), 0 16px 32px -16px oklch(0 0 0 / 0.75);
+
+  color-scheme: dark;
 }
 
 @layer base {
@@ -169,7 +226,7 @@
   }
 
   html {
-    scrollbar-color: oklch(0.75 0.006 70) transparent;
+    scrollbar-color: color-mix(in oklch, var(--foreground) 30%, transparent) transparent;
     scroll-padding-top: 5rem;
   }
 
@@ -183,7 +240,7 @@
   }
 
   ::selection {
-    background-color: oklch(0.665 0.185 45 / 0.22);
+    background-color: color-mix(in oklch, var(--primary) 26%, transparent);
     color: var(--foreground);
   }
 
@@ -252,7 +309,7 @@
 
 /* Štítek položený přes fotku vozu – plný, aby byl čitelný na jakémkoli snímku */
 @utility photo-chip {
-  background-color: oklch(1 0 0 / 0.94);
+  background-color: color-mix(in oklch, var(--card) 94%, transparent);
   color: var(--foreground);
   box-shadow: 0 1px 3px oklch(0.2 0.005 60 / 0.18);
 }
@@ -267,7 +324,7 @@
 @utility lift {
   transition: border-color 0.2s var(--ease-out);
   &:hover {
-    border-color: oklch(0.21 0.004 60 / 0.35);
+    border-color: color-mix(in oklch, var(--foreground) 35%, transparent);
   }
 }
 
@@ -294,6 +351,6 @@
     box-shadow 0.15s;
   &:focus {
     border-color: var(--ring);
-    box-shadow: 0 0 0 3px oklch(0.665 0.185 45 / 0.18);
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 18%, transparent);
   }
 }

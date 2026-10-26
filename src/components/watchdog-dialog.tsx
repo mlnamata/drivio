@@ -9,21 +9,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { brandBySlug } from "@/lib/catalog";
-import { num } from "@/lib/mock-data";
+import { filterChips } from "@/components/listing-filters";
 import type { ListingSearch } from "@/lib/search";
 import { submitWatchdog } from "@/lib/forms";
 import { store } from "@/lib/store";
 
 export function describeSearch(s: ListingSearch) {
-  const parts: string[] = [];
-  if (s.brand)
-    parts.push(`${brandBySlug(s.brand)?.name ?? s.brand}${s.model ? ` ${s.model}` : ""}`);
-  if (s.priceTo) parts.push(`do ${num(s.priceTo)} Kč`);
-  if (s.yearFrom) parts.push(`od roku ${s.yearFrom}`);
-  if (s.kmTo) parts.push(`do ${num(s.kmTo)} km`);
-  if (s.fuel?.length) parts.push(s.fuel.join(", "));
-  if (s.body?.length) parts.push(s.body.join(", "));
+  const parts = filterChips(s).map((c) => c.label);
   return parts.length ? parts.join(", ") : "Všechna auta";
 }
 
