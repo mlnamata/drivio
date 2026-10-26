@@ -29,7 +29,6 @@ function Pricing() {
           ]}
         />
         <SectionTitle
-          eyebrow="Ceník pro autobazary"
           title="Předplatné, nebo platba za vůz – vyberte si"
           desc="Autobazary a firmy si volí: měsíční balíček slotů (vozy v něm libovolně měníte), nebo platbu za každý vystavený vůz bez závazku. Fyzická osoba má 1 inzerát zdarma."
         />
@@ -41,7 +40,7 @@ function Pricing() {
         <PayPerVehicleCard />
         <p className="mt-4 text-sm text-muted-foreground">
           Prodáváte jen jedno vlastní auto jako fyzická osoba? Máte{" "}
-          <a href="/prodat-auto" className="font-semibold text-primary hover:underline">
+          <a href="/prodat-auto" className="font-semibold text-primary-ink hover:underline">
             1 inzerát zdarma
           </a>
           .
@@ -60,7 +59,7 @@ function Pricing() {
                 {[
                   ["1. měsíc inzerce", "základní sazba slotu"],
                   ["2. měsíc", "+50 %"],
-                  ["3. měsíc a dál", "+100 % · nabídka aukce od 1 Kč"],
+                  ["3. měsíc a dál", "+100 %, nabídka aukce od 1 Kč"],
                 ].map(([a, b]) => (
                   <tr key={a} className="border-b border-border last:border-0">
                     <td className="py-2.5">{a}</td>

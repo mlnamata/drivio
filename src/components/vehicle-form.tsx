@@ -75,7 +75,7 @@ export function VehicleForm({
       }
       if (r.year) setYear(String(r.year));
       toast.success("VIN dekódován", {
-        description: `${r.brand ? brandBySlug(r.brand)?.name : "Výrobce neznámý"}${r.year ? `, modelový rok ${r.year}` : ""} · není evidován jako odcizený`,
+        description: `${r.brand ? brandBySlug(r.brand)?.name : "Výrobce neznámý"}${r.year ? `, modelový rok ${r.year}` : ""}, není evidován jako odcizený`,
       });
     } catch {
       toast.error("VIN se nepodařilo dekódovat");
@@ -170,7 +170,7 @@ export function VehicleForm({
               type="button"
               onClick={decode}
               disabled={decoding}
-              className="inline-flex shrink-0 items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold hover:border-primary/40"
+              className="inline-flex shrink-0 items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold hover:border-primary/40"
             >
               <ScanLine className="h-4 w-4" /> {decoding ? "Dekóduji…" : "Dekódovat"}
             </button>
@@ -455,7 +455,7 @@ export function VehicleForm({
           {aside?.(price)}
           <button
             disabled={disabled}
-            className="w-full rounded-full bg-primary py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+            className="w-full rounded-lg bg-primary py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
           >
             {submitLabel}
           </button>

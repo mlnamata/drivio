@@ -64,7 +64,7 @@ function Moderation() {
                 <Link
                   to="/inzerat/$id"
                   params={{ id: v.id }}
-                  className="font-semibold hover:text-primary"
+                  className="font-semibold hover:text-primary-ink"
                 >
                   {vehicleTitle(v)}
                 </Link>
@@ -88,7 +88,7 @@ function Moderation() {
                 <button
                   className={cn(
                     "text-xs font-semibold",
-                    isHidden ? "text-primary" : "text-destructive",
+                    isHidden ? "text-primary-ink" : "text-destructive",
                   )}
                   onClick={() => {
                     store.toggleHidden(v.id);

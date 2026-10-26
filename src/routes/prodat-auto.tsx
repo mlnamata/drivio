@@ -1,14 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import {
-  BellRing,
-  Building2,
-  Camera,
-  ShieldCheck,
-  Store,
-  Trash2,
-  User,
-  Wallet,
-} from "lucide-react";
+import { Building2, Store, Trash2, User } from "lucide-react";
+import { Tick } from "@/components/icons";
 import { useState } from "react";
 import { PayPerVehicleCard, PlanCards } from "@/components/pricing";
 import { cn } from "@/lib/utils";
@@ -48,35 +40,24 @@ function SellCar() {
         <Breadcrumbs items={[{ to: "/", label: "Drivio" }, { label: "Prodat auto" }]} />
         <div className="grid gap-6 lg:grid-cols-[1.3fr_1fr] lg:items-end">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
-              Pro soukromé prodejce
-            </p>
-            <h1 className="mt-2 text-4xl font-extrabold md:text-5xl">
-              Prodejte auto <span className="text-primary">zdarma</span>
-            </h1>
+            <h1 className="text-4xl font-extrabold md:text-5xl">Prodejte svoje auto zdarma</h1>
             <p className="mt-3 max-w-xl text-lg text-muted-foreground">
-              Každý účet má 1 inzerát zdarma na 60 dní. Kupci uvidí i měsíční splátku, takže se auto
-              prodá rychleji.
+              Každý účet má 1{"\u00a0"}inzerát zdarma na 60{"\u00a0"}dní. Kupci u{"\u00a0"}něj uvidí
+              i{"\u00a0"}měsíční splátku, takže se auto prodá rychleji.
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-3 text-sm">
-            {[
-              [Camera, "Až 8 fotek"],
-              [ShieldCheck, "Dekódování VIN"],
-              [BellRing, "Rozesíláme hlídacím psům"],
-              [Wallet, "Kupci vidí splátku"],
-            ].map(([Icon, t]) => {
-              const I = Icon as typeof Camera;
-              return (
-                <div key={t as string} className="surface-card flex items-center gap-2 p-3">
-                  <I className="h-4 w-4 text-primary" /> {t as string}
-                </div>
-              );
-            })}
-          </div>
+          <ul className="grid grid-cols-2 gap-x-6 gap-y-2.5 border-t border-border pt-4 text-sm">
+            {["Až 8 fotek", "Dekódování VIN", "Rozešleme hlídacím psům", "Kupci vidí splátku"].map(
+              (t) => (
+                <li key={t} className="flex items-center gap-2">
+                  <Tick className="text-primary" /> {t}
+                </li>
+              ),
+            )}
+          </ul>
         </div>
 
-        <div className="mt-8 grid max-w-xl grid-cols-2 gap-1 rounded-full bg-muted p-1">
+        <div className="mt-8 grid max-w-xl grid-cols-2 gap-1 rounded-lg bg-muted p-1">
           {(
             [
               ["private", User, "Fyzická osoba"],
@@ -87,7 +68,7 @@ function SellCar() {
               key={t}
               onClick={() => setSellerType(t)}
               className={cn(
-                "flex items-center justify-center gap-2 rounded-full py-2.5 text-sm font-semibold transition",
+                "flex items-center justify-center gap-2 rounded-md py-2.5 text-sm font-semibold transition",
                 sellerType === t ? "bg-card shadow-sm" : "text-muted-foreground",
               )}
             >
@@ -107,13 +88,13 @@ function SellCar() {
             <div className="flex flex-wrap gap-3">
               <Link
                 to="/prihlaseni"
-                className="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"
+                className="rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"
               >
                 Registrovat firmu a vložit vůz
               </Link>
               <Link
                 to="/cenik"
-                className="rounded-full border border-border bg-card px-6 py-3 text-sm font-semibold"
+                className="rounded-lg border border-border bg-card px-6 py-3 text-sm font-semibold"
               >
                 Podrobný ceník a kalkulačka
               </Link>
@@ -138,12 +119,12 @@ function SellCar() {
                     <Link
                       to="/inzerat/$id"
                       params={{ id: v.id }}
-                      className="font-semibold hover:text-primary"
+                      className="font-semibold hover:text-primary-ink"
                     >
                       {vehicleTitle(v)} {v.trim}
                     </Link>
                     <p className="text-sm text-muted-foreground">
-                      {czk(v.price)} · splátka od {czk(monthlyPayment(v.price))}/měs. ·{" "}
+                      {czk(v.price)}, splátka od {czk(monthlyPayment(v.price))}/měs.,{" "}
                       {v.status === "in_auction" ? "v aukci" : "zveřejněno"}
                     </p>
                   </div>
@@ -155,7 +136,7 @@ function SellCar() {
                           description: "Inzerát je stažený a můžete vložit další vůz.",
                         });
                       }}
-                      className="rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background"
+                      className="rounded-lg bg-foreground px-4 py-2 text-sm font-semibold text-background"
                     >
                       Prodáno
                     </button>
@@ -185,7 +166,7 @@ function SellCar() {
               </div>
               <Link
                 to="/pro-autobazary"
-                className="rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+                className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
               >
                 Balíčky pro prodejce
               </Link>

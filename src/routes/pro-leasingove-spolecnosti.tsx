@@ -35,7 +35,6 @@ function ForLeasing() {
     <Page>
       <Container className="py-16">
         <SectionTitle
-          eyebrow="Pro leasingové a úvěrové společnosti"
           title="Kvalifikované leady na financování aut v reálném čase"
           desc="Každá žádost obsahuje ověřený vůz (VIN, cena, prodejce) a doložitelný souhlas zákazníka. Spolupracujeme v modelu CPL nebo CPS."
         />
@@ -76,7 +75,7 @@ function ForLeasing() {
             })}
             <Link
               to="/kontakt"
-              className="inline-flex rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"
+              className="inline-flex rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground"
             >
               Domluvit spolupráci
             </Link>

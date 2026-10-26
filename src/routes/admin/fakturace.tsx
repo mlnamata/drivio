@@ -13,7 +13,7 @@ function Billing() {
     <>
       <PageHeader
         title="Fakturace"
-        desc="Podklad z Edge Function billing-processor → Fakturoid API v3 (ISDOC). Úhrady se párují webhookem."
+        desc="Podklad z Edge Function billing-processor jde do Fakturoid API v3 (ISDOC). Úhrady se párují webhookem."
         actions={
           <button
             className={btn.primary}

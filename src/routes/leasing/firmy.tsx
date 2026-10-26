@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Building2, Check, Minus, Plus, Truck } from "lucide-react";
+import { Building2, Minus, Plus, Truck } from "lucide-react";
+import { Tick } from "@/components/icons";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { BrandLogo } from "@/components/brand-logo";
@@ -96,19 +97,19 @@ function FleetLeasing() {
         />
         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
-            <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-primary">
-              <Building2 className="h-4 w-4" /> Pro firmy a živnostníky
-            </p>
-            <h1 className="mt-2 text-3xl font-extrabold md:text-4xl">
-              Operativní leasing pro firmy
+            <h1 className="text-3xl font-extrabold md:text-4xl">
+              Operativní leasing pro firmy a{"\u00a0"}živnostníky
             </h1>
             <p className="mt-2 max-w-2xl text-muted-foreground">
               Ceny bez DPH, vše v ceně (pojištění, servis, pneu, známka). Vyberte vozy a počty kusů
               a poptejte celou flotilu jedním formulářem.
             </p>
           </div>
-          <Link to="/leasing" className="text-sm font-semibold text-primary">
-            Nabídky pro soukromé osoby →
+          <Link
+            to="/leasing"
+            className="text-sm font-semibold text-foreground underline-offset-4 hover:underline"
+          >
+            Nabídky pro soukromé osoby
           </Link>
         </div>
 
@@ -156,7 +157,7 @@ function FleetLeasing() {
         <div className="surface-card mt-4 overflow-x-auto">
           <table className="w-full min-w-[820px] text-sm">
             <thead>
-              <tr className="border-b border-border text-left text-xs uppercase tracking-wider text-muted-foreground">
+              <tr className="border-b border-border text-left text-xsr text-muted-foreground">
                 <th className="px-4 py-3">Vůz</th>
                 <th className="px-4 py-3">Palivo / výkon</th>
                 {terms.map((t) => (
@@ -182,7 +183,7 @@ function FleetLeasing() {
                         to="/leasing/$id"
                         params={{ id: o.id }}
                         search={{ business: true }}
-                        className="flex items-center gap-2 hover:text-primary"
+                        className="flex items-center gap-2 hover:text-primary-ink"
                       >
                         {brand ? (
                           <BrandLogo slug={brand.slug} name={brand.name} className="h-6 w-6" />
@@ -192,20 +193,20 @@ function FleetLeasing() {
                             {brand?.name} {o.model}
                           </span>
                           <span className="block text-xs text-muted-foreground">
-                            {o.trim} · {o.partner}
+                            {o.trim}, {o.partner}
                           </span>
                         </span>
                       </Link>
                     </td>
                     <td className="px-4 py-3 text-muted-foreground">
-                      {labelOf(fuels, o.fuel)} · {o.powerKw} kW
+                      {labelOf(fuels, o.fuel)}, {o.powerKw} kW
                     </td>
                     {terms.map((t) => (
                       <td
                         key={t}
                         className={cn(
                           "px-4 py-3 text-right tabular-nums",
-                          t === 48 && "font-bold text-primary",
+                          t === 48 && "font-bold text-primary-ink",
                         )}
                       >
                         {czk(leaseMonthly(o, t, km, true))}
@@ -285,7 +286,7 @@ function FleetLeasing() {
                 "Flotilový reporting",
               ].map((t) => (
                 <li key={t} className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-success" /> {t}
+                  <Tick className="text-success" /> {t}
                 </li>
               ))}
             </ul>
@@ -335,7 +336,7 @@ function FleetLeasing() {
                 </label>
                 <button
                   disabled={busy || selected.length === 0}
-                  className="w-full rounded-full bg-primary py-3 text-sm font-bold text-primary-foreground disabled:opacity-50"
+                  className="w-full rounded-lg bg-primary py-3 text-sm font-bold text-primary-foreground disabled:opacity-50"
                 >
                   {selected.length
                     ? `Poptat ${cars(selected.reduce((s, [, n]) => s + n, 0))}`

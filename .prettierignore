@@ -6,3 +6,10 @@ pnpm-lock.yaml
 package-lock.json
 bun.lock
 routeTree.gen.ts
+
+# Převzaté skills třetích stran necháváme beze změn
+.claude/skills/frontend-design
+.claude/skills/avoid-ai-design
+.claude/skills/taste-skill
+.claude/skills/web-design-guidelines
+.claude/skills/drivio-design/reference

@@ -34,7 +34,7 @@ export function AppShell({
         {nav.map((g, gi) => (
           <div key={gi}>
             {g.section ? (
-              <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-sidebar-foreground/40">
+              <p className="mb-2 px-3 text-[11px] font-semibold text-sidebar-foreground/40">
                 {g.section}
               </p>
             ) : null}
@@ -95,7 +95,7 @@ export function AppShell({
         </div>
       ) : null}
       <div className="lg:pl-64">
-        <header className="glass sticky top-0 z-30 flex h-14 items-center gap-3 border-x-0 border-t-0 px-4 md:px-8">
+        <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-card px-4 md:px-8">
           <button className="lg:hidden" onClick={() => setOpen(true)} aria-label="Menu">
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -188,7 +188,7 @@ export function DataTable({ head, children }: { head: string[]; children: ReactN
     <div className="surface-card overflow-x-auto">
       <table className="w-full min-w-[640px] text-sm">
         <thead>
-          <tr className="border-b border-border text-left text-xs uppercase tracking-wider text-muted-foreground">
+          <tr className="border-b border-border text-left text-xsr text-muted-foreground">
             {head.map((h) => (
               <th key={h} className="px-4 py-3 font-semibold">
                 {h}
@@ -206,7 +206,7 @@ export function DataTable({ head, children }: { head: string[]; children: ReactN
 
 export const btn = {
   primary:
-    "inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90",
+    "inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90",
   ghost:
-    "inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold hover:border-primary/40",
+    "inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold hover:border-primary/40",
 };

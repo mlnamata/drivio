@@ -37,7 +37,7 @@ function Watchdog() {
             </p>
             <Link
               to="/inzeraty"
-              className="mt-6 inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+              className="mt-6 inline-flex rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
             >
               Hledat auta
             </Link>
@@ -69,7 +69,7 @@ function Watchdog() {
                   <Link
                     to="/inzeraty"
                     search={w.search}
-                    className="inline-flex w-fit items-center gap-2 rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background"
+                    className="inline-flex w-fit items-center gap-2 rounded-lg bg-foreground px-4 py-2 text-sm font-semibold text-background"
                   >
                     <Search className="h-4 w-4" /> Zobrazit {cars(count)}
                   </Link>

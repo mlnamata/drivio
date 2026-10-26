@@ -33,7 +33,7 @@ function Leads() {
               <td>{vehicleTitle(vehicleById(l.vehicleId)!)}</td>
               <td>
                 {l.kind === "financing"
-                  ? `Financování${"partner" in l ? ` · ${l.partner}` : ""}`
+                  ? `Financování${"partner" in l ? `, ${l.partner}` : ""}`
                   : "Dotaz na vůz"}
               </td>
               <td className="text-muted-foreground">{l.at}</td>

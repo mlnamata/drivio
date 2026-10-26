@@ -85,7 +85,7 @@ export function InstallmentOptions({ price, onPick }: { price: number; onPick?: 
       <div className="mt-5 flex flex-col gap-4 rounded-2xl bg-accent p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="text-sm text-accent-foreground">
           <p>
-            <strong className="font-display text-2xl">{czk(pay)}</strong> měsíčně · {m} splátek ·{" "}
+            <strong className="font-display text-2xl">{czk(pay)}</strong> měsíčně, {m} splátek,{" "}
             {partner.name} ({partner.product})
           </p>
           <p className="text-xs opacity-80">
@@ -96,7 +96,7 @@ export function InstallmentOptions({ price, onPick }: { price: number; onPick?: 
         {onPick ? (
           <button
             onClick={onPick}
-            className="shrink-0 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground"
+            className="shrink-0 rounded-lg bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground"
           >
             Chci tuto variantu
           </button>

@@ -32,8 +32,8 @@ function MyCars() {
         title="Moje vozy"
         desc={
           b.payg
-            ? `${cars(b.used)} · tarif Platba za vůz`
-            : `${b.used} z ${b.plan.slots} slotů obsazeno · limit ceny ${b.plan.maxPrice ? czk(b.plan.maxPrice) : "bez limitu"}`
+            ? `${cars(b.used)}, tarif Platba za vůz`
+            : `${b.used} z ${b.plan.slots} slotů obsazeno, limit ceny ${b.plan.maxPrice ? czk(b.plan.maxPrice) : "bez limitu"}`
         }
         actions={
           <Link to="/dashboard/pridat" className={btn.primary}>
@@ -65,12 +65,12 @@ function MyCars() {
                     <Link
                       to="/inzerat/$id"
                       params={{ id: v.id }}
-                      className="font-semibold hover:text-primary"
+                      className="font-semibold hover:text-primary-ink"
                     >
                       {vehicleTitle(v)}
                     </Link>
                     <p className="text-xs text-muted-foreground">
-                      {v.year} · {num(v.km)} km · VIN {v.vin.slice(-6)}
+                      {v.year}, {num(v.km)} km, VIN {v.vin.slice(-6)}
                     </p>
                   </div>
                 </div>
@@ -127,7 +127,7 @@ function MyCars() {
                   ) : null}
                   {l.month >= 3 && !inAuction ? (
                     <button
-                      className="rounded-lg p-2 text-primary hover:bg-muted"
+                      className="rounded-lg p-2 text-primary-ink hover:bg-muted"
                       aria-label="Přesunout do aukce"
                       title="Přesunout do aukce od 1 Kč"
                       onClick={() => {
@@ -199,7 +199,7 @@ function MyCars() {
               className="field text-lg font-semibold"
               autoFocus
             />
-            <button className="w-full rounded-full bg-primary py-2.5 text-sm font-semibold text-primary-foreground">
+            <button className="w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-primary-foreground">
               Uložit
             </button>
           </form>

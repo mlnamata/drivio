@@ -9,7 +9,8 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "design:check": "node .claude/skills/avoid-ai-design/scripts/detect.mjs src"
   },
   "overrides": {
     "rolldown": "1.2.1"

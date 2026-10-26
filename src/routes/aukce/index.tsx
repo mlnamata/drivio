@@ -1,17 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  Bell,
-  BellRing,
-  CalendarClock,
-  ChevronDown,
-  Clock,
-  Gavel,
-  Info,
-  Scale,
-  Timer,
-  Trophy,
-  Users,
-} from "lucide-react";
+import { Bell, BellRing, CalendarClock, ChevronDown, Clock, Gavel, Trophy } from "lucide-react";
 import { toast } from "sonner";
 import { AuctionCountdown } from "@/components/auction-countdown";
 import { CarImage } from "@/components/car-image";
@@ -19,7 +7,7 @@ import { Breadcrumbs, Container, Page } from "@/components/site-shell";
 import { fuels, labelOf } from "@/lib/catalog";
 import { czk, num, sellerOf, vehicleTitle, type Vehicle } from "@/lib/mock-data";
 import { store, useAllVehicles, useAuctions, type LiveAuction } from "@/lib/store";
-import { cn } from "@/lib/utils";
+import { cn, plural } from "@/lib/utils";
 
 export const Route = createFileRoute("/aukce/")({
   head: () => ({
@@ -58,6 +46,7 @@ function AuctionHub() {
   const mine = withVehicle(auctions.filter((a) => a.myBest !== null && !a.ended));
   const ended = withVehicle(auctions.filter((a) => a.ended));
 
+  const totalBids = live.reduce((sum, x) => sum + x.a.bids, 0);
   const sections = [
     { id: "zive", label: "Živě", count: live.length },
     { id: "pripravujeme", label: "Čekají na aukci", count: upcoming.length },
@@ -69,42 +58,34 @@ function AuctionHub() {
     <Page>
       <Container className="py-8">
         <Breadcrumbs items={[{ to: "/", label: "Drivio" }, { label: "Aukce" }]} />
-        <div className="relative overflow-hidden rounded-[2rem] bg-sidebar p-8 text-white md:p-12">
-          <div className="pointer-events-none absolute -right-20 -top-28 h-96 w-96 rounded-full bg-primary/40 blur-3xl" />
-          <div className="relative grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:items-end">
-            <div>
-              <p className="inline-flex items-center gap-2 rounded-full bg-primary/20 px-3 py-1 text-xs font-semibold text-primary">
-                <span className="h-2 w-2 animate-pulse rounded-full bg-primary" /> {live.length}{" "}
-                aukcí právě běží
-              </p>
-              <h1 className="mt-4 text-4xl font-extrabold md:text-5xl">Aukce aut od 1 Kč</h1>
-              <p className="mt-3 max-w-xl text-white/70">
-                Živé dražby a galerie vozů, které se brzy začnou dražit. Vyvolávací cena 1 Kč,
-                příhozy živě, vydražitel platí jen aukční poplatek 3–5 %.
-              </p>
-            </div>
-            <dl className="grid grid-cols-3 gap-3 text-center">
-              {[
-                [String(live.length), "živých aukcí"],
-                [String(upcoming.length), "čeká na start"],
-                [num(live.reduce((s, x) => s + x.a.bids, 0)), "příhozů"],
-              ].map(([v, l]) => (
-                <div key={l} className="glass-dark rounded-2xl p-3">
-                  <dt className="font-display text-2xl font-extrabold">{v}</dt>
-                  <dd className="text-xs text-white/60">{l}</dd>
-                </div>
-              ))}
-            </dl>
+        <div className="grid gap-4 border-b border-border pb-8 lg:grid-cols-[1.4fr_1fr] lg:items-end lg:gap-12">
+          <h1 className="text-4xl font-extrabold leading-[1.05] md:text-5xl">Aukce aut od 1 Kč</h1>
+          <div>
+            <p className="max-w-xl text-muted-foreground">
+              Živé dražby a{"\u00a0"}galerie vozů, které se brzy začnou dražit. Vyvolávací cena 1
+              {"\u00a0"}Kč, příhozy živě, vydražitel platí jen aukční poplatek 3–5{"\u00a0"}%.
+            </p>
+            <p className="mt-3 flex items-center gap-2 text-sm font-medium">
+              {live.length ? (
+                <span
+                  className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-auction"
+                  aria-hidden
+                />
+              ) : null}
+              Právě běží {live.length} {plural(live.length, "aukce", "aukce", "aukcí")},{" "}
+              {upcoming.length} {plural(upcoming.length, "vůz čeká", "vozy čekají", "vozů čeká")} na
+              start, zatím {num(totalBids)} {plural(totalBids, "příhoz", "příhozy", "příhozů")}.
+            </p>
           </div>
         </div>
 
         {/* Navigace po sekcích jedné stránky */}
-        <nav className="glass sticky top-16 z-30 mt-6 flex gap-1 overflow-x-auto rounded-full p-1">
+        <nav className="sticky top-16 z-30 mt-6 flex gap-1 overflow-x-auto rounded-full border border-border bg-card p-1 shadow-[var(--shadow-card)]">
           {sections.map((s) => (
             <a
               key={s.id}
               href={`#${s.id}`}
-              className="shrink-0 rounded-full px-4 py-2 text-sm font-semibold text-foreground/75 transition hover:bg-foreground hover:text-background"
+              className="shrink-0 rounded-lg px-4 py-2 text-sm font-semibold text-foreground/75 transition hover:bg-foreground hover:text-background"
             >
               {s.label} <span className="ml-1 text-xs opacity-70">{s.count}</span>
             </a>
@@ -150,12 +131,8 @@ function AuctionHub() {
                 >
                   <Link to="/aukce/$id" params={{ id: a.id }} className="group block">
                     <div className="relative aspect-[16/10] overflow-hidden">
-                      <CarImage
-                        src={v.photos[0]!}
-                        alt={vehicleTitle(v)}
-                        className="transition-transform duration-500 group-hover:scale-[1.04]"
-                      />
-                      <span className="glass absolute left-3 top-3 inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold">
+                      <CarImage src={v.photos[0]!} alt={vehicleTitle(v)} />
+                      <span className="photo-chip absolute left-3 top-3 inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold">
                         <Clock className="h-3.5 w-3.5" /> Start za{" "}
                         <AuctionCountdown minutes={a.startsInMinutes ?? 0} />
                       </span>
@@ -163,11 +140,11 @@ function AuctionHub() {
                     <div className="p-4 pb-0">
                       <h3 className="text-lg font-semibold">{vehicleTitle(v)}</h3>
                       <p className="text-sm text-muted-foreground">
-                        {v.year} · {num(v.km)} km · {labelOf(fuels, v.fuel)} · {sellerOf(v).city}
+                        {v.year}, {num(v.km)} km, {labelOf(fuels, v.fuel)}, {sellerOf(v).city}
                       </p>
                       <p className="mt-2 text-sm">
                         Vyvolávací cena <strong>{czk(a.startPrice)}</strong>
-                        {a.reservePrice ? " · s minimální cenou" : " · bez minimální ceny"}
+                        {a.reservePrice ? ", s minimální cenou" : ", bez minimální ceny"}
                       </p>
                     </div>
                   </Link>
@@ -182,7 +159,7 @@ function AuctionHub() {
                         );
                       }}
                       className={cn(
-                        "inline-flex w-full items-center justify-center gap-2 rounded-full py-2.5 text-sm font-semibold",
+                        "inline-flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold",
                         a.reminded
                           ? "bg-accent text-accent-foreground"
                           : "bg-foreground text-background hover:bg-foreground/85",
@@ -228,59 +205,48 @@ function AuctionHub() {
           </details>
         </section>
 
-        <h2 className="mt-14 text-2xl font-bold">Jak aukce funguje</h2>
-        <div className="mt-5 grid gap-4 md:grid-cols-4">
+        <h2 className="mt-16 text-2xl font-bold">Jak aukce funguje</h2>
+        <ol className="mt-6 grid gap-x-8 gap-y-6 md:grid-cols-4">
           {[
             [
-              Users,
               "Registrace dražitele",
-              "Jednorázově potvrdíte kontakt a aukční řád. Pak můžete přihazovat.",
+              "Jednorázově potvrdíte kontakt a\u00a0aukční řád. Pak můžete přihazovat.",
             ],
             [
-              Gavel,
-              "Přihazujte nebo nastavte maximum",
+              "Přihazujte, nebo nastavte maximum",
               "Automatické přihazování vás drží ve vedení až do vámi zvolené částky.",
             ],
             [
-              Timer,
               "Ochrana proti snipingu",
-              "Příhoz v posledních 2 minutách prodlouží aukci o další 2 minuty.",
+              "Příhoz v\u00a0posledních 2\u00a0minutách prodlouží aukci o\u00a0další 2\u00a0minuty.",
             ],
             [
-              Trophy,
               "Vyhráli jste",
-              "Do 3 dnů uhradíte cenu prodejci a aukční poplatek platformě, pak si vůz převezmete.",
+              "Do 3\u00a0dnů uhradíte cenu prodejci a\u00a0aukční poplatek platformě, pak si vůz převezmete.",
             ],
-          ].map(([Icon, t, d]) => {
-            const I = Icon as typeof Gavel;
-            return (
-              <div key={t as string} className="surface-card p-5">
-                <I className="h-5 w-5 text-primary" />
-                <p className="mt-3 font-semibold">{t as string}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{d as string}</p>
-              </div>
-            );
-          })}
-        </div>
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
-          <div className="surface-card flex gap-3 p-5">
-            <Scale className="h-5 w-5 shrink-0 text-primary" />
-            <p className="text-sm text-muted-foreground">
-              <strong className="text-foreground">Férová pravidla:</strong> prodejce nesmí
-              přihazovat na vlastní vůz, všechny příhozy jsou veřejně vidět a zpracovává je databáze
-              atomicky – dva současné příhozy se nikdy nepřepíšou.
-            </p>
-          </div>
-          <div className="surface-card flex gap-3 p-5">
-            <Info className="h-5 w-5 shrink-0 text-primary" />
-            <p className="text-sm text-muted-foreground">
-              <strong className="text-foreground">Aukční poplatek</strong> 3–5 % z vydražené ceny
-              platí vydražitel. Výše je uvedena u každé aukce ještě před příhozem.{" "}
-              <Link to="/pravni/obchodni-podminky" className="text-primary underline">
-                Aukční řád
-              </Link>
-            </p>
-          </div>
+          ].map(([t, d], i) => (
+            <li key={t} className="border-t-2 border-foreground pt-4">
+              <span className="font-display text-sm font-bold text-muted-foreground">
+                Krok {i + 1}
+              </span>
+              <p className="mt-1 font-semibold">{t}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{d}</p>
+            </li>
+          ))}
+        </ol>
+        <div className="mt-10 grid gap-x-8 gap-y-4 border-t border-border pt-6 text-sm text-muted-foreground md:grid-cols-2">
+          <p>
+            <strong className="text-foreground">Férová pravidla.</strong> Prodejce nesmí přihazovat
+            na vlastní vůz, všechny příhozy jsou veřejně vidět a{"\u00a0"}databáze je zpracovává
+            jeden po druhém, takže se dva současné příhozy nikdy nepřepíšou.
+          </p>
+          <p>
+            <strong className="text-foreground">Aukční poplatek</strong> 3–5{"\u00a0"}% z{"\u00a0"}
+            vydražené ceny platí vydražitel. Výši vidíte u{"\u00a0"}každé aukce ještě před příhozem.{" "}
+            <Link to="/pravni/obchodni-podminky" className="text-primary-ink underline">
+              Aukční řád
+            </Link>
+          </p>
         </div>
       </Container>
     </Page>
@@ -300,15 +266,8 @@ function AuctionCard({ a, v }: { a: LiveAuction; v: Vehicle }) {
   return (
     <Link to="/aukce/$id" params={{ id: a.id }} className="surface-card lift group overflow-hidden">
       <div className="relative aspect-[16/10] overflow-hidden">
-        <CarImage
-          src={v.photos[0]!}
-          alt={vehicleTitle(v)}
-          className={cn(
-            "transition-transform duration-500 group-hover:scale-[1.04]",
-            a.ended && "grayscale",
-          )}
-        />
-        <span className="glass absolute left-3 top-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold">
+        <CarImage src={v.photos[0]!} alt={vehicleTitle(v)} className={cn(a.ended && "grayscale")} />
+        <span className="photo-chip absolute left-3 top-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold">
           <Clock className="h-3.5 w-3.5" />{" "}
           {a.ended ? "Ukončeno" : <AuctionCountdown minutes={a.endsInMinutes} />}
         </span>
@@ -328,7 +287,7 @@ function AuctionCard({ a, v }: { a: LiveAuction; v: Vehicle }) {
       <div className="p-4">
         <h3 className="font-semibold">{vehicleTitle(v)}</h3>
         <p className="text-xs text-muted-foreground">
-          {v.year} · {num(v.km)} km · {labelOf(fuels, v.fuel)} · {sellerOf(v).city}
+          {v.year}, {num(v.km)} km, {labelOf(fuels, v.fuel)}, {sellerOf(v).city}
         </p>
         <div className="mt-4 flex items-end justify-between border-t border-border pt-3">
           <div>

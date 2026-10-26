@@ -24,7 +24,7 @@ export function describeSearch(s: ListingSearch) {
   if (s.kmTo) parts.push(`do ${num(s.kmTo)} km`);
   if (s.fuel?.length) parts.push(s.fuel.join(", "));
   if (s.body?.length) parts.push(s.body.join(", "));
-  return parts.length ? parts.join(" · ") : "Všechna auta";
+  return parts.length ? parts.join(", ") : "Všechna auta";
 }
 
 /** Uložení hledání jako hlídacího psa (e-mail při novém voze odpovídajícím filtru). */
@@ -34,7 +34,7 @@ export function WatchdogDialog({ search }: { search: ListingSearch }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-semibold hover:border-primary/50">
+        <button className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2 text-sm font-semibold hover:border-primary/50">
           <BellRing className="h-4 w-4 text-primary" /> Hlídat
         </button>
       </DialogTrigger>
@@ -70,12 +70,12 @@ export function WatchdogDialog({ search }: { search: ListingSearch }) {
           <input name="email" type="email" required className="field" placeholder="Váš e-mail" />
           <p className="text-xs text-muted-foreground">
             Odběr můžete kdykoli zrušit odkazem v e-mailu nebo v sekci{" "}
-            <Link to="/hlidaci-pes" className="text-primary underline">
+            <Link to="/hlidaci-pes" className="text-primary-ink underline">
               Hlídací pes
             </Link>
             .
           </p>
-          <button className="w-full rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
+          <button className="w-full rounded-lg bg-primary py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90">
             Začít hlídat
           </button>
         </form>

@@ -65,7 +65,7 @@ function DealerLayout() {
             <p className="font-semibold text-white">{b.plan.name}</p>
             {b.payg ? (
               <p className="mt-1.5 text-sidebar-foreground/60">
-                {cars(b.used)} · tento měsíc {czk(b.total)}
+                {cars(b.used)}, tento měsíc {czk(b.total)}
               </p>
             ) : (
               <>

@@ -8,18 +8,18 @@ Projekt je napojený na [Lovable](https://lovable.dev/projects/8a75518a-56e0-427
 Logo: `public/brand/drivio-logo-original.png` (originál), `drivio-logo.webp` (průhledné, pro světlá pozadí),
 plochá verze pro tmavé plochy je komponenta `LogoFlat`. Barvy: grafitová `#1f1e1d` + oranžová `#ea7930`.
 
-| Zákazníci (hlavička) | Klienti a partneři (patička) | Administrace |
-| --- | --- | --- |
-| `/` – vyhledávání ve stylu sauto.cz, značky, karoserie, TOP nabídky | `/pro-autobazary`, `/cenik` | `/dashboard` – autobazar: vozy, přidání přes VIN, aukce, poptávky, faktury, předplatné |
-| `/inzeraty` – filtry v URL (vč. Cebia, hodnocení ceny, prodejce, původ, dveře/místa), hlídací pes, reklama ve výpisu | `/pro-leasingove-spolecnosti` | `/admin` – správa portálu: autobazary, moderace, aukce, leady, fakturace, pg_cron |
-| `/inzerat/:id` – detail, Cebia, hodnocení ceny, kontakt, kalkulačka splátek | `/reklama` – formáty a ceník pro inzerenty | `/api/webhooks/fakturoid` – webhook úhrad (HMAC + idempotence) |
-| `/leasing`, `/leasing/:id` – operativní leasing (styl Driveto), konfigurátor, poptávka | `/pravni/*`, `/kontakt` | |
-| `/aukce` – jedna stránka: živé aukce, galerie vozů čekajících na aukci, moje příhozy, výsledky | | |
-| `/aukce/:id` – registrace dražitele, auto-příhoz, anti-sniping, upozornění na start | | |
-| `/leasing/firmy` – operativní leasing pro firmy (ceny bez DPH, poptávka flotily) | | |
-| `/porovnani` – porovnání až 4 vozů (cena, rok, nájezd, historie, výbava); interní vyhodnocení vidí jen admin | | |
-| `/prodat-auto` – fyzická osoba: 1 inzerát zdarma; firma: platba za vůz nebo balíček | | |
-| `/financovani`, `/hlidaci-pes`, `/oblibene`, `/prihlaseni` | | |
+| Zákazníci (hlavička)                                                                                                 | Klienti a partneři (patička)               | Administrace                                                                           |
+| -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------- |
+| `/` – vyhledávání ve stylu sauto.cz, značky, karoserie, TOP nabídky                                                  | `/pro-autobazary`, `/cenik`                | `/dashboard` – autobazar: vozy, přidání přes VIN, aukce, poptávky, faktury, předplatné |
+| `/inzeraty` – filtry v URL (vč. Cebia, hodnocení ceny, prodejce, původ, dveře/místa), hlídací pes, reklama ve výpisu | `/pro-leasingove-spolecnosti`              | `/admin` – správa portálu: autobazary, moderace, aukce, leady, fakturace, pg_cron      |
+| `/inzerat/:id` – detail, Cebia, hodnocení ceny, kontakt, kalkulačka splátek                                          | `/reklama` – formáty a ceník pro inzerenty | `/api/webhooks/fakturoid` – webhook úhrad (HMAC + idempotence)                         |
+| `/leasing`, `/leasing/:id` – operativní leasing (styl Driveto), konfigurátor, poptávka                               | `/pravni/*`, `/kontakt`                    |                                                                                        |
+| `/aukce` – jedna stránka: živé aukce, galerie vozů čekajících na aukci, moje příhozy, výsledky                       |                                            |                                                                                        |
+| `/aukce/:id` – registrace dražitele, auto-příhoz, anti-sniping, upozornění na start                                  |                                            |                                                                                        |
+| `/leasing/firmy` – operativní leasing pro firmy (ceny bez DPH, poptávka flotily)                                     |                                            |                                                                                        |
+| `/porovnani` – porovnání až 4 vozů (cena, rok, nájezd, historie, výbava); interní vyhodnocení vidí jen admin         |                                            |                                                                                        |
+| `/prodat-auto` – fyzická osoba: 1 inzerát zdarma; firma: platba za vůz nebo balíček                                  |                                            |                                                                                        |
+| `/financovani`, `/hlidaci-pes`, `/oblibene`, `/prihlaseni`                                                           |                                            |                                                                                        |
 
 **Ukázkový režim:** bez nastaveného Supabase běží web nad daty v `src/lib/mock-data.ts` a akce
 (přidání vozu, prodej, aukce, příhozy, hlídací pes, změna ceny) se ukládají do `localStorage`
@@ -34,8 +34,10 @@ plochá verze pro tmavé plochy je komponenta `LogoFlat`. Barvy: grafitová `#1f
 
 ## Před spuštěním zkontrolovat
 
-- Recenze na úvodu (`src/components/trust.tsx`) jsou **ukázkové** a označené štítkem „Ukázka“ –
-  nahraďte je skutečnými, zveřejnit vymyšlené recenze je protiprávní.
+- Sekce recenzí (`src/components/trust.tsx`) je prázdná a na webu se neukazuje. Doplňte jen
+  skutečné recenze, zveřejnit vymyšlené je protiprávní.
+- Partneři v pruhu „Partneři pro financování, leasing a prověrky“ (Essox, Home Credit, Cofidis,
+  Cebia…) musí odpovídat podepsaným smlouvám.
 - Ceny v ceníku reklamy, nabídky leasingu a sazby partnerů jsou ukázkové – doplnit dle smluv.
 - Fotky vozů v ukázkových datech se načítají z Unsplash; ostré inzeráty nahrávají prodejci.
 - Doplnit IČO a údaje provozovatele do právních stránek, texty nechat zkontrolovat advokátem.
@@ -77,4 +79,11 @@ serveru (SSR loadery).
 ```sh
 bun install
 bun run dev
+```
+
+Vzhled webu popisuje `DESIGN.md`. Design skills pro Claude Code jsou ve složce `.claude/skills/`
+(přehled zdrojů a licencí v `.claude/skills/SOURCES.md`). Před odesláním změn UI spusťte:
+
+```sh
+npm run design:check
 ```

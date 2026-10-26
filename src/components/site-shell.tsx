@@ -13,7 +13,7 @@ import {
   X,
 } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
-import { Logo } from "@/components/logo";
+import { Logo, LogoFlat } from "@/components/logo";
 import { CookieBanner } from "@/components/cookie-banner";
 import { CompareBar } from "@/components/compare";
 import { UspBar } from "@/components/trust";
@@ -48,7 +48,7 @@ function IconLink({
       to={to}
       className="relative inline-flex h-10 items-center gap-2 rounded-full px-2.5 text-sm font-medium text-foreground/75 transition-colors hover:bg-foreground/5 hover:text-foreground"
       aria-label={label}
-      activeProps={{ className: "text-primary" }}
+      activeProps={{ className: "text-primary-ink" }}
     >
       {children}
       <span className="hidden 2xl:inline">{label}</span>
@@ -79,9 +79,7 @@ export function SiteHeader() {
     <header
       className={cn(
         "sticky top-0 z-50 border-b transition-all",
-        scrolled
-          ? "border-border bg-card/95 shadow-[0_8px_24px_-16px_oklch(0.2_0.005_60/0.35)] backdrop-blur-md"
-          : "border-border bg-card",
+        scrolled ? "border-border bg-card shadow-[var(--shadow-lift)]" : "border-border bg-card",
       )}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center gap-6 px-4">
@@ -109,7 +107,7 @@ export function SiteHeader() {
           </IconLink>
           <Link
             to="/prodat-auto"
-            className="ml-1 hidden items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 md:inline-flex"
+            className="ml-1 hidden items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 md:inline-flex"
           >
             <PlusCircle className="h-4 w-4" /> Prodat auto
           </Link>
@@ -118,7 +116,7 @@ export function SiteHeader() {
               {auth.role !== "customer" ? (
                 <Link
                   to={auth.role === "admin" ? "/admin" : "/dashboard"}
-                  className="rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background"
+                  className="rounded-lg bg-foreground px-4 py-2 text-sm font-semibold text-background"
                 >
                   {auth.role === "admin" ? "Správa" : "Můj autobazar"}
                 </Link>
@@ -133,7 +131,7 @@ export function SiteHeader() {
           ) : (
             <Link
               to="/prihlaseni"
-              className="ml-1 hidden items-center gap-2 rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background transition-colors hover:bg-foreground/85 sm:inline-flex"
+              className="ml-1 hidden items-center gap-2 rounded-lg bg-foreground px-4 py-2 text-sm font-semibold text-background transition-colors hover:bg-foreground/85 sm:inline-flex"
             >
               <User className="h-4 w-4" /> Přihlásit
             </Link>
@@ -221,29 +219,31 @@ const footerCols: { title: string; links: { to: string; label: string }[] }[] = 
   },
 ];
 
+const businessIntro: Record<string, string> = {
+  "Pro autobazary": "Sloty nebo platba za vůz, import z vašeho systému a statistiky zájmu.",
+  "Pro leasingové společnosti": "Žádosti o financování s ověřeným vozem a souhlasem zákazníka.",
+  "Pro inzerenty": "Reklama pro lidi, kteří právě vybírají auto.",
+};
+
 export function SiteFooter() {
+  const [buyers, ...business] = footerCols;
   return (
-    <footer className="mt-24 border-t border-border bg-card">
-      <div className="mx-auto max-w-7xl px-4 py-14">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.3fr_1fr_1fr_1fr_1fr]">
-          <div>
-            <Logo className="h-8" />
-            <p className="mt-4 max-w-xs text-sm text-muted-foreground">
-              Ojetá auta od prověřených autobazarů. Férové ceny, splátka na první pohled a aukce od
-              1 Kč.
-            </p>
-          </div>
-          {footerCols.map((c) => (
+    <footer className="mt-24 bg-sidebar text-sidebar-foreground">
+      <div className="mx-auto max-w-7xl px-4 pb-8 pt-14">
+        {/* Firemní sekce – v hlavičce je jen to, co potřebují zákazníci */}
+        <div className="grid gap-10 border-b border-sidebar-border pb-12 md:grid-cols-3">
+          {business.map((c) => (
             <div key={c.title}>
-              <p className="mb-4 text-xs font-bold uppercase tracking-[0.16em] text-foreground">
-                {c.title}
+              <h2 className="text-lg font-bold text-white">{c.title}</h2>
+              <p className="mt-2 max-w-xs text-sm text-sidebar-foreground/65">
+                {businessIntro[c.title]}
               </p>
-              <ul className="space-y-2.5 text-sm">
+              <ul className="mt-4 space-y-2 text-sm">
                 {c.links.map((l) => (
                   <li key={l.label}>
                     <Link
                       to={l.to}
-                      className="text-muted-foreground transition-colors hover:text-primary"
+                      className="text-sidebar-foreground/85 underline-offset-4 hover:text-white hover:underline"
                     >
                       {l.label}
                     </Link>
@@ -254,17 +254,42 @@ export function SiteFooter() {
           ))}
         </div>
 
-        <div className="mt-12 border-t border-border pt-8">
-          <p className="mb-3 text-xs font-bold uppercase tracking-[0.16em] text-foreground">
-            Oblíbené značky
-          </p>
+        <div className="grid gap-10 py-12 lg:grid-cols-[1fr_2fr]">
+          <div>
+            <LogoFlat className="text-[1.7rem]" />
+            <p className="mt-4 max-w-xs text-sm text-sidebar-foreground/65">
+              Ojetá auta od prověřených autobazarů. Splátka na první pohled, operativní leasing a
+              {"\u00a0"}aukce od 1{"\u00a0"}Kč.
+            </p>
+          </div>
+          {buyers ? (
+            <div>
+              <p className="mb-4 text-sm font-semibold text-white">{buyers.title}</p>
+              <ul className="grid grid-cols-2 gap-x-6 gap-y-2.5 text-sm sm:grid-cols-3">
+                {buyers.links.map((l) => (
+                  <li key={l.label}>
+                    <Link
+                      to={l.to}
+                      className="text-sidebar-foreground/75 underline-offset-4 hover:text-white hover:underline"
+                    >
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
+        </div>
+
+        <div className="border-t border-sidebar-border pt-8">
+          <p className="mb-3 text-sm font-semibold text-white">Oblíbené značky</p>
           <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
             {brands.map((b) => (
               <Link
                 key={b.slug}
                 to="/inzeraty"
                 search={{ brand: b.slug }}
-                className="text-muted-foreground hover:text-primary"
+                className="text-sidebar-foreground/65 hover:text-white"
               >
                 {b.name}
               </Link>
@@ -272,19 +297,19 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="mt-10 flex flex-col gap-4 border-t border-border pt-6 text-xs text-muted-foreground md:flex-row md:items-center md:justify-between">
-          <p>© {new Date().getFullYear()} Drivio s.r.o. · Provozovatel portálu drivio.cz</p>
+        <div className="mt-10 flex flex-col gap-4 border-t border-sidebar-border pt-6 text-xs text-sidebar-foreground/55 md:flex-row md:items-center md:justify-between">
+          <p>© {new Date().getFullYear()} Drivio s.r.o., provozovatel portálu drivio.cz</p>
           <div className="flex flex-wrap gap-5">
-            <Link to="/pravni/obchodni-podminky" className="hover:text-primary">
+            <Link to="/pravni/obchodni-podminky" className="hover:text-white">
               Obchodní podmínky
             </Link>
-            <Link to="/pravni/ochrana-osobnich-udaju" className="hover:text-primary">
+            <Link to="/pravni/ochrana-osobnich-udaju" className="hover:text-white">
               Ochrana osobních údajů
             </Link>
-            <Link to="/pravni/cookies" className="hover:text-primary">
+            <Link to="/pravni/cookies" className="hover:text-white">
               Cookies
             </Link>
-            <Link to="/admin" className="hover:text-primary">
+            <Link to="/admin" className="hover:text-white">
               Správa portálu
             </Link>
           </div>
@@ -296,7 +321,7 @@ export function SiteFooter() {
 
 export function Page({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <div className={cn("bg-ambient min-h-screen", className)}>
+    <div className={cn("min-h-screen bg-background", className)}>
       <SiteHeader />
       <UspBar />
       <main>{children}</main>
@@ -307,26 +332,26 @@ export function Page({ children, className }: { children: ReactNode; className?:
   );
 }
 
+/** Nadpis sekce. Bez nadtitulků („eyebrow“) – nadpis má nést sdělení sám. */
 export function SectionTitle({
-  eyebrow,
   title,
   desc,
+  action,
   className,
 }: {
-  eyebrow?: string;
   title: string;
   desc?: string;
+  /** Odkaz zarovnaný vpravo od nadpisu, např. „Všech 120 vozů“ */
+  action?: ReactNode;
   className?: string;
 }) {
   return (
-    <div className={cn("mb-8 max-w-2xl", className)}>
-      {eyebrow ? (
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-          {eyebrow}
-        </p>
-      ) : null}
-      <h2 className="text-2xl font-bold md:text-3xl">{title}</h2>
-      {desc ? <p className="mt-3 text-muted-foreground">{desc}</p> : null}
+    <div className={cn("mb-6 flex flex-wrap items-end justify-between gap-x-6 gap-y-2", className)}>
+      <div className="max-w-2xl">
+        <h2 className="text-2xl font-bold md:text-[1.75rem]">{title}</h2>
+        {desc ? <p className="mt-2 text-muted-foreground">{desc}</p> : null}
+      </div>
+      {action}
     </div>
   );
 }

@@ -50,7 +50,7 @@ function NumberSelect({
   );
 }
 
-/** Vyhledávání na úvodní stránce – rozložení podle sauto.cz, skleněný panel. */
+/** Vyhledávání na úvodní stránce – rozložení podle sauto.cz. */
 export function QuickSearch() {
   const navigate = useNavigate();
   const source = useVehicles();
@@ -68,7 +68,7 @@ export function QuickSearch() {
         e.preventDefault();
         void navigate({ to: "/inzeraty", search: cleanSearch(s) });
       }}
-      className="rounded-3xl border border-border bg-card p-4 shadow-[var(--shadow-lift)] md:p-6"
+      className="rounded-xl border border-border bg-background p-4 md:p-5"
     >
       <div className="mb-4 flex gap-1 overflow-x-auto">
         {categories.map((c) => {
@@ -205,7 +205,7 @@ export function QuickSearch() {
             trigger={
               <button
                 type="button"
-                className="inline-flex items-center gap-1.5 font-semibold text-primary hover:underline"
+                className="inline-flex items-center gap-1.5 font-semibold text-primary-ink hover:underline"
               >
                 <SlidersHorizontal className="h-4 w-4" /> Další parametry
               </button>
@@ -214,7 +214,7 @@ export function QuickSearch() {
         </div>
         <button
           type="submit"
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-7 py-3 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/30 transition-colors hover:bg-primary/90"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-7 py-3 text-sm font-bold text-primary-foreground transition-colors hover:bg-primary/90"
         >
           <Search className="h-4 w-4" /> Zobrazit {cars(count)}
         </button>

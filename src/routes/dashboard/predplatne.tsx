@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Check } from "lucide-react";
+import { Tick } from "@/components/icons";
+
 import { toast } from "sonner";
 import { PageHeader } from "@/components/app-shell";
 import { SlotCalculator } from "@/components/pricing";
@@ -40,16 +41,15 @@ function Subscription() {
         )}
       >
         <div className="flex-1">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Bez závazku</p>
-          <p className="mt-1 text-xl font-bold">{PAYG_PLAN.name}</p>
+          <p className="text-xl font-bold">{PAYG_PLAN.name} bez závazku</p>
           <p className="mt-1 text-sm text-muted-foreground">
             Platíte jen za vozy, které máte zrovna vystavené. Vhodné pro menší prodejce a firmy.
           </p>
           <ul className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-sm">
             {perVehicleTiers.map((t) => (
               <li key={t.label} className="flex items-center gap-1.5">
-                <Check className="h-4 w-4 text-success" /> {t.label}:{" "}
-                <strong>{czk(t.price)}</strong> / 30 dní
+                <Tick className="text-success" /> {t.label}: <strong>{czk(t.price)}</strong> / 30
+                dní
               </li>
             ))}
           </ul>
@@ -58,7 +58,7 @@ function Subscription() {
           disabled={b.payg}
           onClick={() => choose("payg", PAYG_PLAN.name)}
           className={cn(
-            "shrink-0 rounded-full px-6 py-3 text-sm font-semibold",
+            "shrink-0 rounded-lg px-6 py-3 text-sm font-semibold",
             b.payg
               ? "bg-muted text-muted-foreground"
               : "bg-foreground text-background hover:bg-foreground/85",
@@ -80,7 +80,7 @@ function Subscription() {
                 <span className="text-sm font-medium text-muted-foreground"> / měsíc</span>
               </p>
               <p className="text-sm text-muted-foreground">
-                {p.slots} slotů · {p.maxPrice ? `do ${num(p.maxPrice)} Kč` : "bez limitu"} ·{" "}
+                {p.slots} slotů, {p.maxPrice ? `do ${num(p.maxPrice)} Kč` : "bez limitu"},{" "}
                 {czk(p.perSlot)}/slot
               </p>
               <button

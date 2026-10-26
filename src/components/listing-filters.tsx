@@ -165,7 +165,7 @@ export function ListingFilters({ value: s, onChange, onReset, variant = "sidebar
             type="button"
             onClick={onReset}
             disabled={!hasActive}
-            className="inline-flex items-center gap-1 text-xs font-semibold text-primary hover:underline disabled:cursor-default disabled:text-muted-foreground disabled:no-underline"
+            className="inline-flex items-center gap-1 text-xs font-semibold text-primary-ink hover:underline disabled:cursor-default disabled:text-muted-foreground disabled:no-underline"
           >
             <RotateCcw className="h-3.5 w-3.5" /> Zrušit vše
           </button>

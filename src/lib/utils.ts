@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-/** České skloňování podle počtu: plural(1, "vůz", "vozy", "vozů") → "vůz". */
+/** České skloňování podle počtu: plural(1, "vůz", "vozy", "vozů") vrátí "vůz". */
 export function plural(n: number, one: string, few: string, many: string) {
   const abs = Math.abs(n);
   if (abs === 1) return one;
@@ -13,6 +13,6 @@ export function plural(n: number, one: string, few: string, many: string) {
   return many;
 }
 
-/** „1 vůz“, „3 vozy“, „12 vozů“. */
+/** „1 vůz“, „3 vozy“, „12 vozů“ – s nezlomitelnou mezerou, číslo nezůstane na konci řádku. */
 export const cars = (n: number) =>
-  `${n.toLocaleString("cs-CZ")} ${plural(n, "vůz", "vozy", "vozů")}`;
+  `${n.toLocaleString("cs-CZ")}\u00a0${plural(n, "vůz", "vozy", "vozů")}`;

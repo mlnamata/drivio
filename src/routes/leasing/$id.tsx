@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Building2, Check, Truck, User } from "lucide-react";
+import { Building2, Truck, User } from "lucide-react";
+import { Tick } from "@/components/icons";
 import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -47,7 +48,7 @@ function OfferNotFound() {
         <h1 className="text-3xl font-bold">Nabídka už není dostupná</h1>
         <Link
           to="/leasing"
-          className="mt-6 inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+          className="mt-6 inline-flex rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
         >
           Zobrazit nabídky leasingu
         </Link>
@@ -90,7 +91,7 @@ function LeaseDetailView({ o }: { o: LeasingOffer }) {
           months,
           kmPerYear: km,
           business,
-          message: `${brand?.name} ${o.model} ${o.trim} · ${months} měs. · ${num(km)} km/rok · ${czk(price)}/měs. · ${o.partner}${f.get("ico") ? ` · IČO ${String(f.get("ico"))}` : ""}`,
+          message: `${brand?.name} ${o.model} ${o.trim}, ${months} měs., ${num(km)} km/rok, ${czk(price)}/měs., ${o.partner}${f.get("ico") ? `, IČO ${String(f.get("ico"))}` : ""}`,
           consent: true,
         },
       });
@@ -150,7 +151,7 @@ function LeaseDetailView({ o }: { o: LeasingOffer }) {
               <ul className="mt-4 grid gap-2 sm:grid-cols-2">
                 {leaseIncluded.map((i) => (
                   <li key={i} className="flex items-center gap-2 text-sm">
-                    <Check className="h-4 w-4 text-success" /> {i}
+                    <Tick className="text-success" /> {i}
                   </li>
                 ))}
               </ul>
@@ -227,7 +228,7 @@ function LeaseDetailView({ o }: { o: LeasingOffer }) {
                   {czk(price)}
                 </p>
                 <p className="text-xs text-accent-foreground/70">
-                  {business ? "bez DPH" : "vč. DPH"} · bez akontace · vše v ceně
+                  {business ? "bez DPH" : "vč. DPH"}, bez akontace, vše v ceně
                 </p>
               </div>
 
@@ -275,7 +276,7 @@ function LeaseDetailView({ o }: { o: LeasingOffer }) {
                   </label>
                   <button
                     disabled={busy}
-                    className="w-full rounded-full bg-primary py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+                    className="w-full rounded-lg bg-primary py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
                   >
                     {busy ? "Odesílám…" : "Nezávazně poptat"}
                   </button>

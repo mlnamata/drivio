@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { BarChart3, Car, Megaphone, MousePointerClick, Target, Users } from "lucide-react";
+import { Megaphone, MousePointerClick } from "lucide-react";
 import { toast } from "sonner";
 import { submitContact } from "@/lib/forms";
 import { Breadcrumbs, Container, Page, SectionTitle } from "@/components/site-shell";
@@ -51,33 +51,28 @@ function Advertising() {
       <Container className="py-8">
         <Breadcrumbs items={[{ to: "/", label: "Drivio" }, { label: "Reklama" }]} />
         <SectionTitle
-          eyebrow="Pro inzerenty"
           title="Oslovte lidi, kteří právě kupují auto"
           desc="Drivio navštěvují zákazníci v nákupní fázi – hledají konkrétní vůz, financování, pojištění i servis."
         />
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <dl className="grid gap-x-8 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            [Users, "Kupci v nákupní fázi", "Návštěvníci aktivně vybírají vůz a řeší financování."],
-            [Target, "Cílení", "Podle značky, ceny vozu, kraje, typu karoserie i paliva."],
-            [Car, "Kontext vozu", "Reklama u konkrétního modelu, např. pojištění u detailu vozu."],
-            [BarChart3, "Transparentní reporting", "Zobrazení, prokliky a konverze měsíčně."],
-          ].map(([Icon, t, d]) => {
-            const I = Icon as typeof Users;
-            return (
-              <div key={t as string} className="surface-card p-5">
-                <I className="h-5 w-5 text-primary" />
-                <p className="mt-3 font-semibold">{t as string}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{d as string}</p>
-              </div>
-            );
-          })}
-        </div>
+            ["Kupci v nákupní fázi", "Návštěvníci aktivně vybírají vůz a řeší financování."],
+            ["Cílení", "Podle značky, ceny vozu, kraje, typu karoserie i paliva."],
+            ["Kontext vozu", "Reklama u konkrétního modelu, např. pojištění u detailu vozu."],
+            ["Měsíční report", "Zobrazení, prokliky a konverze za každý měsíc."],
+          ].map(([t, d]) => (
+            <div key={t} className="border-t border-border py-5">
+              <dt className="font-semibold">{t}</dt>
+              <dd className="mt-1 text-sm text-muted-foreground">{d}</dd>
+            </div>
+          ))}
+        </dl>
 
         <h2 className="mt-12 text-2xl font-bold">Formáty a orientační ceník</h2>
         <div className="surface-card mt-4 overflow-x-auto">
           <table className="w-full min-w-[560px] text-sm">
             <thead>
-              <tr className="border-b border-border text-left text-xs uppercase tracking-wider text-muted-foreground">
+              <tr className="border-b border-border text-left text-xsr text-muted-foreground">
                 <th className="px-4 py-3">Formát</th>
                 <th className="px-4 py-3">Rozměr</th>
                 <th className="px-4 py-3">Umístění</th>
@@ -161,7 +156,7 @@ function Advertising() {
               className="field"
               placeholder="Co chcete propagovat?"
             />
-            <button className="w-full rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground">
+            <button className="w-full rounded-lg bg-primary py-3 text-sm font-semibold text-primary-foreground">
               Poslat poptávku
             </button>
           </form>

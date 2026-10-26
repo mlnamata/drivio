@@ -29,7 +29,7 @@ function DealerAuctions() {
                 <Link
                   to="/aukce/$id"
                   params={{ id: a.id }}
-                  className="font-semibold hover:text-primary"
+                  className="font-semibold hover:text-primary-ink"
                 >
                   {vehicleTitle(v)}
                 </Link>

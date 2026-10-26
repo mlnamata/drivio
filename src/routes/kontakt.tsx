@@ -48,7 +48,7 @@ function Contact() {
             {[
               [Mail, "Zákaznická podpora", "podpora@drivio.cz"],
               [Phone, "Obchod pro autobazary", "+420 800 123 456 (Po–Pá 8–18)"],
-              [MapPin, "Drivio s.r.o.", "Na Poříčí 1, 110 00 Praha 1 · IČO doplnit"],
+              [MapPin, "Drivio s.r.o.", "Na Poříčí 1, 110 00 Praha 1, IČO doplnit"],
             ].map(([Icon, t, d]) => {
               const I = Icon as typeof Mail;
               return (
@@ -105,7 +105,7 @@ function Contact() {
             <input required name="name" placeholder="Jméno" className="field" />
             <input required type="email" name="email" placeholder="E-mail" className="field" />
             <textarea required name="message" rows={5} placeholder="Zpráva" className="field" />
-            <button className="w-full rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground">
+            <button className="w-full rounded-lg bg-primary py-3 text-sm font-semibold text-primary-foreground">
               Odeslat
             </button>
           </form>

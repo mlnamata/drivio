@@ -1,14 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  Building2,
-  Check,
-  Clock,
-  ShieldCheck,
-  Truck,
-  User,
-  Wrench,
-} from "lucide-react";
+import { Building2, Plus, Truck, User } from "lucide-react";
+import { Tick } from "@/components/icons";
 import { useMemo } from "react";
 import { z } from "zod";
 import { BrandLogo } from "@/components/brand-logo";
@@ -83,29 +75,24 @@ function Leasing() {
 
   return (
     <Page>
-      {/* HERO */}
-      <Container className="pt-6">
-        <section className="relative overflow-hidden rounded-[2rem] bg-sidebar px-6 py-10 text-white md:px-12 md:py-14">
-          <div className="pointer-events-none absolute -right-20 -top-24 h-96 w-96 rounded-full bg-primary/35 blur-3xl" />
-          <div className="relative grid gap-10 lg:grid-cols-[1.2fr_1fr] lg:items-center">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
-                Operativní leasing
-              </p>
-              <h1 className="mt-3 text-4xl font-extrabold leading-[1.05] md:text-5xl">
-                Nové auto bez starostí. <span className="text-primary">Jedna splátka.</span>
-              </h1>
-              <p className="mt-4 max-w-xl text-white/70">
-                Pojištění, servis, pneumatiky i dálniční známka jsou v ceně. Bez akontace, bez
-                rizika ztráty hodnoty. Po skončení auto jednoduše vrátíte nebo vyměníte za nové.
-              </p>
-              <Link
-                to="/leasing/firmy"
-                className="mt-6 mr-3 inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+      {/* Úvod – tmavý pás přes celou šířku, bez dekorací */}
+      <section className="bg-sidebar text-sidebar-foreground">
+        <Container className="grid gap-10 py-12 md:py-14 lg:grid-cols-[1.3fr_1fr] lg:items-end">
+          <div>
+            <h1 className="text-4xl font-extrabold leading-[1.05] text-white md:text-5xl">
+              Nové auto za jednu měsíční splátku
+            </h1>
+            <p className="mt-4 max-w-xl text-white/70">
+              Pojištění, servis, pneumatiky i{"\u00a0"}dálniční známka jsou v{"\u00a0"}ceně. Bez
+              akontace a{"\u00a0"}bez starostí s{"\u00a0"}prodejem. Po skončení auto vrátíte, nebo
+              vyměníte za nové.
+            </p>
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <div
+                className="inline-flex rounded-lg bg-white/10 p-1"
+                role="group"
+                aria-label="Ceny pro"
               >
-                <Building2 className="h-4 w-4" /> Seznam pro firmy (bez DPH)
-              </Link>
-              <div className="mt-6 inline-flex rounded-full bg-white/10 p-1">
                 {(
                   [
                     [false, User, "Soukromá osoba"],
@@ -115,26 +102,38 @@ function Leasing() {
                   <button
                     key={l}
                     onClick={() => set({ business: b || undefined })}
+                    aria-pressed={!!s.business === b}
                     className={cn(
-                      "inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold transition",
-                      !!s.business === b ? "bg-white text-foreground" : "text-white/80",
+                      "inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-semibold transition-colors",
+                      !!s.business === b
+                        ? "bg-white text-foreground"
+                        : "text-white/80 hover:text-white",
                     )}
                   >
                     <Icon className="h-4 w-4" /> {l}
                   </button>
                 ))}
               </div>
+              <Link
+                to="/leasing/firmy"
+                className="text-sm font-semibold text-white underline-offset-4 hover:underline"
+              >
+                Seznam pro firmy (bez DPH)
+              </Link>
             </div>
-            <ul className="glass-dark grid gap-3 rounded-3xl p-6 text-sm">
+          </div>
+          <div>
+            <p className="mb-3 text-sm font-semibold text-white">V měsíční splátce je</p>
+            <ul className="grid gap-2.5 border-t border-sidebar-border pt-4 text-sm sm:grid-cols-2 lg:grid-cols-1">
               {leaseIncluded.map((i) => (
                 <li key={i} className="flex items-center gap-3">
-                  <Check className="h-4 w-4 shrink-0 text-primary" /> {i}
+                  <Tick className="text-primary" /> {i}
                 </li>
               ))}
             </ul>
           </div>
-        </section>
-      </Container>
+        </Container>
+      </section>
 
       {/* FILTRY */}
       <Container className="py-8">
@@ -214,7 +213,7 @@ function Leasing() {
         </div>
 
         <p className="mb-4 mt-6 text-sm text-muted-foreground">
-          {list.length} nabídek · ceny {s.business ? "bez DPH" : "vč. DPH"} při 48 měsících a 20 000
+          {list.length} nabídek, ceny {s.business ? "bez DPH" : "vč. DPH"} při 48 měsících a 20 000
           km/rok
         </p>
 
@@ -223,7 +222,7 @@ function Leasing() {
             <p className="font-semibold">Žádná nabídka neodpovídá filtru.</p>
             <button
               onClick={() => void navigate({ search: {}, replace: true })}
-              className="mt-4 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground"
+              className="mt-4 rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground"
             >
               Zrušit filtry
             </button>
@@ -238,14 +237,10 @@ function Leasing() {
                   to="/leasing/$id"
                   params={{ id: o.id }}
                   search={s.business ? { business: true } : {}}
-                  className="surface-card lift group overflow-hidden"
+                  className="surface-card lift overflow-hidden"
                 >
                   <div className="relative aspect-[16/10] overflow-hidden">
-                    <CarImage
-                      src={o.photo}
-                      alt={`${brand?.name} ${o.model}`}
-                      className="transition-transform duration-500 group-hover:scale-[1.04]"
-                    />
+                    <CarImage src={o.photo} alt={`${brand?.name} ${o.model}`} />
                     <div className="absolute left-3 top-3 flex gap-1.5">
                       {o.inStock ? (
                         <span className="rounded-full bg-success px-2.5 py-1 text-[11px] font-bold text-success-foreground">
@@ -253,7 +248,7 @@ function Leasing() {
                         </span>
                       ) : null}
                       {o.condition === "ojete" ? (
-                        <span className="glass rounded-full px-2.5 py-1 text-[11px] font-bold">
+                        <span className="photo-chip rounded-full px-2.5 py-1 text-[11px] font-bold">
                           Ojeté
                         </span>
                       ) : null}
@@ -270,12 +265,12 @@ function Leasing() {
                     </div>
                     <p className="truncate text-sm text-muted-foreground">{o.trim}</p>
                     <p className="mt-1 text-xs text-muted-foreground">
-                      {labelOf(fuels, o.fuel)} · {o.powerKw} kW · {o.partner}
+                      {labelOf(fuels, o.fuel)}, {o.powerKw} kW, {o.partner}
                     </p>
                     <div className="mt-4 flex items-end justify-between border-t border-border pt-3">
                       <div>
                         <p className="text-xs text-muted-foreground">měsíčně od</p>
-                        <p className="font-display text-2xl font-extrabold text-primary">
+                        <p className="font-display text-2xl font-extrabold text-primary-ink">
                           {czk(leaseMonthly(o, 48, 20000, s.business))}
                         </p>
                       </div>
@@ -291,44 +286,30 @@ function Leasing() {
         )}
       </Container>
 
-      {/* JAK TO FUNGUJE */}
+      {/* Jak to funguje: skutečná posloupnost, proto čísla kroků */}
       <Container className="py-12">
-        <SectionTitle eyebrow="Jak to funguje" title="Auto na operativní leasing ve 4 krocích" />
-        <div className="grid gap-5 md:grid-cols-4">
+        <SectionTitle title="Auto na operativní leasing ve 4 krocích" />
+        <ol className="grid gap-x-8 gap-y-6 md:grid-cols-4">
           {[
-            [Clock, "Vyberte auto", "Nastavte délku pronájmu a roční nájezd, cenu vidíte hned."],
-            [
-              ShieldCheck,
-              "Nezávazně poptejte",
-              "Do pár hodin vám zavolá specialista a pomůže s výběrem.",
-            ],
-            [
-              Wrench,
-              "Podepište online",
-              "Smlouvu uzavřete s leasingovou společností, bez akontace.",
-            ],
-            [Truck, "Převezměte vůz", "Skladová auta doručíme do 14 dní až k vám domů."],
-          ].map(([Icon, t, d], i) => {
-            const I = Icon as typeof Clock;
-            return (
-              <div key={t as string} className="surface-card p-6">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
-                    {i + 1}
-                  </span>
-                  <I className="h-5 w-5 text-primary" />
-                </div>
-                <p className="mt-4 font-semibold">{t as string}</p>
-                <p className="mt-1 text-sm text-muted-foreground">{d as string}</p>
-              </div>
-            );
-          })}
-        </div>
+            ["Vyberte auto", "Nastavte délku pronájmu a roční nájezd, cenu vidíte hned."],
+            ["Nezávazně poptejte", "Do pár hodin vám zavolá specialista a pomůže s výběrem."],
+            ["Podepište online", "Smlouvu uzavřete s leasingovou společností, bez akontace."],
+            ["Převezměte vůz", "Skladová auta doručíme do 14 dní až k vám domů."],
+          ].map(([t, d], i) => (
+            <li key={t} className="border-t-2 border-foreground pt-4">
+              <span className="font-display text-sm font-bold text-muted-foreground">
+                Krok {i + 1}
+              </span>
+              <p className="mt-1 font-semibold">{t}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{d}</p>
+            </li>
+          ))}
+        </ol>
       </Container>
 
       {/* FAQ + PARTNEŘI */}
       <Container className="grid gap-6 py-6 lg:grid-cols-[1.4fr_1fr]">
-        <div className="surface-card divide-y divide-border">
+        <div className="divide-y divide-border border-y border-border">
           {[
             [
               "Komu auto patří?",
@@ -347,18 +328,23 @@ function Leasing() {
               "Ano. Operativní leasing nabízíme soukromým osobám, živnostníkům i firmám (ceny bez DPH).",
             ],
           ].map(([q, a]) => (
-            <details key={q} className="p-5">
-              <summary className="cursor-pointer list-none font-semibold">{q}</summary>
+            <details key={q} className="group py-5">
+              <summary className="flex cursor-pointer list-none items-center justify-between font-semibold">
+                {q}
+                <Plus
+                  aria-hidden
+                  className="ml-4 h-5 w-5 shrink-0 text-primary transition-transform group-open:rotate-45"
+                />
+              </summary>
               <p className="mt-2 text-sm text-muted-foreground">{a}</p>
             </details>
           ))}
         </div>
         <div className="surface-card flex flex-col justify-between gap-5 p-6">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
-              Pro leasingové společnosti
+            <p className="text-lg font-bold">
+              Jste leasingová společnost? Zveřejněte nabídky na Drivio
             </p>
-            <p className="mt-2 text-lg font-bold">Zveřejněte své nabídky na Drivio</p>
             <p className="mt-2 text-sm text-muted-foreground">
               Nabídky nahrajete přes API, poptávky vám posíláme v reálném čase i se souhlasem
               zákazníka.
@@ -366,9 +352,9 @@ function Leasing() {
           </div>
           <Link
             to="/pro-leasingove-spolecnosti"
-            className="inline-flex w-fit items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background"
+            className="inline-flex w-fit items-center gap-2 rounded-lg bg-foreground px-5 py-2.5 text-sm font-semibold text-background transition-colors hover:bg-foreground/85"
           >
-            Partnerský program <ArrowRight className="h-4 w-4" />
+            Partnerský program
           </Link>
         </div>
       </Container>

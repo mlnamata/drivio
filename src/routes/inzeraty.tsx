@@ -288,7 +288,7 @@ function Listings() {
                 </p>
                 <button
                   onClick={reset}
-                  className="mt-5 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground"
+                  className="mt-5 rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground"
                 >
                   Zrušit filtry
                 </button>

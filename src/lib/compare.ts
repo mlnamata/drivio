@@ -1,5 +1,5 @@
 /**
- * Interní vyhodnocení porovnávaných vozů. Zákazníkovi se NEZOBRAZUJE – slouží pro
+ * Interní vyhodnocení porovnávaných vozů. Zákazníkovi se nezobrazuje, slouží pro
  * analytiku (které nabídky v porovnání vyhrávají) a pro doporučování v budoucnu.
  */
 import { priceRating, type Vehicle } from "./mock-data";

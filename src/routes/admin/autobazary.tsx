@@ -37,7 +37,7 @@ function Tenants() {
               <td>★ {d.rating.toLocaleString("cs-CZ")}</td>
               <td className="text-right">
                 <button
-                  className="text-xs font-semibold text-primary"
+                  className="text-xs font-semibold text-primary-ink"
                   onClick={() => toast(`Přihlášení jako ${d.name} (impersonace, audit log)`)}
                 >
                   Spravovat

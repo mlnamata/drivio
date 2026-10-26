@@ -97,9 +97,7 @@ export function AdSlot({ format, className }: { format: AdFormat; className?: st
       )}
       aria-label="Reklamní plocha – inzerujte na Drivio"
     >
-      <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-        Reklama
-      </span>
+      <span className="text-xs text-muted-foreground">Reklama</span>
       <span className="flex items-center gap-2 text-sm font-semibold group-hover:text-accent-foreground">
         <Megaphone className="h-4 w-4 text-primary" /> Zde může být vaše reklama
       </span>

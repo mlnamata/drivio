@@ -19,7 +19,7 @@ function AdminLeads() {
             key={p.id}
             label={p.name}
             value="API online"
-            hint="p95 odezva 420 ms · CPL 350 Kč"
+            hint="p95 odezva 420 ms, CPL 350 Kč"
             tone="ok"
           />
         ))}
@@ -30,7 +30,7 @@ function AdminLeads() {
             <td className="font-mono text-xs">{l.id}</td>
             <td>{l.name}</td>
             <td>{"partner" in l ? l.partner : "—"}</td>
-            <td className="text-xs text-muted-foreground">v2026-09-v1 · IP uložena</td>
+            <td className="text-xs text-muted-foreground">v2026-09-v1, IP uložena</td>
             <td>
               <StatusBadge tone="ok">200 OK</StatusBadge>
             </td>

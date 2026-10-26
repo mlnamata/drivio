@@ -1,4 +1,4 @@
-import { Check } from "lucide-react";
+import { Tick } from "@/components/icons";
 import { useState } from "react";
 import {
   commissionFor,
@@ -32,7 +32,7 @@ export function PlanCards() {
             {num(p.price)} Kč
             <span className="text-base font-medium text-muted-foreground"> / měsíc</span>
           </p>
-          <p className="mt-1 text-sm text-muted-foreground">bez DPH · {czk(p.perSlot)} za slot</p>
+          <p className="mt-1 text-sm text-muted-foreground">bez DPH, {czk(p.perSlot)} za slot</p>
           <ul className="mt-5 space-y-2 text-sm">
             {[
               `${p.slots} aktivních inzerátů současně`,
@@ -42,7 +42,7 @@ export function PlanCards() {
               "Přístup k aukčnímu modulu",
             ].map((f) => (
               <li key={f} className="flex gap-2">
-                <Check className="h-4 w-4 shrink-0 text-success" /> {f}
+                <Tick className="shrink-0 text-success" /> {f}
               </li>
             ))}
           </ul>
@@ -162,13 +162,11 @@ export function PayPerVehicleCard() {
   return (
     <div className="surface-card grid gap-6 p-6 md:grid-cols-[1fr_1.2fr] md:items-center md:p-8">
       <div>
-        <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
-          Bez předplatného
-        </p>
-        <h3 className="mt-1 text-2xl font-bold">Platba za vůz</h3>
+        <h3 className="text-2xl font-bold">Platba za vůz</h3>
         <p className="mt-2 text-sm text-muted-foreground">
-          Pro firmy a menší autobazary, které nechtějí měsíční závazek. Platíte jen za vozy, které
-          máte zrovna vystavené, vždy na 30 dní. Kdykoli můžete přejít na balíček.
+          Bez předplatného. Pro firmy a menší autobazary, které nechtějí měsíční závazek. Platíte
+          jen za vozy, které máte zrovna vystavené, vždy na 30 dní. Kdykoli můžete přejít na
+          balíček.
         </p>
       </div>
       <div className="grid gap-3 sm:grid-cols-3">

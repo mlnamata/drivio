@@ -18,7 +18,7 @@ const jobs = [
     "drivio-stale-offer",
     "15 6 * * *",
     "stale-notifier",
-    "Ležáky 90+ dní → notifikace a nabídka aukce (Resend)",
+    "Ležáky 90+ dní: upozornění a nabídka aukce (Resend)",
     "dnes 06:15 UTC",
     "ok",
   ],
@@ -66,7 +66,7 @@ function Jobs() {
               {st === "ok" ? (
                 <StatusBadge tone="ok">{last}</StatusBadge>
               ) : (
-                <StatusBadge tone="warn">{last} · pomalé</StatusBadge>
+                <StatusBadge tone="warn">{last}, pomalé</StatusBadge>
               )}
             </td>
             <td>

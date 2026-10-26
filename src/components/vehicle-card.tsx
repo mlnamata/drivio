@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { BadgeCheck, Fuel, Gauge, Heart, MapPin, Settings2, ShieldCheck } from "lucide-react";
+import { BadgeCheck, Heart, MapPin, ShieldCheck } from "lucide-react";
 import { CarImage } from "@/components/car-image";
 import { CompareButton } from "@/components/compare";
 import { useFavorites } from "@/hooks/use-favorites";
@@ -29,7 +29,7 @@ export function FavoriteButton({ id, className }: { id: string; className?: stri
       aria-pressed={active}
       aria-label={active ? "Odebrat z oblíbených" : "Přidat do oblíbených"}
       className={cn(
-        "glass inline-flex h-9 w-9 items-center justify-center rounded-full transition-transform hover:scale-105",
+        "photo-chip inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors hover:bg-card",
         className,
       )}
     >
@@ -59,7 +59,7 @@ export function VehicleCard({
       to="/inzerat/$id"
       params={{ id: vehicle.id }}
       className={cn(
-        "surface-card lift group block overflow-hidden",
+        "surface-card lift group flex flex-col overflow-hidden",
         layout === "list" && "sm:flex",
       )}
     >
@@ -69,11 +69,7 @@ export function VehicleCard({
           layout === "list" && "sm:aspect-auto sm:w-72 sm:shrink-0",
         )}
       >
-        <CarImage
-          src={vehicle.photos[0]!}
-          alt={title}
-          className="transition-transform duration-500 group-hover:scale-[1.04]"
-        />
+        <CarImage src={vehicle.photos[0]!} alt={title} />
         <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
           {vehicle.top ? (
             <span className="rounded-full bg-foreground px-2.5 py-1 text-[11px] font-bold text-background">
@@ -86,7 +82,7 @@ export function VehicleCard({
             </span>
           ) : null}
           {vehicle.vatDeductible ? (
-            <span className="glass rounded-full px-2.5 py-1 text-[11px] font-semibold">
+            <span className="photo-chip rounded-full px-2.5 py-1 text-[11px] font-semibold">
               Odpočet DPH
             </span>
           ) : null}
@@ -98,7 +94,9 @@ export function VehicleCard({
       </div>
       <div className="flex flex-1 flex-col p-4">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="truncate text-base font-semibold">{title}</h3>
+          <h3 className="truncate text-base font-semibold group-hover:underline group-hover:underline-offset-4">
+            {title}
+          </h3>
           {vehicle.cebiaVerified ? (
             <span
               title="Historie ověřena Cebia"
@@ -109,35 +107,43 @@ export function VehicleCard({
           ) : null}
         </div>
         <p className="truncate text-sm text-muted-foreground">
-          {vehicle.year} · {vehicle.trim}
+          {vehicle.year}, {vehicle.trim}
         </p>
-        <div className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1.5 overflow-hidden whitespace-nowrap">
-            <Gauge className="h-3.5 w-3.5 shrink-0" /> {num(vehicle.km)} km
-          </span>
-          <span className="flex items-center gap-1.5 overflow-hidden whitespace-nowrap">
-            <Fuel className="h-3.5 w-3.5 shrink-0" /> {labelOf(fuels, vehicle.fuel)}
-          </span>
-          <span className="flex items-center gap-1.5 overflow-hidden whitespace-nowrap">
-            <Settings2 className="h-3.5 w-3.5 shrink-0" /> {labelOf(gearboxes, vehicle.gearbox)}
-          </span>
-          <span className="flex items-center gap-1.5 overflow-hidden whitespace-nowrap">
-            <MapPin className="h-3.5 w-3.5 shrink-0" /> {dealer.city}
-            {dealer.isDealer ? (
-              <BadgeCheck
-                className="h-3.5 w-3.5 shrink-0 text-success"
-                aria-label="Ověřený prodejce"
-              />
-            ) : null}
-          </span>
-        </div>
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">
+        {/* Parametry jako na prodejním štítku: nájezd, palivo, převodovka, místo */}
+        <dl className="mt-3 grid grid-cols-3 gap-2 text-xs">
+          <div className="min-w-0">
+            <dt className="text-muted-foreground">Najeto</dt>
+            <dd className="truncate font-medium tabular-nums">{num(vehicle.km)} km</dd>
+          </div>
+          <div className="min-w-0">
+            <dt className="text-muted-foreground">Palivo</dt>
+            <dd className="truncate font-medium">{labelOf(fuels, vehicle.fuel)}</dd>
+          </div>
+          <div className="min-w-0">
+            <dt className="text-muted-foreground">Převodovka</dt>
+            <dd className="truncate font-medium">{labelOf(gearboxes, vehicle.gearbox)}</dd>
+          </div>
+        </dl>
+        <p className="mt-2 flex items-center gap-1 truncate text-xs text-muted-foreground">
+          <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden /> {dealer.city}
+          {dealer.isDealer ? (
+            <>
+              <BadgeCheck className="ml-1 h-3.5 w-3.5 shrink-0 text-success" aria-hidden />
+              <span>ověřený prodejce</span>
+            </>
+          ) : null}
+        </p>
+        <div className="flex-1" />
+        <div className="mt-4 flex flex-wrap items-end justify-between gap-2 border-t border-border pt-3">
           <div>
             <p className="font-display text-xl font-extrabold">{czk(vehicle.price)}</p>
             <PriceRatingBadge vehicle={vehicle} />
           </div>
-          <p className="whitespace-nowrap rounded-full bg-accent px-2.5 py-1 text-xs font-semibold text-accent-foreground">
-            od {czk(monthlyPayment(vehicle.price))}/měs.
+          <p className="text-right text-xs text-muted-foreground">
+            splátka od
+            <span className="block font-display text-sm font-bold text-primary-ink">
+              {czk(monthlyPayment(vehicle.price))}/měs.
+            </span>
           </p>
         </div>
       </div>

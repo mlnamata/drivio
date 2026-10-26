@@ -1,19 +1,21 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+// Hvězdička značí hodnocení prodejce, není to dekorace. avoid-ai-design-ignore: I3
 import {
   BadgeCheck,
   CalendarDays,
-  Check,
+  CircleGauge,
   Fuel,
   Gauge,
   MapPin,
   Palette,
   Phone,
+  Route as RouteIcon,
   Settings2,
   Share2,
   ShieldCheck,
   Star,
-  Zap,
 } from "lucide-react";
+import { Tick } from "@/components/icons";
 import { useState } from "react";
 import { toast } from "sonner";
 import { BrandLogo } from "@/components/brand-logo";
@@ -104,7 +106,7 @@ function NotFoundView() {
         <p className="mt-2 text-muted-foreground">Vůz byl pravděpodobně prodán.</p>
         <Link
           to="/inzeraty"
-          className="mt-6 inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+          className="mt-6 inline-flex rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
         >
           Zobrazit podobné vozy
         </Link>
@@ -139,10 +141,10 @@ function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
 
   const params: [typeof Gauge, string, string][] = [
     [CalendarDays, "Rok výroby", String(v.year)],
-    [Gauge, "Najeto", `${num(v.km)} km`],
+    [RouteIcon, "Najeto", `${num(v.km)} km`],
     [Fuel, "Palivo", labelOf(fuels, v.fuel)],
     [Settings2, "Převodovka", labelOf(gearboxes, v.gearbox)],
-    [Zap, "Výkon", `${v.powerKw} kW (${Math.round(v.powerKw * 1.36)} k)`],
+    [CircleGauge, "Výkon", `${v.powerKw} kW (${Math.round(v.powerKw * 1.36)} k)`],
     [Palette, "Barva", labelOf(colors, v.color)],
   ];
 
@@ -180,7 +182,7 @@ function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
               <Link
                 to="/aukce/$id"
                 params={{ id: auction.id }}
-                className="rounded-full bg-primary px-4 py-2 text-center font-semibold text-primary-foreground"
+                className="rounded-lg bg-primary px-4 py-2 text-center font-semibold text-primary-foreground"
               >
                 Přejít do aukce
               </Link>
@@ -199,7 +201,7 @@ function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
                       void navigator.clipboard?.writeText(window.location.href);
                       toast.success("Odkaz zkopírován");
                     }}
-                    className="glass inline-flex h-9 w-9 items-center justify-center rounded-full"
+                    className="photo-chip inline-flex h-9 w-9 items-center justify-center rounded-full"
                     aria-label="Sdílet"
                   >
                     <Share2 className="h-4 w-4" />
@@ -207,7 +209,7 @@ function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
                   <CompareButton id={v.id} />
                   <FavoriteButton id={v.id} />
                 </div>
-                <span className="glass absolute bottom-3 left-3 rounded-full px-3 py-1 text-xs font-semibold">
+                <span className="photo-chip absolute bottom-3 left-3 rounded-full px-3 py-1 text-xs font-semibold">
                   {photo + 1} / {v.photos.length}
                 </span>
               </div>
@@ -277,7 +279,7 @@ function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
                 <ul className="grid gap-2 sm:grid-cols-2">
                   {v.equipment.map((e) => (
                     <li key={e} className="flex items-center gap-2 text-sm">
-                      <Check className="h-4 w-4 text-success" /> {labelOf(equipment, e)}
+                      <Tick className="text-success" /> {labelOf(equipment, e)}
                     </li>
                   ))}
                 </ul>
@@ -322,7 +324,7 @@ function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
                     "Stav tachometru bez podezření",
                   ].map((t) => (
                     <li key={t} className="flex items-center gap-2 text-sm">
-                      <Check className="h-4 w-4 text-success" /> {t}
+                      <Tick className="text-success" /> {t}
                     </li>
                   ))}
                 </ul>
@@ -358,7 +360,7 @@ function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
                   {dealer.isDealer && dealer.rating ? (
                     <p className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Star className="h-3.5 w-3.5 fill-warning text-warning" />{" "}
-                      {dealer.rating.toLocaleString("cs-CZ")} ({dealer.reviews} hodnocení) · od{" "}
+                      {dealer.rating.toLocaleString("cs-CZ")} ({dealer.reviews} hodnocení), od{" "}
                       {dealer.since}
                     </p>
                   ) : (
@@ -374,7 +376,7 @@ function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
               </p>
               <button
                 onClick={() => setShowPhone(true)}
-                className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-foreground py-3 text-sm font-semibold text-background hover:bg-foreground/90"
+                className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-foreground py-3 text-sm font-semibold text-background hover:bg-foreground/90"
               >
                 <Phone className="h-4 w-4" /> {showPhone ? dealer.phone : "Zobrazit telefon"}
               </button>
@@ -393,7 +395,7 @@ function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
                 <span className="block font-semibold">Raději nové auto na operativní leasing?</span>
                 <span className="text-sm text-muted-foreground">Vše v ceně, bez akontace.</span>
               </span>
-              <span className="text-sm font-semibold text-primary">Nabídky →</span>
+              <span className="text-sm font-semibold text-primary-ink">Zobrazit nabídky</span>
             </Link>
             <AdSlot format="rectangle" />
           </aside>
@@ -428,17 +430,17 @@ function DetailView({ v, all }: { v: Vehicle; all: Vehicle[] }) {
         {v.vatDeductible ? (
           <p className="text-sm text-muted-foreground">{czk(Math.round(v.price / 1.21))} bez DPH</p>
         ) : null}
-        <div className="mt-4 flex items-center justify-between gap-3 rounded-2xl bg-accent p-3">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-accent p-3">
           <div>
             <p className="text-xs text-accent-foreground/80">nebo na splátky bez akontace</p>
-            <p className="font-display text-xl font-extrabold text-accent-foreground">
-              od {czk(monthlyPayment(v.price))} / měs.
+            <p className="whitespace-nowrap font-display text-xl font-extrabold text-accent-foreground">
+              od {czk(monthlyPayment(v.price))}/měs.
             </p>
           </div>
           <button
             type="button"
             onClick={openFinance}
-            className="shrink-0 rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground hover:bg-primary/90"
+            className="shrink-0 rounded-lg bg-primary px-4 py-2 text-xs font-bold text-primary-foreground hover:bg-primary/90"
           >
             Předschválení za 2 min
           </button>
@@ -520,7 +522,7 @@ function DealerContactForm({ vehicleId, title }: { vehicleId: string; title: str
       </p>
       <button
         disabled={busy}
-        className="w-full rounded-full border border-border py-2.5 text-sm font-semibold hover:border-primary/40 disabled:opacity-60"
+        className="w-full rounded-lg border border-border py-2.5 text-sm font-semibold hover:border-primary/40 disabled:opacity-60"
       >
         {busy ? "Odesílám…" : "Napsat prodejci"}
       </button>

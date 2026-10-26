@@ -146,7 +146,7 @@ export function FinanceCalculator({
             <button
               type="button"
               onClick={() => setStep("form")}
-              className="mt-5 w-full rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
+              className="mt-5 w-full rounded-lg bg-primary py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90"
             >
               Chci nezávaznou nabídku
             </button>
@@ -175,7 +175,7 @@ export function FinanceCalculator({
                 />
                 <span>
                   {CONSENT_TEXT}{" "}
-                  <a href="/pravni/ochrana-osobnich-udaju" className="text-primary underline">
+                  <a href="/pravni/ochrana-osobnich-udaju" className="text-primary-ink underline">
                     Zásady zpracování
                   </a>
                 </span>
@@ -193,7 +193,7 @@ export function FinanceCalculator({
               </label>
               <button
                 disabled={busy}
-                className="w-full rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+                className="w-full rounded-lg bg-primary py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
               >
                 {busy ? "Odesílám…" : "Odeslat žádost"}
               </button>

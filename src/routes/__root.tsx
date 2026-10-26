@@ -80,14 +80,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Drivio — ojetá auta od prověřených autobazarů" },
+      { title: "Ojetá auta od prověřených autobazarů | Drivio" },
       { name: "theme-color", content: "#1f1e1d" },
       {
         name: "description",
         content:
           "Ojetá auta od prověřených autobazarů. Cena i splátka na první pohled, aukce aut od 1 Kč.",
       },
-      { property: "og:title", content: "Drivio — ojetá auta od prověřených autobazarů" },
+      { property: "og:title", content: "Ojetá auta od prověřených autobazarů | Drivio" },
       { property: "og:locale", content: "cs_CZ" },
       {
         property: "og:description",
@@ -103,11 +103,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      // Písma hostujeme sami (Archivo a Exo 2, licence OFL) – žádné volání na Google Fonts kvůli GDPR.
       {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@1,900&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap",
+        rel: "preload",
+        href: "/fonts/archivo-latin.woff2",
+        as: "font",
+        type: "font/woff2",
+        crossOrigin: "anonymous",
+      },
+      {
+        rel: "preload",
+        href: "/fonts/archivo-latin-ext.woff2",
+        as: "font",
+        type: "font/woff2",
+        crossOrigin: "anonymous",
       },
       { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
       { rel: "alternate icon", href: "/favicon.ico" },

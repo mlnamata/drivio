@@ -21,8 +21,8 @@ export function CompareButton({ id, className }: { id: string; className?: strin
       aria-label={active ? "Odebrat z porovnání" : "Přidat do porovnání"}
       title={active ? "Odebrat z porovnání" : "Porovnat"}
       className={cn(
-        "inline-flex h-9 w-9 items-center justify-center rounded-full transition-transform hover:scale-105",
-        active ? "bg-primary text-primary-foreground" : "glass text-foreground/70",
+        "inline-flex h-9 w-9 items-center justify-center rounded-full transition-colors",
+        active ? "bg-primary text-primary-foreground" : "photo-chip text-foreground/70",
         className,
       )}
     >
@@ -39,7 +39,7 @@ export function CompareBar() {
   if (list.length === 0) return null;
   return (
     <div className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-3xl">
-      <div className="glass flex items-center gap-3 rounded-2xl p-3 shadow-2xl">
+      <div className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 shadow-[var(--shadow-lift)]">
         <GitCompareArrows className="ml-1 hidden h-5 w-5 shrink-0 text-primary sm:block" />
         <div className="flex min-w-0 flex-1 gap-2 overflow-x-auto">
           {list.map((v) => (

@@ -87,7 +87,7 @@ function Overview() {
         <Stat
           label="Rychlost obratu"
           value={`${avgDays} dní`}
-          hint={`průměrná doba inzerce · nejstarší vůz ${oldest} dní`}
+          hint={`průměrná doba inzerce, nejstarší vůz ${oldest} dní`}
           tone={avgDays > 60 ? "warn" : "ok"}
         />
         <Stat
@@ -159,7 +159,7 @@ function Overview() {
               .map((l) => (
                 <div key={l.vehicle.id} className="flex justify-between gap-3">
                   <dt className="text-muted-foreground">
-                    {vehicleTitle(l.vehicle)} · {l.progression ? `progrese ${l.month}. měs.` : ""}
+                    {vehicleTitle(l.vehicle)}, {l.progression ? `progrese ${l.month}. měs.` : ""}
                     {l.surcharge ? " doplatek nad limit" : ""}
                   </dt>
                   <dd className="font-semibold">+ {czk(l.progression + l.surcharge)}</dd>

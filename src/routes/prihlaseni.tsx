@@ -67,12 +67,12 @@ function Login() {
   }
 
   return (
-    <div className="bg-ambient flex min-h-screen items-center justify-center px-4 py-12">
+    <div className="flex min-h-screen bg-background items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <Link to="/" className="mb-8 flex justify-center">
           <Logo />
         </Link>
-        <div className="glass rounded-3xl p-6 md:p-8">
+        <div className="surface-card p-6 md:p-8">
           <div className="grid grid-cols-2 gap-1 rounded-full bg-muted p-1">
             {(
               [
@@ -134,11 +134,11 @@ function Login() {
                 <input type="checkbox" required className="mt-0.5 accent-[var(--primary)]" />
                 <span>
                   Souhlasím s{" "}
-                  <Link to="/pravni/obchodni-podminky" className="text-primary underline">
+                  <Link to="/pravni/obchodni-podminky" className="text-primary-ink underline">
                     obchodními podmínkami
                   </Link>{" "}
                   a beru na vědomí{" "}
-                  <Link to="/pravni/ochrana-osobnich-udaju" className="text-primary underline">
+                  <Link to="/pravni/ochrana-osobnich-udaju" className="text-primary-ink underline">
                     zásady zpracování osobních údajů
                   </Link>
                   .
@@ -147,7 +147,7 @@ function Login() {
             ) : null}
             <button
               disabled={busy}
-              className="w-full rounded-full bg-primary py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+              className="w-full rounded-lg bg-primary py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
             >
               {tab === "login" ? "Přihlásit se" : "Zaregistrovat"}
             </button>
@@ -156,7 +156,7 @@ function Login() {
             {tab === "login" ? "Nemáte účet? " : "Už účet máte? "}
             <button
               onClick={() => setTab(tab === "login" ? "register" : "login")}
-              className="font-semibold text-primary"
+              className="font-semibold text-primary-ink"
             >
               {tab === "login" ? "Zaregistrujte se" : "Přihlaste se"}
             </button>

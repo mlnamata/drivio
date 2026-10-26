@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Check, GitCompareArrows, Minus, X } from "lucide-react";
+import { GitCompareArrows, Minus, X } from "lucide-react";
+import { Tick } from "@/components/icons";
 import { useEffect, useState, type ReactNode } from "react";
 import { CarImage } from "@/components/car-image";
 import { Breadcrumbs, Container, Page } from "@/components/site-shell";
@@ -27,11 +28,7 @@ export const Route = createFileRoute("/porovnani")({
 type Row = { label: string; value: (v: Vehicle) => ReactNode; raw: (v: Vehicle) => string };
 
 const yes = (b: boolean) =>
-  b ? (
-    <Check className="h-4 w-4 text-success" />
-  ) : (
-    <Minus className="h-4 w-4 text-muted-foreground" />
-  );
+  b ? <Tick className="text-success" /> : <Minus className="h-4 w-4 text-muted-foreground" />;
 
 const groups: { title: string; rows: Row[] }[] = [
   {
@@ -182,7 +179,7 @@ function Compare() {
             </p>
             <Link
               to="/inzeraty"
-              className="mt-6 inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+              className="mt-6 inline-flex rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
             >
               Vybrat vozy
             </Link>
@@ -213,7 +210,7 @@ function Compare() {
                         </Link>
                         <button
                           onClick={() => store.toggleCompare(v.id)}
-                          className="glass absolute right-2 top-2 rounded-full p-1.5"
+                          className="photo-chip absolute right-2 top-2 rounded-full p-1.5"
                           aria-label="Odebrat z porovnání"
                         >
                           <X className="h-3.5 w-3.5" />
@@ -222,7 +219,7 @@ function Compare() {
                       <Link
                         to="/inzerat/$id"
                         params={{ id: v.id }}
-                        className="mt-3 block font-bold hover:text-primary"
+                        className="mt-3 block font-bold hover:text-primary-ink"
                       >
                         {vehicleTitle(v)}
                       </Link>
@@ -241,7 +238,7 @@ function Compare() {
                     <tr>
                       <td
                         colSpan={list.length + 1}
-                        className="bg-muted px-4 py-2 text-xs font-bold uppercase tracking-wider text-muted-foreground"
+                        className="bg-muted px-4 py-2 text-xs font-boldr text-muted-foreground"
                       >
                         {g.title}
                       </td>

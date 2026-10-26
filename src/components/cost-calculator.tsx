@@ -69,7 +69,7 @@ export function CostCalculatorDialog({
           <Calculator className="h-5 w-5 text-primary" /> Náklady a marže
         </DialogTitle>
         <DialogDescription>
-          {v.year} · inzerováno {v.listedDays} dní ({month}. měsíc) · tarif {plan.name}
+          {v.year}, inzerováno {v.listedDays} dní ({month}. měsíc), tarif {plan.name}
         </DialogDescription>
         <div className="grid grid-cols-3 gap-2">
           {(

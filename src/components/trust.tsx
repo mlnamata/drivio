@@ -1,4 +1,4 @@
-import { BadgeCheck, Gavel, ShieldCheck, Truck, Wallet } from "lucide-react";
+import { BadgeCheck, Gavel, Plus, ShieldCheck, Truck, Wallet } from "lucide-react";
 
 /** Pruh s hlavními výhodami (ve stylu driveto.cz) – pod hlavičkou veřejného webu. */
 export function UspBar() {
@@ -23,66 +23,25 @@ export function UspBar() {
 }
 
 /**
- * UKÁZKOVÉ recenze – před spuštěním nahraďte skutečnými (např. z Google recenzí).
- * Zveřejňovat vymyšlené recenze je podle zákona o ochraně spotřebitele zakázané,
- * proto jsou na webu označené štítkem „Ukázka“.
+ * Recenze zákazníků. Na webu se ukazují jen skutečné recenze (např. převzaté z Google),
+ * vymyšlené recenze zakazuje zákon o ochraně spotřebitele. Dokud pole je prázdné,
+ * sekce se nevykreslí vůbec.
  */
-const reviews: { name: string; city: string; text: string; car: string; sample?: boolean }[] = [
-  {
-    name: "Petra K.",
-    city: "Brno",
-    text: "Octavii jsem našla za dva večery. Splátku jsem viděla hned u inzerátu a úvěr byl schválený druhý den.",
-    car: "Škoda Octavia Combi",
-    sample: true,
-  },
-  {
-    name: "Martin D.",
-    city: "Praha",
-    text: "Vydražil jsem Astru za 41 tisíc. Aukce byla férová, všechny příhozy jsem viděl živě.",
-    car: "Opel Astra (aukce)",
-    sample: true,
-  },
-  {
-    name: "Jana a Tomáš",
-    city: "Plzeň",
-    text: "Operativní leasing pro naši firmu vyřízený za týden, auto přivezli až před kancelář.",
-    car: "Toyota Corolla Touring",
-    sample: true,
-  },
-];
+const reviews: { name: string; city: string; text: string; car: string }[] = [];
 
 export function Reviews() {
   if (reviews.length === 0) return null;
   return (
     <div>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-            Zkušenosti zákazníků
-          </p>
-          <h2 className="text-2xl font-bold md:text-3xl">Co o nás říkají</h2>
-        </div>
-      </div>
-      <div className="mt-8 grid gap-5 md:grid-cols-3">
+      <h2 className="text-2xl font-bold md:text-[1.75rem]">Zkušenosti zákazníků</h2>
+      <div className="mt-6 grid gap-x-10 gap-y-8 md:grid-cols-3">
         {reviews.map((r) => (
-          <figure key={r.name} className="surface-card relative flex flex-col justify-between p-6">
-            {r.sample ? (
-              <span className="absolute right-4 top-4 rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-                Ukázka
-              </span>
-            ) : null}
+          <figure key={r.name} className="border-t border-border pt-5">
             <blockquote className="text-foreground/85">„{r.text}“</blockquote>
-            <figcaption className="mt-5 flex items-center gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent font-bold text-accent-foreground">
-                {r.name.slice(0, 1)}
-              </span>
-              <span>
-                <span className="flex items-center gap-1 text-sm font-semibold">
-                  {r.name} <BadgeCheck className="h-4 w-4 text-success" />
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {r.city} · {r.car}
-                </span>
+            <figcaption className="mt-4 text-sm">
+              <span className="font-semibold">{r.name}</span>
+              <span className="text-muted-foreground">
+                , {r.city}, {r.car}
               </span>
             </figcaption>
           </figure>
@@ -104,13 +63,13 @@ export function Partners() {
     "Arval",
   ];
   return (
-    <div className="text-center">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-        Spolupracujeme
+    <div className="flex flex-col gap-4 border-t border-border pt-8 md:flex-row md:items-center md:gap-10">
+      <p className="shrink-0 text-sm text-muted-foreground">
+        Partneři pro financování, leasing a prověrky
       </p>
-      <div className="mt-5 flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+      <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
         {names.map((n) => (
-          <span key={n} className="font-display text-lg font-extrabold text-foreground/35">
+          <span key={n} className="font-display text-lg font-bold text-foreground/40">
             {n}
           </span>
         ))}
@@ -146,28 +105,26 @@ export function Faq() {
   return (
     <div className="grid gap-8 lg:grid-cols-[1fr_1.6fr]">
       <div>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-          Nápověda
-        </p>
-        <h2 className="text-2xl font-bold md:text-3xl">Časté dotazy</h2>
+        <h2 className="text-2xl font-bold md:text-[1.75rem]">Časté dotazy</h2>
         <p className="mt-3 text-muted-foreground">
           Nenašli jste odpověď? Napište nám, odpovídáme obvykle do hodiny.
         </p>
         <a
           href="/kontakt"
-          className="mt-5 inline-flex rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background"
+          className="mt-5 inline-flex rounded-lg bg-foreground px-5 py-2.5 text-sm font-semibold text-background transition-colors hover:bg-foreground/85"
         >
           Kontaktovat podporu
         </a>
       </div>
-      <div className="surface-card divide-y divide-border">
+      <div className="divide-y divide-border border-y border-border">
         {faq.map(([q, a]) => (
-          <details key={q} className="group p-5">
+          <details key={q} className="group py-5">
             <summary className="flex cursor-pointer list-none items-center justify-between font-semibold">
               {q}
-              <span className="ml-4 text-xl leading-none text-primary transition-transform group-open:rotate-45">
-                +
-              </span>
+              <Plus
+                aria-hidden
+                className="ml-4 h-5 w-5 shrink-0 text-primary transition-transform group-open:rotate-45"
+              />
             </summary>
             <p className="mt-2 text-sm text-muted-foreground">{a}</p>
           </details>

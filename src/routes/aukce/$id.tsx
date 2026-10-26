@@ -4,13 +4,13 @@ import {
   Bell,
   Bot,
   CalendarClock,
-  CheckCircle2,
   Clock,
   Gavel,
   ShieldCheck,
   TrendingUp,
   Trophy,
 } from "lucide-react";
+import { Tick } from "@/components/icons";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { AuctionCountdown } from "@/components/auction-countdown";
@@ -76,7 +76,7 @@ function AuctionPage() {
           <h1 className="text-3xl font-bold">Aukce nenalezena</h1>
           <Link
             to="/aukce"
-            className="mt-6 inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+            className="mt-6 inline-flex rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
           >
             Všechny aukce
           </Link>
@@ -254,11 +254,11 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
               <p className="mt-5 text-sm leading-relaxed text-foreground/80">{v.description}</p>
               <p className="mt-4 text-sm text-muted-foreground">
                 Prodejce: <span className="font-medium text-foreground">{seller.name}</span>
-                {seller.city ? `, ${seller.city}` : ""} ·{" "}
+                {seller.city ? `, ${seller.city}` : ""},{" "}
                 <Link
                   to="/inzerat/$id"
                   params={{ id: v.id }}
-                  className="text-primary hover:underline"
+                  className="text-primary-ink hover:underline"
                 >
                   kompletní parametry vozu
                 </Link>
@@ -276,7 +276,7 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
                     <AuctionCountdown minutes={a.startsInMinutes ?? 0} />
                   </p>
                   <p className="mt-2 text-sm">
-                    Vyvolávací cena <strong>{czk(a.startPrice)}</strong> · min. příhoz{" "}
+                    Vyvolávací cena <strong>{czk(a.startPrice)}</strong>, min. příhoz{" "}
                     {czk(a.minIncrement)}
                   </p>
                   <button
@@ -285,7 +285,7 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
                       toast(a.reminded ? "Upozornění zrušeno" : "Upozorníme vás na start aukce");
                     }}
                     className={cn(
-                      "mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full py-3 text-sm font-bold",
+                      "mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg py-3 text-sm font-bold",
                       a.reminded
                         ? "bg-accent text-accent-foreground"
                         : "bg-primary text-primary-foreground",
@@ -297,7 +297,7 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
                   {!bidder ? (
                     <button
                       onClick={() => setRegister(true)}
-                      className="mt-2 w-full rounded-full border border-border py-2.5 text-sm font-semibold"
+                      className="mt-2 w-full rounded-lg border border-border py-2.5 text-sm font-semibold"
                     >
                       Registrovat se jako dražitel předem
                     </button>
@@ -311,7 +311,7 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
                   <p className="mt-1 text-xs text-muted-foreground">{count} příhozů</p>
                   <Link
                     to="/aukce"
-                    className="mt-5 inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+                    className="mt-5 inline-flex rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
                   >
                     Probíhající aukce
                   </Link>
@@ -319,7 +319,7 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
               ) : (
                 <>
                   <div className="flex items-center justify-between">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/12 px-3 py-1 text-xs font-semibold text-primary">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/12 px-3 py-1 text-xs font-semibold text-primary-ink">
                       <span className="h-2 w-2 animate-pulse rounded-full bg-primary" /> Živě
                     </span>
                     <span className="flex items-center gap-1 text-sm font-medium">
@@ -334,7 +334,7 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
                     {czk(Math.max(price, 0))}
                   </p>
                   <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
-                    <TrendingUp className="h-3.5 w-3.5" /> {count} příhozů · vyvolávací cena{" "}
+                    <TrendingUp className="h-3.5 w-3.5" /> {count} příhozů, vyvolávací cena{" "}
                     {czk(a.startPrice)}
                   </p>
                   {feed.some((f) => f.mine) ? (
@@ -349,11 +349,7 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
                       )}
                     >
                       <p className="flex items-center gap-2 font-bold">
-                        {leading ? (
-                          <CheckCircle2 className="h-4 w-4" />
-                        ) : (
-                          <AlertTriangle className="h-4 w-4" />
-                        )}
+                        {leading ? <Tick /> : <AlertTriangle className="h-4 w-4" />}
                         {leading ? "Vedete aukci" : "Někdo vás přehodil – přihoďte znovu"}
                       </p>
                       {lastMine ? (
@@ -389,7 +385,7 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
                     />
                     <button
                       disabled={busy}
-                      className="flex w-full items-center justify-center gap-2 rounded-full bg-primary py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+                      className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
                     >
                       <Gavel className="h-4 w-4" />{" "}
                       {busy ? "Odesílám příhoz…" : `Přihodit ${czk(amount)}`}
@@ -438,7 +434,7 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
                           placeholder="Moje maximum"
                           className="field py-2"
                         />
-                        <button className="shrink-0 rounded-full bg-foreground px-4 text-sm font-semibold text-background">
+                        <button className="shrink-0 rounded-lg bg-foreground px-4 text-sm font-semibold text-background">
                           Nastavit
                         </button>
                       </form>
@@ -534,13 +530,13 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
               />
               <span>
                 Souhlasím s aukčním řádem v{" "}
-                <Link to="/pravni/obchodni-podminky" className="text-primary underline">
+                <Link to="/pravni/obchodni-podminky" className="text-primary-ink underline">
                   obchodních podmínkách
                 </Link>{" "}
                 a beru na vědomí, že vítězný příhoz je závazný a platí se k němu aukční poplatek.
               </span>
             </label>
-            <button className="w-full rounded-full bg-primary py-3 text-sm font-bold text-primary-foreground">
+            <button className="w-full rounded-lg bg-primary py-3 text-sm font-bold text-primary-foreground">
               Registrovat a přihazovat
             </button>
           </form>

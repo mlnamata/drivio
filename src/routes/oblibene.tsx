@@ -30,7 +30,7 @@ function Favorites() {
             </p>
             <Link
               to="/inzeraty"
-              className="mt-6 inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+              className="mt-6 inline-flex rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
             >
               Prohlížet vozy
             </Link>

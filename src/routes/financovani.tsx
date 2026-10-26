@@ -57,8 +57,8 @@ function Financing() {
                     od{" "}
                     <span className="font-semibold">
                       {(p.rate * 100).toFixed(1).replace(".", ",")} % p.a.
-                    </span>{" "}
-                    · až {p.maxMonths} měsíců
+                    </span>
+                    , až {p.maxMonths} měsíců
                   </p>
                 </div>
               ))}
