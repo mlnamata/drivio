@@ -14,10 +14,12 @@ export function evaluateVehicles(list: Vehicle[]): {
 } {
   if (list.length < 2) return { ranking: [], winnerId: null };
   const maxEq = Math.max(1, ...list.map((v) => v.equipment.length));
-  const minKmPerYear = Math.min(...list.map((v) => v.km / Math.max(1, 2026 - v.year)));
+  const minKmPerYear = Math.min(
+    ...list.map((v) => v.km / Math.max(1, new Date().getFullYear() - v.year)),
+  );
   const ranking = list
     .map((v) => {
-      const age = Math.max(1, 2026 - v.year);
+      const age = Math.max(1, new Date().getFullYear() - v.year);
       const kmPerYear = v.km / age;
       const parts = {
         price: toneScore[priceRating(v).tone] * 30,

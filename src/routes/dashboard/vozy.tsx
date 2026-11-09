@@ -194,7 +194,6 @@ function MyCars() {
               name="price"
               type="number"
               min={1000}
-              step={1000}
               defaultValue={editing?.price}
               className="field text-lg font-semibold"
               autoFocus

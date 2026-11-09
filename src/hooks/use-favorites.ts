@@ -6,7 +6,9 @@ const EVENT = "drivio:favorites";
 function read(): string[] {
   try {
     const raw = window.localStorage.getItem(KEY);
-    return raw ? (JSON.parse(raw) as string[]) : [];
+    const parsed: unknown = raw ? JSON.parse(raw) : [];
+    // Poškozený nebo starý záznam nesmí shodit stránku.
+    return Array.isArray(parsed) ? parsed.filter((x): x is string => typeof x === "string") : [];
   } catch {
     return [];
   }
@@ -30,7 +32,7 @@ function subscribe(cb: () => void) {
   };
 }
 
-/** Oblíbené vozy – per-prohlížeč; po přihlášení se synchronizují do tabulky `favorites`. */
+/** Oblíbené vozy – ukládají se v tomto prohlížeči (tabulka `favorites` je připravená v databázi). */
 export function useFavorites() {
   const ids = useSyncExternalStore(subscribe, snapshot, serverSnapshot);
   const toggle = useCallback((id: string) => {

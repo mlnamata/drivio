@@ -349,18 +349,28 @@ export function SectionTitle({
   title,
   desc,
   action,
+  as: Heading = "h2",
   className,
 }: {
   title: string;
   desc?: string;
   /** Odkaz zarovnaný vpravo od nadpisu, např. „Všech 120 vozů“ */
   action?: ReactNode;
+  /** "h1", když je to hlavní nadpis stránky */
+  as?: "h1" | "h2";
   className?: string;
 }) {
   return (
     <div className={cn("mb-6 flex flex-wrap items-end justify-between gap-x-6 gap-y-2", className)}>
       <div className="max-w-2xl">
-        <h2 className="text-2xl font-bold md:text-[1.75rem]">{title}</h2>
+        <Heading
+          className={cn(
+            "font-bold",
+            Heading === "h1" ? "text-3xl md:text-4xl" : "text-2xl md:text-[1.75rem]",
+          )}
+        >
+          {title}
+        </Heading>
         {desc ? <p className="mt-1.5 text-muted-foreground">{desc}</p> : null}
       </div>
       {action ? <div className="shrink-0 text-sm font-semibold">{action}</div> : null}

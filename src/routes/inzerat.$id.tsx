@@ -535,6 +535,7 @@ function DealerContactForm({ vehicleId, title }: { vehicleId: string; title: str
       <textarea
         name="message"
         rows={3}
+        aria-label="Zpráva prodejci"
         className="field"
         defaultValue={`Dobrý den, mám zájem o vůz ${title}. Je stále k dispozici?`}
       />

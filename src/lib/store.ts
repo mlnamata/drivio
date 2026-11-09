@@ -192,7 +192,8 @@ export function useAuctions(): LiveAuction[] {
       currentBid: 0,
       bids: 0,
       startsInMinutes: startsIn,
-      endsInMinutes: Math.max(1, startsIn + 7 * 24 * 60),
+      // Po 7 dnech běhu aukce skončí (záporná hodnota = ukončeno).
+      endsInMinutes: startsIn + 7 * 24 * 60,
       minIncrement: 500,
       buyerFeeRate: 0.04,
     };
@@ -222,7 +223,13 @@ export const store = {
       ? crypto.randomUUID()
       : `${v.brand}-${v.model}-${Date.now().toString(36)}`.toLowerCase().replace(/[^a-z0-9-]/g, "");
     write((s) => ({ ...s, added: [{ ...v, id }, ...s.added] }));
-    void run(remote?.addVehicle({ ...v, id }));
+    // Když se vůz do databáze neuloží, nesmí zůstat viset jako zveřejněný.
+    void run(
+      remote?.addVehicle({ ...v, id }).catch((e: unknown) => {
+        write((s) => ({ ...s, added: s.added.filter((x) => x.id !== id) }));
+        throw e;
+      }),
+    );
     return id;
   },
   setPrice(id: string, price: number) {

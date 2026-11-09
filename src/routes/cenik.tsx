@@ -29,6 +29,7 @@ function Pricing() {
           ]}
         />
         <SectionTitle
+          as="h1"
           title="Předplatné, nebo platba za vůz – vyberte si"
           desc="Autobazary a firmy si volí: měsíční balíček slotů (vozy v něm libovolně měníte), nebo platbu za každý vystavený vůz bez závazku. Fyzická osoba má 1 inzerát zdarma."
         />

@@ -35,6 +35,7 @@ function ForLeasing() {
     <Page>
       <Container className="py-16">
         <SectionTitle
+          as="h1"
           title="Kvalifikované leady na financování aut v reálném čase"
           desc="Každá žádost obsahuje ověřený vůz (VIN, cena, prodejce) a doložitelný souhlas zákazníka. Spolupracujeme v modelu CPL nebo CPS."
         />

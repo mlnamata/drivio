@@ -9,7 +9,8 @@ import { CarImage } from "@/components/car-image";
 import { Breadcrumbs, Container, Page } from "@/components/site-shell";
 import { VehicleForm } from "@/components/vehicle-form";
 import { czk, monthlyPayment, PRIVATE_SELLER, vehicleTitle } from "@/lib/mock-data";
-import { store, useAllVehicles } from "@/lib/store";
+import { useAuth } from "@/lib/auth";
+import { isRemote, store, useAllVehicles, useStore } from "@/lib/store";
 
 /** Počet inzerátů zdarma na jeden účet soukromé osoby. */
 const FREE_PRIVATE_LISTINGS = 1;
@@ -30,7 +31,18 @@ export const Route = createFileRoute("/prodat-auto")({
 
 function SellCar() {
   const navigate = useNavigate();
-  const mine = useAllVehicles().filter((v) => v.dealerId === PRIVATE_SELLER && v.status !== "sold");
+  const auth = useAuth();
+  const { added } = useStore();
+  const userId = auth.status === "signed-in" ? auth.session.user.id : null;
+  // Do limitu zdarma se počítají jen vlastní inzeráty: s databází podle účtu,
+  // v ukázkovém režimu ty vložené v tomto prohlížeči.
+  const mine = useAllVehicles().filter(
+    (v) =>
+      v.dealerId === PRIVATE_SELLER &&
+      v.status !== "sold" &&
+      (isRemote() ? v.ownerUserId === userId : added.some((a) => a.id === v.id)),
+  );
+  const needsLogin = isRemote() && auth.status === "anonymous";
   const limitReached = mine.length >= FREE_PRIVATE_LISTINGS;
   const [sellerType, setSellerType] = useState<"private" | "company">("private");
 
@@ -99,6 +111,22 @@ function SellCar() {
                 Podrobný ceník a kalkulačka
               </Link>
             </div>
+          </div>
+        ) : needsLogin ? (
+          <div className="surface-card mt-8 flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p className="text-lg font-bold">Pro vložení inzerátu se přihlaste</p>
+              <p className="text-sm text-muted-foreground">
+                Inzerát zdarma patří k vašemu účtu, abyste ho mohli později upravit nebo stáhnout.
+              </p>
+            </div>
+            <Link
+              to="/prihlaseni"
+              search={{ next: "/prodat-auto" }}
+              className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
+            >
+              Přihlásit se
+            </Link>
           </div>
         ) : limitReached ? (
           <div className="mt-8 space-y-5">

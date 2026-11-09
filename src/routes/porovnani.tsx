@@ -73,8 +73,9 @@ const groups: { title: string; rows: Row[] }[] = [
       { label: "Najeto", value: (v) => `${num(v.km)} km`, raw: (v) => String(v.km) },
       {
         label: "Najeto za rok",
-        value: (v) => `${num(Math.round(v.km / Math.max(1, 2026 - v.year)))} km`,
-        raw: (v) => String(Math.round(v.km / Math.max(1, 2026 - v.year))),
+        value: (v) =>
+          `${num(Math.round(v.km / Math.max(1, new Date().getFullYear() - v.year)))} km`,
+        raw: (v) => String(Math.round(v.km / Math.max(1, new Date().getFullYear() - v.year))),
       },
       { label: "Palivo", value: (v) => labelOf(fuels, v.fuel), raw: (v) => v.fuel },
       { label: "Převodovka", value: (v) => labelOf(gearboxes, v.gearbox), raw: (v) => v.gearbox },

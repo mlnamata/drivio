@@ -51,6 +51,7 @@ function Advertising() {
       <Container className="py-8">
         <Breadcrumbs items={[{ to: "/", label: "Drivio" }, { label: "Reklama" }]} />
         <SectionTitle
+          as="h1"
           title="Oslovte lidi, kteří právě kupují auto"
           desc="Drivio navštěvují zákazníci v nákupní fázi – hledají konkrétní vůz, financování, pojištění i servis."
         />

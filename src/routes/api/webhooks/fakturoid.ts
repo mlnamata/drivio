@@ -79,11 +79,20 @@ export const Route = createFileRoute("/api/webhooks/fakturoid")({
 
         if (event.event_name === "invoice_paid" && event.body?.invoice) {
           // RPC je rychlé (jeden UPDATE); vše ostatní (e-maily, aktivace) obstarají triggery asynchronně.
-          await fetch(`${supabaseUrl}/rest/v1/rpc/mark_invoice_paid`, {
+          const paid = await fetch(`${supabaseUrl}/rest/v1/rpc/mark_invoice_paid`, {
             method: "POST",
             headers,
             body: JSON.stringify({ p_fakturoid_id: event.body.invoice.id }),
-          });
+          }).catch(() => null);
+          if (!paid?.ok) {
+            // Úhrada se nezapsala: záznam události smažeme, aby ji opakované doručení
+            // Fakturoidu nepovažovalo za duplicitu a zpracovalo ji znovu.
+            await fetch(
+              `${supabaseUrl}/rest/v1/webhook_events?provider=eq.fakturoid&event_id=eq.${encodeURIComponent(eventId)}`,
+              { method: "DELETE", headers },
+            ).catch(() => null);
+            return new Response("Payment not recorded", { status: 500 });
+          }
         }
 
         return Response.json({ ok: true });

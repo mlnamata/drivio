@@ -238,7 +238,7 @@ export function VehicleForm({
             className="field"
             type="number"
             min={1950}
-            max={2027}
+            max={new Date().getFullYear() + 1}
             placeholder="Rok výroby *"
             value={year}
             onChange={(e) => setYear(e.target.value)}

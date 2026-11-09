@@ -24,6 +24,23 @@ export const Route = createFileRoute("/prihlaseni")({
   component: Login,
 });
 
+/** Supabase vrací chyby anglicky – nejčastější přeložíme, ostatní obecně. */
+function authErrorCs(message: string) {
+  const m = message.toLowerCase();
+  if (m.includes("invalid login credentials")) return "Nesprávný e-mail nebo heslo.";
+  if (m.includes("email not confirmed"))
+    return "E-mail ještě není potvrzený. Klikněte na odkaz, který jsme vám poslali.";
+  if (m.includes("already registered") || m.includes("already exists"))
+    return "Účet s tímto e-mailem už existuje. Přihlaste se.";
+  if (m.includes("password") && (m.includes("at least") || m.includes("weak")))
+    return "Heslo je příliš slabé. Použijte aspoň 8 znaků.";
+  if (m.includes("rate limit") || m.includes("too many"))
+    return "Příliš mnoho pokusů. Zkuste to prosím za chvíli.";
+  if (m.includes("invalid email") || m.includes("unable to validate email"))
+    return "Zadejte platný e-mail.";
+  return "Přihlášení se nepodařilo. Zkuste to prosím znovu.";
+}
+
 function Login() {
   const [mode, setMode] = useState<"customer" | "dealer">("customer");
   const [tab, setTab] = useState<"login" | "register">("login");
@@ -61,7 +78,7 @@ function Login() {
             },
           });
     setBusy(false);
-    if (error) return void toast.error(error.message);
+    if (error) return void toast.error(authErrorCs(error.message));
     if (tab === "register") toast.success("Potvrďte registraci odkazem v e-mailu.");
     else go(mode === "dealer" ? "/dashboard" : "/");
   }

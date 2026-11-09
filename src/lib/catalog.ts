@@ -1055,7 +1055,7 @@ export const labelOf = <T extends { value: string; label: string }>(
   value: string,
 ) => list.find((i) => i.value === value)?.label ?? value;
 
-export const yearsRange = Array.from({ length: 37 }, (_, i) => 2026 - i);
+export const yearsRange = Array.from({ length: 37 }, (_, i) => new Date().getFullYear() - i);
 export const priceSteps = [
   20000, 30000, 50000, 75000, 100000, 125000, 150000, 175000, 200000, 250000, 300000, 350000,
   400000, 500000, 600000, 700000, 800000, 1000000, 1250000, 1500000, 2000000, 3000000,

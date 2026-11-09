@@ -79,6 +79,7 @@ function toVehicle(r: Row): Vehicle {
     cebiaVerified: bool(r["cebia_verified"]),
     top: bool(r["is_top"]),
     status: status === "sold" ? "sold" : status === "in_auction" ? "in_auction" : "active",
+    ...(r["owner_user_id"] ? { ownerUserId: str(r["owner_user_id"]) } : {}),
     ...(tenant === PRIVATE_SELLER
       ? {
           privateSeller: {

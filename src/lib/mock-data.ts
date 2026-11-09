@@ -183,6 +183,8 @@ export type Vehicle = {
   status: "active" | "in_auction" | "sold";
   /** Soukromý prodejce (dealerId === "private"). */
   privateSeller?: { name: string; city: string; region: string; phone: string };
+  /** Účet, který soukromý inzerát vložil (jen s databází). */
+  ownerUserId?: string;
 };
 
 export const PRIVATE_SELLER = "private";
@@ -1043,7 +1045,7 @@ export function priceRating(v: Vehicle): {
   label: string;
   tone: "great" | "good" | "fair" | "high";
 } {
-  const age = Math.max(0, 2026 - v.year);
+  const age = Math.max(0, new Date().getFullYear() - v.year);
   const expected =
     800_000 *
     Math.pow(0.92, age) *

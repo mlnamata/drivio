@@ -128,7 +128,15 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
   const [lastMine, setLastMine] = useState<{ amount: number; at: Date } | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const push = (user: string, value: number, mine: boolean) => {
+  // ID příhozů, které už jsou ve výpisu – realtime pošle i náš vlastní příhoz, nesmí se zdvojit.
+  const seenRef = useRef(new Set<string>());
+  const userIdRef = useRef<string | null>(null);
+
+  const push = (user: string, value: number, mine: boolean, bidId?: string) => {
+    if (bidId) {
+      if (seenRef.current.has(bidId)) return;
+      seenRef.current.add(bidId);
+    }
     const wasLeading = leaderRef.current === "me";
     priceRef.current = value;
     leaderRef.current = mine ? "me" : "other";
@@ -146,30 +154,69 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
     if (mine) store.addBid(a.id, user, value);
   };
 
-  const bidAsMe = (value: number) => push(`${bidder?.name ?? "Vy"} (vy)`, value, true);
+  const myName = `${bidder?.name ?? "Vy"} (vy)`;
+  const bidAsMe = (value: number) => push(myName, value, true);
+
+  /**
+   * Vlastní příhoz. S databází jde vždy přes RPC `place_bid` (i automatické přihazování),
+   * v ukázkovém režimu se jen zapíše do prohlížeče. Vrací true, když byl přijat.
+   */
+  async function placeMine(value: number): Promise<boolean> {
+    if (!supabase) {
+      bidAsMe(value);
+      return true;
+    }
+    const { data } = await supabase.auth.getSession();
+    if (!data.session) {
+      toast("Pro příhoz se přihlaste");
+      void navigate({ to: "/prihlaseni", search: { next: `/aukce/${a.id}` } });
+      return false;
+    }
+    userIdRef.current = data.session.user.id;
+    try {
+      const res = await placeBid(a.id, value);
+      push(myName, value, true, res.bid_id);
+      return true;
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Příhoz se nepodařilo zpracovat");
+      return false;
+    }
+  }
+
+  /** Automatické přihazování: po cizím příhozu přihodí, dokud nepřesáhne nastavené maximum. */
+  const autoCounter = (other: number) => {
+    const max = autoRef.current;
+    if (max === null) return;
+    const counter = other + a.minIncrement;
+    if (counter <= max) {
+      window.setTimeout(() => void placeMine(counter), 600);
+    } else {
+      setAutoMax(null);
+      toast.warning("Automatické přihazování skončilo", {
+        description: `Příhoz ${czk(other)} přesáhl vaše maximum ${czk(max)}.`,
+      });
+    }
+  };
 
   // Realtime: s napojeným Supabase poslouchá INSERTy do bids; bez něj simuluje ostatní dražitele.
   useEffect(() => {
     if (a.ended || a.upcoming) return;
-    if (supabase) return subscribeToBids(a.id, (b) => push("Dražitel", b.amount, false));
+    if (supabase) {
+      void supabase.auth.getSession().then(({ data }) => {
+        userIdRef.current = data.session?.user.id ?? null;
+      });
+      return subscribeToBids(a.id, (b) => {
+        const mine = b.bidder_id === userIdRef.current;
+        push(mine ? myName : "Dražitel", b.amount, mine, b.id);
+        if (!mine) autoCounter(b.amount);
+      });
+    }
     const names = ["Petr H.", "Kateřina D.", "Ondřej S.", "Pavla M.", "Radek B."];
     const t = window.setInterval(() => {
       if (Math.random() < 0.55) return;
       const next = priceRef.current + a.minIncrement * (1 + Math.floor(Math.random() * 2));
       push(names[Math.floor(Math.random() * names.length)]!, next, false);
-      // Automatické přihazování: pokud nás někdo přehodí a máme nastavené maximum, přihodíme.
-      const max = autoRef.current;
-      if (max !== null) {
-        const counter = next + a.minIncrement;
-        if (counter <= max) {
-          window.setTimeout(() => bidAsMe(counter), 600);
-        } else {
-          setAutoMax(null);
-          toast.warning("Automatické přihazování skončilo", {
-            description: `Příhoz ${czk(next)} přesáhl vaše maximum ${czk(max)}.`,
-          });
-        }
-      }
+      autoCounter(next);
     }, 8000);
     return () => window.clearInterval(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -178,7 +225,7 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
   async function onBid(e: React.FormEvent) {
     e.preventDefault();
     if (!bidder) return setRegister(true);
-    if (amount < minBid) {
+    if (!Number.isFinite(amount) || amount < minBid) {
       toast.error(`Minimální příhoz je ${czk(minBid)}`);
       return;
     }
@@ -191,25 +238,8 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
   }
 
   async function submitBid() {
-    if (supabase) {
-      const { data } = await supabase.auth.getSession();
-      if (!data.session) {
-        toast("Pro příhoz se přihlaste");
-        void navigate({ to: "/prihlaseni", search: { next: `/aukce/${a.id}` } });
-        return;
-      }
-      try {
-        await placeBid(a.id, amount);
-        setLastMine({ amount, at: new Date() });
-        leaderRef.current = "me";
-        toast.success(`Příhoz ${czk(amount)} přijat`, { description: "Vedete aukci." });
-      } catch (err) {
-        toast.error(err instanceof Error ? err.message : "Příhoz se nepodařilo zpracovat");
-      }
-      return;
-    }
-    bidAsMe(amount);
-    toast.success(`Příhoz ${czk(amount)} přijat`, { description: "Vedete aukci." });
+    if (await placeMine(amount))
+      toast.success(`Příhoz ${czk(amount)} přijat`, { description: "Vedete aukci." });
   }
 
   return (
@@ -361,7 +391,7 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
                     </div>
                   ) : null}
 
-                  <form onSubmit={onBid} className="mt-5 space-y-3">
+                  <form onSubmit={onBid} noValidate className="mt-5 space-y-3">
                     <div className="flex gap-2">
                       {[1, 2, 5].map((k) => (
                         <button
@@ -414,6 +444,7 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
                       </div>
                     ) : (
                       <form
+                        noValidate
                         className="mt-2 flex gap-2"
                         onSubmit={(e) => {
                           e.preventDefault();
@@ -422,7 +453,7 @@ function AuctionDetail({ a, v }: { a: LiveAuction; v: ReturnType<typeof useAllVe
                           if (!max || max < minBid)
                             return void toast.error(`Maximum musí být alespoň ${czk(minBid)}`);
                           setAutoMax(max);
-                          if (!leading) bidAsMe(minBid);
+                          if (!leading) void placeMine(minBid);
                           toast.success(`Budeme za vás přihazovat až do ${czk(max)}`);
                         }}
                       >

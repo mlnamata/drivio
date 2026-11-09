@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { climateLevels, emissionClasses, rankIn, TAG, tagValue } from "./catalog";
+import { brandBySlug, climateLevels, emissionClasses, rankIn, TAG, tagValue } from "./catalog";
 import {
   conditionOf,
   monthlyPayment,
@@ -87,12 +87,35 @@ function monthsUntil(ym: string | undefined) {
 
 export type SellerInfo = { region: string; rating?: number; isDealer: boolean };
 
+/** Malá písmena bez diakritiky – „Škoda“ i „skoda“ najdou totéž. */
+const fold = (t: string) =>
+  t
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+
+/** Běžné zkratky značek, jak je lidé píšou do hledání. */
+const BRAND_ALIASES: Record<string, string> = {
+  volkswagen: "vw",
+  "mercedes-benz": "mercedes mb",
+  "alfa-romeo": "alfa",
+  "land-rover": "landrover range",
+  ssangyong: "ssang yong",
+};
+
+/** Text, ve kterém se hledá: značka (název, adresa a zkratka), model a motorizace. */
+const haystack = (v: Vehicle) =>
+  fold(
+    `${brandBySlug(v.brand)?.name ?? ""} ${v.brand} ${BRAND_ALIASES[v.brand] ?? ""} ${v.model} ${v.trim}`,
+  );
+
 export function filterVehicles(
   source: Vehicle[],
   s: ListingSearch,
   seller: (v: Vehicle) => SellerInfo = sellerOf,
 ): Vehicle[] {
-  const q = s.q?.trim().toLowerCase();
+  // Každé slovo dotazu musí v inzerátu být, pořadí nehraje roli („octavia dsg“).
+  const terms = s.q ? fold(s.q).split(/\s+/).filter(Boolean) : [];
   const emissionMin = s.emission ? emissionClasses.findIndex((e) => e.value === s.emission) : -1;
   const climateMin = s.climate ? climateLevels.findIndex((c) => c.value === s.climate) : -1;
 
@@ -110,7 +133,7 @@ export function filterVehicles(
     if (s.kmTo && v.km > s.kmTo) return false;
     if (s.powerFrom && v.powerKw < s.powerFrom) return false;
     if (s.powerTo && v.powerKw > s.powerTo) return false;
-    if (s.ccmFrom && v.engineCcm < s.ccmFrom) return false;
+    if (s.ccmFrom && (!v.engineCcm || v.engineCcm < s.ccmFrom)) return false;
     if (s.ccmTo && (!v.engineCcm || v.engineCcm > s.ccmTo)) return false;
     if (s.fuel?.length && !s.fuel.includes(v.fuel)) return false;
     if (s.body?.length && !s.body.includes(v.body)) return false;
@@ -147,7 +170,10 @@ export function filterVehicles(
     if (s.rangeFrom && Number(tagValue(eq, TAG.range) ?? 0) < s.rangeFrom) return false;
     if (s.listed && v.listedDays > s.listed) return false;
     if (s.priceRating && !["great", "good"].includes(priceRating(v).tone)) return false;
-    if (q && !`${v.brand} ${v.model} ${v.trim}`.toLowerCase().includes(q)) return false;
+    if (terms.length) {
+      const text = haystack(v);
+      if (!terms.every((t) => text.includes(t))) return false;
+    }
     return true;
   });
 
